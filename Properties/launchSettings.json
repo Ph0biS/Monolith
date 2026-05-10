@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Monolith": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\gando\\source\\PROJECT\\PROJECT\\PROJECT",
+      "remoteDebugMachine": "Monolith"
+    }
+  }
+}

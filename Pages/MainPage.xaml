@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             ControlTemplate="{StaticResource MainPageTemplate}"
+             xmlns:local="clr-namespace:PROJECT.Pages"
+             xmlns:micro="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
+             x:Class="PROJECT.Pages.MainPage"
+             BackgroundColor="#0B011D">
+
+    <Grid RowDefinitions="*, Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20" Spacing="15">
+
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
+                    <Label x:Name="mode" Text="DARK MODE" FontAttributes="Bold" FontFamily="Inter" FontSize="10" TextColor="#A78BFA" VerticalOptions="Center" CharacterSpacing="1"/>
+                    <Switch x:Name="Switch_mode" Toggled="Switch_Toggled" IsToggled="True" ThumbColor="#D946EF" />
+                </HorizontalStackLayout>
+
+                <Border x:Name="BalanceBorder" BackgroundColor="#1A1033" Stroke="#3D2B5E" Padding="20" StrokeShape="RoundRectangle 20">
+                    <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
+                        <Label Text="МОЙ БАЛАНС" FontFamily="Inter" FontAttributes="Bold" FontSize="12" HorizontalOptions="Center" TextColor="#A78BFA" CharacterSpacing="2" />
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <Label x:Name="BalanceLabel" 
+       FontFamily="Orbitron" 
+       Text="0 ₽" 
+       FontSize="38" 
+       TextColor="#2DD4BF"
+       HorizontalOptions="Center"
+       Margin="10,5">
+                                <Label.Shadow>
+                                    <Shadow Brush="#2DD4BF" Offset="0,0" Radius="15" Opacity="0.4" />
+                                </Label.Shadow>
+                            </Label>
+                            <Picker x:Name="CurrencyPicker" FontFamily="RobotoMono" FontAttributes="Bold" TitleColor="#A78BFA" TextColor="White" SelectedIndexChanged="OnCurrencyChanged">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type x:String}">
+                                        <x:String>RUB</x:String>
+                                        <x:String>USD</x:String>
+                                        <x:String>EUR</x:String>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                            </Picker>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" Margin="0,10,0,0">
+                            <Button Text="📥 CSV" FontFamily="Inter" FontAttributes="Bold" Clicked="OnShareReportClicked" BackgroundColor="#2A1A4A" TextColor="White" CornerRadius="10" HeightRequest="35"/>
+                            <Button Text="🔄" Clicked="OnResetStatsClicked" BackgroundColor="Transparent" TextColor="#D946EF" FontSize="18" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <VerticalStackLayout x:Name="ChartContainer" Spacing="10">
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Label Text="Период:"  FontFamily="Montserrat"  VerticalOptions="Center" TextColor="#A78BFA" />
+                        <Picker x:Name="PeriodPicker" FontAttributes="Bold" SelectedIndex="0" SelectedIndexChanged="OnPeriodChanged" WidthRequest="150" TextColor="White" Title="Выберите период" FontFamily="Inter" TitleColor="#5A4A7A">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Все время</x:String>
+                                    <x:String>Январь</x:String>
+                                    <x:String>Февраль</x:String>
+                                    <x:String>Март</x:String>
+                                    <x:String>Апрель</x:String>
+                                    <x:String>Май</x:String>
+                                    <x:String>Июнь</x:String>
+                                    <x:String>Июль</x:String>
+                                    <x:String>Август</x:String>
+                                    <x:String>Сентябрь</x:String>
+                                    <x:String>Октябрь</x:String>
+                                    <x:String>Ноябрь</x:String>
+                                    <x:String>Декабрь</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </HorizontalStackLayout>
+
+                    <VerticalStackLayout x:Name="MainDashboardView" IsVisible="True">
+                        <Grid HeightRequest="300" WidthRequest="300" HorizontalOptions="Center">
+                            <micro:ChartView x:Name="ChartV" 
+                         HeightRequest="300" 
+                         WidthRequest="300"
+                         BackgroundColor="Transparent">
+                                <micro:ChartView.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnChartTapped" />
+                                </micro:ChartView.GestureRecognizers>
+                            </micro:ChartView>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout x:Name="DetailedAnalyticsView" IsVisible="False" Padding="10">
+                        <HorizontalStackLayout Spacing="10" Margin="0,0,0,15">
+                            <Button Text="⬅ НАЗАД" FontFamily="Orbitron" FontAttributes="Bold" Clicked="OnBackToChartClicked" BackgroundColor="#2A1A4A" HeightRequest="40" />
+                            <Label x:Name="SelectedCategoryLabel" Text="Детализация" FontFamily="Orbitron" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" TextColor="White"/>
+                        </HorizontalStackLayout>
+                        <CollectionView x:Name="CategoryDetailsList" HeightRequest="150" />
+                    </VerticalStackLayout>
+
+                    <CollectionView x:Name="ChartLegendView"  HeightRequest="120" HorizontalOptions="Center" WidthRequest="300">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <HorizontalStackLayout Spacing="10" Margin="0,2">
+                                    <BoxView WidthRequest="8" HeightRequest="8" Color="{Binding DisplayColor}" CornerRadius="4" VerticalOptions="Center"/>
+                                    <Label VerticalOptions="Center" FontFamily="Inter">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding Category}" TextColor="White" FontSize="13" FontAttributes="Bold"/>
+                                                <Span Text=" — " TextColor="#A78BFA"/>
+                                                <Span Text="{Binding AmountText}" TextColor="#2DD4BF" FontFamily="JetBrainsMono" FontAttributes="Bold"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </HorizontalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <Border Stroke="#3D2B5E" Background="#140B2D" Padding="15" StrokeShape="RoundRectangle 15">
+                    <VerticalStackLayout Spacing="12">
+                        <Entry x:Name="DescriptionEntry" Placeholder="Описание" FontAttributes="Bold" FontFamily="Inter" PlaceholderColor="#5A4A7A" TextColor="White" />
+                        <Entry x:Name="AmountEntry" Placeholder="Сумма"  FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" PlaceholderColor="#5A4A7A" TextColor="#2DD4BF" />
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Border x:Name="BtnExpenseBorder" Stroke="#D946EF" StrokeThickness="1" BackgroundColor="#2A1A4A" StrokeShape="RoundRectangle 10" HeightRequest="45">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnExpenseClicked" />
+                                </Border.GestureRecognizers>
+                                <Label x:Name="LblExpense" Text="💸 РАСХОД" FontFamily="Orbitron" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="#D946EF" FontSize="13"/>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="#2A1A4A" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="#D946EF" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Border>
+
+                            <Border x:Name="BtnIncomeBorder" Grid.Column="1" Stroke="#2DD4BF" StrokeThickness="1" BackgroundColor="#2A1A4A" StrokeShape="RoundRectangle 10" HeightRequest="45">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnIncomeClicked" />
+                                </Border.GestureRecognizers>
+                                <Label x:Name="LblIncome" Text="💰 ДОХОД" FontAttributes="Bold" FontFamily="Orbitron" HorizontalOptions="Center" VerticalOptions="Center" TextColor="#2DD4BF" FontSize="13"/>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="#2A1A4A" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="#2DD4BF" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Border>
+                        </Grid>
+
+                        <Picker x:Name="CategoryPicker" Title="Категория" FontAttributes="Bold" FontFamily="Inter" TitleColor="#5A4A7A" TextColor="White" />
+
+                        <Button x:Name="AddTransactionBtn" Text="ДОБАВИТЬ ЗАПИСЬ" FontAttributes="Bold" FontFamily="Orbitron" Clicked="OnAddTransactionClicked" TextColor="White" HeightRequest="50" CharacterSpacing="1">
+                            <Button.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#8B5CF6" Offset="0.1" />
+                                    <GradientStop Color="#D946EF" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Button.Background>
+                        </Button>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Text="ЦЕЛИ И КОПИЛКИ" FontFamily="Orbitron" FontAttributes="Bold" FontSize="16" TextColor="#A78BFA" Margin="0,10,0,0" CharacterSpacing="1"/>
+                <Border Stroke="#3D2B5E" Padding="10" StrokeShape="RoundRectangle 12" BackgroundColor="#1A1033">
+                    <Grid ColumnDefinitions="*, *, Auto" ColumnSpacing="10">
+                        <Entry x:Name="GoalNameEntry" Placeholder="Название" FontAttributes="Bold"  FontFamily="Inter" TextColor="White" PlaceholderColor="#5A4A7A"/>
+                        <Entry Grid.Column="1" x:Name="GoalTargetEntry" Placeholder="Сумма" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="#2DD4BF" PlaceholderColor="#5A4A7A"/>
+                        <Button Grid.Column="2" Text="💲" Clicked="OnAddGoalClicked" BackgroundColor="#8B5CF6" WidthRequest="45" CornerRadius="10"/>
+                    </Grid>
+                </Border>
+
+                <CollectionView x:Name="SavingsCollection" HeightRequest="250">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" Margin="0,5" Padding="12" StrokeShape="RoundRectangle 15">
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <Label Text="🎯" FontSize="20" VerticalOptions="Center"/>
+                                        <VerticalStackLayout Grid.Column="1" Margin="10,0">
+                                            <Label Text="{Binding Name}" FontFamily="Montserrat" FontAttributes="Bold" TextColor="White"/>
+                                            <Label Text="{Binding ProgressText}" FontFamily="JetBrainsMono" FontAttributes="Bold" FontSize="11" TextColor="#A78BFA"/>
+                                        </VerticalStackLayout>
+                                        <HorizontalStackLayout Grid.Column="2" Spacing="5">
+                                            <Button Text="🚀" Clicked="OnDepositGoalClicked" CommandParameter="{Binding .}" BackgroundColor="#2DD4BF" TextColor="#0B011D" WidthRequest="32" HeightRequest="32" CornerRadius="16" Padding="0"/>
+                                            <Button Text="🗑️" Clicked="OnDeleteGoalClicked" CommandParameter="{Binding .}" BackgroundColor="#D946EF" WidthRequest="32" HeightRequest="32" CornerRadius="16" FontSize="10" Padding="0"/>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding Progress}" ProgressColor="#8B5CF6" ScaleY="2"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Label Text="ПОДПИСКИ" FontFamily="Orbitron" FontAttributes="Bold" FontSize="16" TextColor="#A78BFA" Margin="0,15,0,0" CharacterSpacing="1"/>
+                <Border Stroke="#3D2B5E" Background="#1A1033" Padding="10" StrokeShape="RoundRectangle 12">
+                    <Grid ColumnDefinitions="*, 70, 70, Auto" ColumnSpacing="5">
+                        <Entry x:Name="SubNameEntry" Placeholder="Имя" FontFamily="Inter" FontAttributes="Bold" TextColor="White" PlaceholderColor="#5A4A7A"/>
+                        <Entry Grid.Column="1" x:Name="SubPriceEntry" Placeholder="Цена" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="#D946EF" PlaceholderColor="#5A4A7A"/>
+                        <DatePicker Grid.Column="2" x:Name="SubDatePicker" FontFamily="RobotoMono" FontAttributes="Bold" Format="dd/MM" TextColor="White" FontSize="10"/>
+                        <Button Grid.Column="3" Text="▶️" Clicked="OnAddSubscriptionClicked" BackgroundColor="#D946EF" WidthRequest="45" CornerRadius="10"/>
+                    </Grid>
+                </Border>
+
+                <CollectionView x:Name="SubsCollectionView" HeightRequest="200">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" Margin="0,5" Padding="12" StrokeShape="RoundRectangle 12">
+                                <Grid ColumnDefinitions="40, *, Auto, 40">
+                                    <Label Text="💳" FontSize="18" VerticalOptions="Center"/>
+                                    <Label Grid.Column="1" Text="{Binding Name}" FontFamily="Inter" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" Margin="10,0"/>
+                                    <Label Grid.Column="2" Text="{Binding DisplayPrice}" FontFamily="JetBrainsMono" FontAttributes="Bold" TextColor="#D946EF" FontSize="14" VerticalOptions="Center"/>
+                                    <Button Grid.Column="3" Text="✕" Clicked="OnDeleteSubscriptionClicked" CommandParameter="{Binding .}" BackgroundColor="Transparent" TextColor="#5A4A7A" FontSize="14"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+        <Grid x:Name="LoadingOverlay" 
+          BackgroundColor="#0D081F" IsVisible="False"  Opacity="0"
+          RowDefinitions="*, Auto, Auto, *" 
+          Padding="30"
+          InputTransparent="False">
+
+            <Border Grid.Row="0" 
+                x:Name="SplashLogo"
+                Stroke="#00F2FF" 
+                StrokeThickness="2" 
+                HeightRequest="100" 
+                WidthRequest="100" 
+                StrokeShape="RoundRectangle 20" 
+                BackgroundColor="#1A1033"
+                VerticalOptions="End"
+                Opacity="0">
+
+                <Image Source="logomain.png" Aspect="AspectFit" Margin="15" />
+
+                <Border.Shadow>
+                    <Shadow x:Name="LogoGlow" Brush="#00F2FF" Opacity="0" Radius="0" />
+                </Border.Shadow>
+            </Border>
+
+            <Label Grid.Row="1" 
+               x:Name="TerminalText"
+               Text="> MONOLITH_OS_BOOT..."
+               FontFamily="JetBrainsMono"
+               FontSize="13"
+               TextColor="#00F2FF"
+               HorizontalOptions="Center"
+               Margin="0,40,0,0" />
+
+            <Grid Grid.Row="2" 
+              WidthRequest="250" 
+              HeightRequest="6" 
+              Margin="0,20,0,0"
+              VerticalOptions="Start">
+                <BoxView BackgroundColor="#2A1B4E" CornerRadius="3" />
+                <BoxView x:Name="ProgressBar" 
+                     BackgroundColor="#D946EF" 
+                     HorizontalOptions="Start" 
+                     WidthRequest="0" 
+                     CornerRadius="3" />
+            </Grid>
+
+            <Label Grid.Row="3" 
+               Text="v1.0.0-SYSTEM_READY" 
+               FontFamily="JetBrainsMono"
+               FontSize="10"
+               TextColor="#4D3B6D"
+               HorizontalOptions="Center"
+               VerticalOptions="End"/>
+        </Grid>
+    </Grid>
+</ContentPage>

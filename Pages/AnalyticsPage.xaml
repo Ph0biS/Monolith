@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             ControlTemplate="{StaticResource MainPageTemplate}"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
+             x:Class="PROJECT.Pages.AnalyticsPage"
+             BackgroundColor="#0B011D"
+             Title="Аналитика">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Сбросить"  Clicked="OnResetStatsClicked" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <Label Text="АНАЛИТИКА" FontAttributes="Bold"
+                   FontFamily="Orbitron"
+                   FontSize="24"
+                   TextColor="#A78BFA"
+                   HorizontalOptions="Center"
+                   CharacterSpacing="3"/>
+
+            <Border Stroke="#3D2B5E" BackgroundColor="#1A1033" StrokeShape="RoundRectangle 20" Padding="10">
+                <Grid x:Name="AnalyticsChartContainer" HeightRequest="300">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBackToWalletTapped" />
+                    </Grid.GestureRecognizers>
+                    <microcharts:ChartView x:Name="ChartV" HeightRequest="300" BackgroundColor="Transparent" />
+                </Grid>
+            </Border>
+
+            <CollectionView x:Name="AnalyticsList">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="#3D2B5E" StrokeShape="RoundRectangle 15" BackgroundColor="#1A1033" Padding="15" Margin="0,5">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Text="{Binding Category}"
+                                           FontFamily="MontserratBold" FontAttributes="Bold"
+                                           FontSize="14"
+                                           TextColor="White"/>
+
+                                    <Label Grid.Column="1"
+                                           Text="{Binding AmountText}" FontAttributes="Bold"
+                                           FontFamily="JetBrainsMono"
+                                           FontSize="15"
+                                           TextColor="#2DD4BF"/>
+                                </Grid>
+
+                                <ProgressBar Progress="{Binding Percentage}"
+                                             ProgressColor="#D946EF"
+                                             HeightRequest="8"
+                                             ScaleY="2"/>
+
+                                <Label Text="{Binding PercentageText}" FontAttributes="Bold"
+                                       FontFamily="RobotoMono"
+                                       FontSize="11"
+                                       TextColor="#A78BFA"
+                                       HorizontalOptions="End"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label x:Name="NoDataLabel"
+                   Text="Нет данных для анализа" 
+                   FontFamily="Inter"
+                   TextColor="#5A4A7A"
+                   HorizontalOptions="Center"
+                   IsVisible="False"
+                   Margin="0,50"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             ControlTemplate="{StaticResource MainPageTemplate}"
+             xmlns:micro="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
+             xmlns:charts="clr-namespace:Microcharts;assembly=Microcharts"
+             x:Class="PROJECT.Pages.StatisticsPage"
+             BackgroundColor="#0B011D">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+
+            <Label Text="РАСПРЕДЕЛЕНИЕ" FontAttributes="Bold"
+                   FontFamily="Orbitron" 
+                   HorizontalOptions="Center" 
+                   FontSize="22" 
+                   TextColor="#A78BFA" 
+                   CharacterSpacing="2"/>
+
+            <Border Stroke="#3D2B5E" BackgroundColor="#1A1033" Padding="10" StrokeShape="RoundRectangle 20">
+                <Grid HeightRequest="300">
+                    <micro:ChartView x:Name="StatisticsDonutChart" HeightRequest="250" BackgroundColor="Transparent">
+                        <micro:ChartView.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnChartTappedBack" />
+                        </micro:ChartView.GestureRecognizers>
+                    </micro:ChartView>
+                </Grid>
+            </Border>
+
+            <Label Text="ДЕТАЛИЗАЦИЯ" 
+                   FontFamily="Orbitron" FontAttributes="Bold"
+                   FontSize="14" 
+                   TextColor="#A78BFA" 
+                   Margin="5,10,0,0" 
+                   CharacterSpacing="1"/>
+
+            <CollectionView x:Name="StatisticsLegend">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="#3D2B5E" StrokeThickness="1" Background="#1A1033" Margin="0,5" Padding="15" StrokeShape="RoundRectangle 12">
+                            <Grid ColumnDefinitions="Auto, *, Auto">
+                                <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" 
+                                         Color="{Binding Color}" VerticalOptions="Center"/>
+
+                                <Label Grid.Column="1" 
+                                       Text="{Binding Label}" 
+                                       FontFamily="Inter" 
+                                       FontAttributes="Bold"
+                                       TextColor="White" 
+                                       Margin="15,0" 
+                                       VerticalOptions="Center" 
+                                       FontSize="14"/>
+
+                                <Label Grid.Column="2" 
+                                       Text="{Binding ValueLabel}" 
+                                       FontFamily="JetBrainsMono" FontAttributes="Bold"
+                                       TextColor="#2DD4BF" 
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Border Stroke="#8B5CF6" Background="#2A1A4A" Padding="15" StrokeShape="RoundRectangle 15">
+                <VerticalStackLayout Spacing="5">
+                    <Label x:Name="TopCategoryLabel" 
+                           Text="🏆 Лидер: ---" 
+                           FontFamily="Inter"
+                           FontAttributes="Bold" 
+                           TextColor="White" 
+                           FontSize="16"/>
+                    <Label x:Name="TotalTransactionsLabel" 
+                           Text="Операций: 0"  FontAttributes="Bold"
+                           FontFamily="JetBrainsMono"
+                           TextColor="#A78BFA" 
+                           FontSize="12"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="ПОДЕЛИТЬСЯ ОТЧЕТОМ" FontAttributes="Bold"
+                    FontFamily="Orbitron" 
+                    Clicked="OnShareReportClicked" 
+                    BackgroundColor="#8B5CF6" 
+                    TextColor="White" 
+                    CornerRadius="12" 
+                    HeightRequest="50"
+                    Margin="0,0,0,20"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

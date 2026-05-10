@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="PROJECT.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:PROJECT.Pages"
+    Shell.FlyoutBehavior="Disabled"
+    Title="Monolith"
+    Shell.NavBarIsVisible="False"
+    Shell.PresentationMode="NotAnimated"
+    BackgroundColor="#1A1033"
+    Shell.TabBarBackgroundColor="#1A1033"
+    Shell.TabBarForegroundColor="#D946EF"
+    Shell.TabBarUnselectedColor="#4D3B6D">
+
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Style x:Key="TabLabelStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="Orbitron" />
+                <Setter Property="FontSize" Value="10" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="#A78BFA" />
+            </Style>
+
+            <Style TargetType="ShellItem">
+                <Setter Property="Shell.NavBarIsVisible" Value="False" />
+            </Style>
+        </ResourceDictionary>
+    </Shell.Resources>
+
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid HeightRequest="60" BackgroundColor="#1A1033">
+                <BoxView Margin="5,2" CornerRadius="10" Color="#4D3B6D" />
+
+                <BoxView Margin="7,4" CornerRadius="8" Color="#1A1033" />
+
+                <BoxView Margin="5,2" CornerRadius="10" Color="#D946EF" ZIndex="1" IsVisible="False">
+                    <BoxView.Triggers>
+                        <DataTrigger TargetType="BoxView" Binding="{Binding IsSelected}" Value="True">
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                    </BoxView.Triggers>
+                </BoxView>
+
+                <BoxView Margin="7,4" CornerRadius="8" Color="#2D1B5A" ZIndex="2" IsVisible="False">
+                    <BoxView.Triggers>
+                        <DataTrigger TargetType="BoxView" Binding="{Binding IsSelected}" Value="True">
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                    </BoxView.Triggers>
+                </BoxView>
+
+                <Label Text="{Binding Title}" ZIndex="3" 
+                       VerticalOptions="Center" HorizontalOptions="Center"
+                       Style="{StaticResource TabLabelStyle}">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                            <Setter Property="TextColor" Value="White" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <ShellContent Title="Кошелек 💰" Route="MainPage" ContentTemplate="{DataTemplate pages:MainPage}" />
+    <ShellContent Title="История 📜" Route="HistoryPage" ContentTemplate="{DataTemplate pages:HistoryPage}" />
+    <ShellContent Title="Анализ 📊" Route="AnalyticsPage" ContentTemplate="{DataTemplate pages:AnalyticsPage}" />
+    <ShellContent Title="Прогноз 📈" Route="ForecastPage" ContentTemplate="{DataTemplate pages:ForecastPage}" />
+    <ShellContent Title="Достижения 🏆" Route="AchievementsPage" ContentTemplate="{DataTemplate pages:AchievementsPage}" />
+</Shell>

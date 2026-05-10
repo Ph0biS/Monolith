@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             ControlTemplate="{StaticResource MainPageTemplate}"
+             x:Class="PROJECT.Pages.ForecastPage"
+             BackgroundColor="#0B011D"
+             Title="Прогноз">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <Label Text="ПРОГНОЗ" FontAttributes="Bold"
+                   FontFamily="Orbitron" 
+                   FontSize="24" 
+                   TextColor="#A78BFA" 
+                   CharacterSpacing="2" />
+
+            <Border Stroke="#8B5CF6" StrokeShape="RoundRectangle 15" BackgroundColor="#1A1033" Padding="15">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="ЛИМИТ НА МЕСЯЦ" FontAttributes="Bold"
+                           FontFamily="MontserratBold" 
+                           TextColor="#A78BFA" 
+                           FontSize="10" 
+                           CharacterSpacing="1" />
+                    <Entry x:Name="LimitEntry" 
+                           Placeholder="0" 
+                           FontFamily="JetBrainsMono" FontAttributes="Bold"
+                           Keyboard="Numeric" 
+                           TextColor="White" 
+                           FontSize="22" 
+                           TextChanged="OnLimitTextChanged" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" StrokeShape="RoundRectangle 20" Padding="20">
+                <VerticalStackLayout Spacing="15">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label x:Name="SpentLabel" FontAttributes="Bold"
+                               Text="Потрачено: 0 ₽" 
+                               FontFamily="Inter"
+                               TextColor="White" 
+                               FontSize="14" />
+                        <Label x:Name="RemainingLabel" 
+                               Grid.Column="1" FontAttributes="Bold"
+                               Text="Осталось: 0 ₽" 
+                               FontFamily="JetBrainsMono" 
+                               TextColor="#2DD4BF" 
+                               FontSize="14"/>
+                    </Grid>
+
+                    <ProgressBar x:Name="BudgetProgressBar" 
+                                 Progress="0" 
+                                 HeightRequest="12" 
+                                 ProgressColor="#2DD4BF" 
+                                 ScaleY="2"/>
+
+                    <Label x:Name="StatusMessageLabel" 
+                           Text="Введите лимит" FontAttributes="Bold"
+                           FontFamily="RobotoMono"
+                           TextColor="#A78BFA" 
+                           HorizontalOptions="Center" 
+                           FontSize="11" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#2A1A4A" Stroke="#D946EF" StrokeShape="RoundRectangle 20" Padding="20">
+                <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
+                    <Label Text="ВЫЖИВАНИЕ (ДНЕЙ)" FontAttributes="Bold"
+                           FontFamily="Orbitron" 
+                           TextColor="#A78BFA" 
+                           FontSize="10" 
+                           CharacterSpacing="1"/>
+                    <Label x:Name="DaysLeftLabel" 
+                           Text="---" 
+                           FontFamily="JetBrainsMono" FontAttributes="Bold"
+                           TextColor="White" 
+                           FontSize="32" 
+                           Margin="0,5" />
+                    <Label x:Name="DailyAverageLabel" 
+                           Text="0 ₽/день" FontAttributes="Bold"
+                           FontFamily="JetBrainsMono"
+                           TextColor="#A78BFA" 
+                           FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="СБРОСИТЬ ЛИМИТ" FontAttributes="Bold"
+                    FontFamily="Orbitron"
+                    Clicked="OnResetLimitClicked" 
+                    BackgroundColor="Transparent" 
+                    TextColor="#D946EF" 
+                    BorderColor="#D946EF" 
+                    BorderWidth="1" 
+                    CornerRadius="10" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

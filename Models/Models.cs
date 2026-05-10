@@ -1,0 +1,103 @@
+﻿using SQLite;
+using System;
+using System.Collections.Generic;
+using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Controls;
+namespace PROJECT.Models
+{
+    public class Transaction
+    {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public string Category { get; set; }
+        public string Description { get; set; }
+        public decimal Amount { get; set; }
+        public bool IsIncome { get; set; }
+
+        [Ignore]
+        public Color AmountColor => IsIncome ? Colors.MediumSeaGreen : Colors.IndianRed;
+        [Ignore]
+        public string DisplayAmount => IsIncome
+    ? $"+{Amount * Subscription.CurrentRate:N0} {Subscription.CurrentSymbol}"
+    : $"-{Amount * Subscription.CurrentRate:N0} {Subscription.CurrentSymbol}";
+
+        public string Type { get; internal set; }
+    }
+
+    public class SavingsGoal
+    {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal TargetAmount { get; set; }
+        public decimal CurrentAmount { get; set; }
+        public string Icon { get; set; } = "💰";
+
+        // Эти свойства вычисляются на лету для интерфейса
+        [Ignore]
+        public double Progress => (double)(TargetAmount > 0 ? CurrentAmount / TargetAmount : 0);
+        [Ignore]
+        public string ProgressText =>
+    $"{CurrentAmount * Subscription.CurrentRate:N0} / {TargetAmount * Subscription.CurrentRate:N0} {Subscription.CurrentSymbol}";
+    }
+
+    public class Subscription
+    {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; } // Оставляем Price, как было у тебя
+        public int PaymentDay { get; set; } // Это добавляем
+        public DateTime NextPaymentDate { get; set; } // Это было в твоем коде
+
+        // Для вывода в списке
+        [Ignore]
+        public string PaymentInfo => $"Списание: {NextPaymentDate:dd.MM.yyyy}";
+
+        // Статические поля для конвертации курсов (те, что у тебя уже были)
+        public static decimal CurrentRate { get; set; } = 1.0m;
+        public static string CurrentSymbol { get; set; } = "₽";
+
+        [Ignore]
+        public string DisplayPrice => $"{(Price * CurrentRate):N0} {CurrentSymbol}";
+    }
+    public class ChartItem
+    {
+        public string Category { get; set; }
+        public float Sum { get; set; }
+        public string AmountText { get; set; }
+        public Color DisplayColor { get; set; }
+    }
+    public class ExpenseCategoryItem
+    {
+        public string Category { get; set; }
+        public float Sum { get; set; }
+        public string AmountText { get; set; }
+        public Color DisplayColor { get; set; }
+    }
+    public class Achievement
+    {
+        [SQLite.PrimaryKey] // Если используешь в БД, это поле будет ключом
+        public string Name { get; set; }
+
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Icon { get; set; }
+        public bool IsUnlocked { get; set; }
+        public double CurrentValue { get; set; }
+        public double TargetValue { get; set; }
+
+        // Вычисляем процент для ProgressBar (от 0 до 1)
+        public double Progress => TargetValue > 0 ? Math.Min(CurrentValue / TargetValue, 1.0) : 0;
+        public string ProgressText => $"{CurrentValue:N0} / {TargetValue:N0}";
+    }
+    public partial class TransactionGroup : List<Transaction>
+    {
+        public string Date { get; private set; }
+        public TransactionGroup(string date, List<Transaction> transactions) : base(transactions)
+        {
+            Date = date;
+        }
+    }
+}
