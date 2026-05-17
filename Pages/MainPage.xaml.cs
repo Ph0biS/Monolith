@@ -57,8 +57,9 @@ public partial class MainPage : ContentPage
     
         BindingContext = this;
 
-        CategoryPicker.ItemsSource = expenseCategories;
-        CurrencyPicker.SelectedIndex = 0;
+        // Даем Mac Catalyst непустой список при старте, чтобы инициализировать оверлей
+        CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
+        CategoryPicker.SelectedIndex = 0;
 
         // Явная привязка источников данных для стабильности
         SavingsCollection.ItemsSource = UserSavings;
@@ -68,71 +69,82 @@ public partial class MainPage : ContentPage
     private bool _isPulseRunning = false; // Флаг, чтобы не запускать анимацию дважды
 
     protected override async void OnAppearing()
+{
+    base.OnAppearing();
+    _isPageVisible = true;
+
+    // По умолчанию ни один режим (Доход/Расход) не выбран, пикер категорий пуст
+    isIncomeMode = false; 
+    CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
+        CategoryPicker.SelectedIndex = 0;
+
+    // Явно принуждаем плашку приветствия ИИ быть видимой
+    if (AtlasLoadingView != null)
     {
-        base.OnAppearing();
-        _isPageVisible = true;
-        isIncomeMode = true;
-        CategoryPicker.ItemsSource = incomeCategories;
-
-        if (App.IsFirstLaunch)
-        {
-            LoadingOverlay.IsVisible = true;
-            LoadingOverlay.Opacity = 1;
-
-            // Запускаем твой метод
-            await RunCyberpunkBootloader();
-
-            // Помечаем, что больше показывать не нужно
-            App.IsFirstLaunch = false;
-        }
-        else
-        {
-            // Если не первый запуск, просто убеждаемся, что оверлей скрыт
-            LoadingOverlay.IsVisible = false;
-        }
-        // ОБЯЗАТЕЛЬНО: Даем UI-потоку «продышаться» после перехода
-        await Task.Delay(20);
-
-        // Визуальные состояния (кнопки)
-        if (BtnIncomeBorder != null && BtnExpenseBorder != null)
-        {
-            // Сначала сбрасываем всё в Normal
-            VisualStateManager.GoToState(BtnExpenseBorder, "Normal");
-            VisualStateManager.GoToState(BtnIncomeBorder, "Normal");
-
-            // А теперь выбираем Доход
-            VisualStateManager.GoToState(BtnIncomeBorder, "Selected");
-
-            // 4. Ручное управление цветом (на случай, если VSM капризничает)
-            LblIncome.TextColor = Color.FromArgb("#140B2D"); // Темный (контраст)
-            LblExpense.TextColor = Color.FromArgb("#D946EF"); // Розовый неон
-        }
-
-        // Загружаем данные из БД (асинхронно)
-        await LoadDataFromDatabase();
-
-        // Загружаем курсы, но НЕ ЖДЕМ их (чтобы не висеть, если интернет тупит)
-        _ = Task.Run(async () => {
-            try { await LoadCurrencyRates(); }
-            catch { /* Логгируем ошибку в консоль */ }
-        });
-
-        // Запускаем заставку только если это первый вход
-        if (_isFirstLoad)
-        {
-            LoadingOverlay.IsVisible = true;
-            await RunCyberpunkBootloader();
-            _isFirstLoad = false;
-        }
-
-        // Обновляем интерфейс и графики
-
-        if (!_isPulseRunning)
-        {
-            _isPulseRunning = true;
-            //_ = PulseBalanceGlow();
-        }
+        AtlasLoadingView.IsVisible = true;
+        AtlasLoadingView.Opacity = 1;
     }
+
+    #if MACCATALYST
+    await Task.Delay(150); // Увеличенный таймаут для стабильного рендеринга на Mac
+    #else
+    await Task.Delay(20);
+    #endif
+
+    if (App.IsFirstLaunch)
+    {
+        LoadingOverlay.IsVisible = true;
+        LoadingOverlay.Opacity = 1;
+        await RunCyberpunkBootloader();
+        App.IsFirstLaunch = false;
+    }
+    else
+    {
+        LoadingOverlay.IsVisible = false;
+    }
+
+    // Возвращаем видимость интерфейса аналитики после загрузчика
+    if (AtlasLoadingView != null) 
+        AtlasLoadingView.IsVisible = true;
+
+    // ВРУЧНУЮ тушим ОБЕ кнопки (нейтральное стартовое состояние)
+    if (BtnIncomeBorder != null && BtnExpenseBorder != null)
+    {
+        // Потухший РАСХОД (темный фон, тусклый розовый контур и текст)
+        BtnExpenseBorder.BackgroundColor = Color.FromArgb("#140B2D");
+        BtnExpenseBorder.Stroke = Color.FromArgb("#3D1D4A"); 
+        LblExpense.TextColor = Color.FromArgb("#7A2D6A");   
+
+        // Потухший ДОХОД (темный фон, тусклый бирюзовый контур и текст)
+        BtnIncomeBorder.BackgroundColor = Color.FromArgb("#140B2D");
+        BtnIncomeBorder.Stroke = Color.FromArgb("#1F3A3A"); 
+        LblIncome.TextColor = Color.FromArgb("#1E6B60");    
+    }
+
+    // Загружаем данные из локальной БД и обновляем графики
+    await LoadDataFromDatabase();
+    await UpdateDashboardUI();
+
+    // Запрос курсов валют в фоновом потоке
+    _ = Task.Run(async () => {
+        try { await LoadCurrencyRates(); }
+        catch { /* Игнорируем ошибки сети */ }
+    });
+
+    if (_isFirstLoad)
+    {
+        LoadingOverlay.IsVisible = true;
+        await RunCyberpunkBootloader();
+        _isFirstLoad = false;
+        if (AtlasLoadingView != null) AtlasLoadingView.IsVisible = true;
+        await UpdateDashboardUI();
+    }
+
+    // Принудительный хак для Mac Catalyst: заставляем ОС пересчитать размеры окна
+    #if MACCATALYST
+    InvalidateMeasure();
+    #endif
+}
     private async Task PulseBalanceGlow()
     {
         // Цикл будет работать ТОЛЬКО пока страница действительно видна
@@ -251,36 +263,77 @@ public partial class MainPage : ContentPage
     #region --- 4. ЛОГИКА ТРАНЗАКЦИЙ ---
 
     private async void OnAddTransactionClicked(object sender, EventArgs e)
-    {
-        if (decimal.TryParse(AmountEntry.Text, out decimal amt))
+{
+    // 1. КРИТИЧЕСКАЯ ПРОВЕРКА: выбран ли режим и категория
+    // Так как при старте ничего не горит, ItemsSource у пикера равен null.
+    // ПРОВЕРКА: Если выбрана заглушка или ничего не выбрано — стопим процесс
+        if (CategoryPicker.SelectedItem == null || 
+            CategoryPicker.SelectedItem.ToString().StartsWith("[") || 
+            CategoryPicker.ItemsSource == null)
         {
-            var newTransaction = new Transaction
-            {
-                Description = string.IsNullOrWhiteSpace(DescriptionEntry.Text) ? "Без описания" : DescriptionEntry.Text,
-                Amount = amt,
-                IsIncome = isIncomeMode,
-                Category = CategoryPicker.SelectedItem?.ToString() ?? "Прочее",
-                Date = DateTime.Now
-            };
-
-            await App.Database.SaveTransactionAsync(newTransaction);
-            // После сохранения транзакции
-            var history = await App.Database.GetTransactionsAsync();
-            var achievements = AchievementService.CalculateAchievements(history);
-
-            // Проверяем, есть ли новые открытые ачивки, которых не было раньше
-            // (Это простая версия, можно усложнить хранением в БД)
-            if (newTransaction.Amount >= 50000 && !achievements.First(a => a.Name == "Saver").IsUnlocked)
-            {
-                await DisplayAlert("ACHIEVEMENT UNLOCKED!", "Вы получили ачивку: Сберегатель 💰", "КРУТО!");
-            }
-            AmountEntry.Text = string.Empty;
-            DescriptionEntry.Text = string.Empty;
-            CategoryPicker.SelectedIndex = -1;
-            await CheckNewAchievements();
-            await LoadDataFromDatabase(); // Мгновенное обновление
+            await DisplayAlert("Monolith OS", "Пожалуйста, выберите режим (Доход или Расход) перед добавлением записи.", "OK");
+            return;
         }
+
+    // 2. Проверка корректности введенной суммы
+    if (decimal.TryParse(AmountEntry.Text, out decimal amt))
+    {
+        // Создаем транзакцию с выбранной категорией
+        var newTransaction = new Transaction
+        {
+            Description = string.IsNullOrWhiteSpace(DescriptionEntry.Text) ? "Без описания" : DescriptionEntry.Text,
+            Amount = amt,
+            IsIncome = isIncomeMode,
+            Category = CategoryPicker.SelectedItem.ToString(),
+            Date = DateTime.Now
+        };
+
+        // Сохраняем в локальную БД
+        await App.Database.SaveTransactionAsync(newTransaction);
+
+        // Получаем историю для расчета достижений
+        var history = await App.Database.GetTransactionsAsync();
+        var achievements = AchievementService.CalculateAchievements(history);
+
+        // Проверка конкретной ачивки "Saver"
+        var saverAchievement = achievements.FirstOrDefault(a => a.Name == "Saver");
+        if (newTransaction.Amount >= 50000 && saverAchievement != null && !saverAchievement.IsUnlocked)
+        {
+            await DisplayAlert("ACHIEVEMENT UNLOCKED!", "Вы получили ачивку: Сберегатель 💰", "КРУТО!");
+        }
+
+        // 3. Очистка полей ввода
+        AmountEntry.Text = string.Empty;
+        DescriptionEntry.Text = string.Empty;
+
+        // Сбрасываем выбранный элемент пикера
+        CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
+            CategoryPicker.SelectedIndex = 0;
+
+            // Тушим кнопки обратно в нейтральное состояние
+            BtnExpenseBorder.BackgroundColor = Color.FromArgb("#140B2D");
+            BtnExpenseBorder.Stroke = Color.FromArgb("#3D1D4A"); 
+            LblExpense.TextColor = Color.FromArgb("#7A2D6A");   
+
+            BtnIncomeBorder.BackgroundColor = Color.FromArgb("#140B2D");
+            BtnIncomeBorder.Stroke = Color.FromArgb("#1F3A3A"); 
+            LblIncome.TextColor = Color.FromArgb("#1E6B60");
+
+        // Дополнительный фикс для десктопа: если нужно полностью сбросить пикер в дефолт
+        #if MACCATALYST
+        CategoryPicker.ItemsSource = null; // Полностью очищаем до следующего выбора Дохода/Расхода
+        #endif
+
+        // Обновляем ачивки и интерфейс графиков
+        await CheckNewAchievements();
+        await LoadDataFromDatabase(); // Мгновенное обновление всей аналитики и баланса
     }
+    else
+    {
+        // Если пользователь ввел буквы или оставил поле суммы пустым
+        await DisplayAlert("Monolith OS", "Пожалуйста, введите корректную сумму операции.", "OK");
+    }
+}
     private async Task CheckNewAchievements()
     {
         var history = await App.Database.GetTransactionsAsync();
@@ -318,14 +371,19 @@ public partial class MainPage : ContentPage
         isIncomeMode = false;
         if (BtnExpenseBorder == null || BtnIncomeBorder == null) return;
 
-        VisualStateManager.GoToState(BtnExpenseBorder, "Selected");
-        VisualStateManager.GoToState(BtnIncomeBorder, "Normal");
+        // Активное состояние для РАСХОД
+        BtnExpenseBorder.BackgroundColor = Color.FromArgb("#2A1A4A");
+        BtnExpenseBorder.Stroke = Color.FromArgb("#D946EF");
+        LblExpense.TextColor = Color.FromArgb("#D946EF");
 
-        // Меняем цвета текста вручную
-        LblExpense.TextColor = Colors.White;
-        LblIncome.TextColor = Color.FromArgb("#2DD4BF");
+        // Пассивное состояние для ДОХОД
+        BtnIncomeBorder.BackgroundColor = Color.FromArgb("#140B2D");
+        BtnIncomeBorder.Stroke = Color.FromArgb("#1F3A3A");
+        LblIncome.TextColor = Color.FromArgb("#1E6B60");
 
+        // Прямое переназначение коллекции без зануления
         CategoryPicker.ItemsSource = expenseCategories;
+        CategoryPicker.SelectedIndex = 0; // Сразу выбираем первую реальную категорию для удобства
     }
 
     private void OnIncomeClicked(object s, EventArgs e)
@@ -333,14 +391,19 @@ public partial class MainPage : ContentPage
         isIncomeMode = true;
         if (BtnIncomeBorder == null || BtnExpenseBorder == null) return;
 
-        VisualStateManager.GoToState(BtnIncomeBorder, "Selected");
-        VisualStateManager.GoToState(BtnExpenseBorder, "Normal");
+        // Активное состояние для ДОХОД
+        BtnIncomeBorder.BackgroundColor = Color.FromArgb("#2A1A4A");
+        BtnIncomeBorder.Stroke = Color.FromArgb("#2DD4BF");
+        LblIncome.TextColor = Color.FromArgb("#2DD4BF");
 
-        // Меняем цвета текста вручную
-        LblIncome.TextColor = Color.FromArgb("#140B2D"); // Темный для контраста на зеленом
-        LblExpense.TextColor = Color.FromArgb("#D946EF");
+        // Пассивное состояние для РАСХОД
+        BtnExpenseBorder.BackgroundColor = Color.FromArgb("#140B2D");
+        BtnExpenseBorder.Stroke = Color.FromArgb("#3D1D4A");
+        LblExpense.TextColor = Color.FromArgb("#7A2D6A");
 
+        // Прямое переназначение коллекции без зануления
         CategoryPicker.ItemsSource = incomeCategories;
+        CategoryPicker.SelectedIndex = 0; // Сразу выбираем первую реальную категорию для удобства
     }
 
     #endregion
