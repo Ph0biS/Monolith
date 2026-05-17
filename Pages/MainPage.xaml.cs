@@ -26,6 +26,7 @@ public partial class MainPage : ContentPage
     private bool _isAnimating = false;
     private bool _isPageVisible;
     // Те самые коллекции, которые теперь 100% привязаны к UI
+
     public ObservableCollection<Transaction> TransactionHistory { get; set; } = new();
     public ObservableCollection<SavingsGoal> UserSavings { get; set; } = new();
     public ObservableCollection<Subscription> Subscriptions { get; set; } = new();
@@ -133,16 +134,6 @@ public partial class MainPage : ContentPage
             //_ = PulseBalanceGlow();
         }
     }
-    private async Task PulseBalanceGlow()
-    {
-        // Цикл будет работать ТОЛЬКО пока страница действительно видна
-        while (_isPageVisible)
-        {
-            await BalanceLabel.FadeTo(0.7, 1500, Easing.SinInOut);
-            await BalanceLabel.FadeTo(1.0, 1500, Easing.SinInOut);
-        }
-    }
-    
     private async Task RunCyberpunkBootloader()
     {
         // Блокируем навигацию, пока идет загрузка (чтобы не уйти в момент анимации)
@@ -470,16 +461,21 @@ public partial class MainPage : ContentPage
         if (ChartV == null || BalanceLabel == null || TransactionHistory == null) return;
 
         // 1. Считаем всё в фоне
-        var (convBal, symbol, expenseStats) = await Task.Run(() =>
+        var (convBal, symbol, expenseStats, hasAnyExpensesInHistory) = await Task.Run(() =>
         {
             decimal r = 1.0m;
             string s = "₽";
             if (_currentCurrency == "USD") { r = (decimal)_usdRate; s = "$"; }
             else if (_currentCurrency == "EUR") { r = (decimal)_eurRate; s = "€"; }
 
+            // ПРОВЕРКА 1: Проверяем наличие РАСХОДОВ вообще во всей истории базы (игнорируя выбранный период/месяц)
+            bool globalExpensesExist = TransactionHistory.Any(t => !t.IsIncome);
+
+            // Расчет общего баланса
             decimal rawBal = TransactionHistory.Sum(t => t.IsIncome ? t.Amount : -t.Amount);
             decimal finalBal = rawBal / r;
 
+            // Группируем расходы (локально для выбранного на UI периода)
             var stats = TransactionHistory
                 .Where(t => !t.IsIncome)
                 .GroupBy(t => t.Category)
@@ -493,7 +489,7 @@ public partial class MainPage : ContentPage
                 .OrderByDescending(x => x.Sum)
                 .ToList();
 
-            return (finalBal, s, stats);
+            return (finalBal, s, stats, globalExpensesExist);
         });
 
         // 2. Обновляем UI в главном потоке
@@ -502,28 +498,57 @@ public partial class MainPage : ContentPage
             BalanceLabel.Text = $"{convBal:N0} {symbol}";
             ChartLegendView.ItemsSource = expenseStats;
 
-            var newEntries = expenseStats.Select(x => new ChartEntry(x.Sum)
+            // Если в истории приложения глобально есть расходы с прошлых разов
+            if (hasAnyExpensesInHistory)
             {
-                Label = x.Category,
-                ValueLabel = x.AmountText,
-                Color = SKColor.Parse(x.DisplayColor.ToHex())
-            }).ToArray();
+                // ВКЛЮЧАЕМ всю область графика, ВЫКЛЮЧАЕМ плейсхолдер Атласа
+                if (ChartVisualElements != null) ChartVisualElements.IsVisible = true;
+                if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = false;
 
-            // КЛЮЧЕВОЙ МОМЕНТ: Не пересоздаем график, если он уже есть
-            if (ChartV.Chart is DonutChart existingChart)
-            {
-                existingChart.Entries = newEntries;
+                // Если есть конкретно расходы в выбранном периоде — отрисовываем кольцо диаграммы
+                if (expenseStats != null && expenseStats.Any())
+                {
+                    var newEntries = expenseStats.Select(x => new ChartEntry(x.Sum)
+                    {
+                        Label = x.Category,
+                        ValueLabel = x.AmountText,
+                        Color = SKColor.Parse(x.DisplayColor.ToHex())
+                    }).ToArray();
+
+                    if (ChartV.Chart is DonutChart existingChart)
+                    {
+                        existingChart.Entries = newEntries;
+                    }
+                    else
+                    {
+                        ChartV.Chart = new DonutChart
+                        {
+                            Entries = newEntries,
+                            HoleRadius = 0.7f,
+                            BackgroundColor = SKColors.Transparent,
+                            LabelMode = LabelMode.None,
+                            Typeface = SKTypeface.FromFamilyName("Orbitron")
+                        };
+                    }
+                }
+                else
+                {
+                    // Если глобально расходы есть, но в выбранном пустом месяце их 0
+                    ChartV.Chart = new DonutChart
+                    {
+                        Entries = new ChartEntry[] { new ChartEntry(1) { Color = SKColors.DarkGray, Label = "Нет данных" } },
+                        HoleRadius = 0.7f,
+                        BackgroundColor = SKColors.Transparent,
+                        LabelMode = LabelMode.None
+                    };
+                }
             }
             else
             {
-                ChartV.Chart = new DonutChart
-                {
-                    Entries = newEntries,
-                    HoleRadius = 0.7f,
-                    BackgroundColor = SKColors.Transparent,
-                    LabelMode = LabelMode.None,
-                    Typeface = SKTypeface.FromFamilyName("Orbitron")
-                };
+                // База абсолютно чистая (первый запуск) -> Показываем Атласа и скрываем область графика
+                if (ChartVisualElements != null) ChartVisualElements.IsVisible = false;
+                if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = true;
+                ChartV.Chart = null;
             }
         });
     }
