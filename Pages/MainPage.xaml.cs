@@ -55,17 +55,16 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
         _isReady = true;
-    
+
         BindingContext = this;
 
         CategoryPicker.ItemsSource = expenseCategories;
         CurrencyPicker.SelectedIndex = 0;
 
         // Явная привязка источников данных для стабильности
-        SavingsCollection.ItemsSource = UserSavings;
-        SubsCollectionView.ItemsSource = Subscriptions;
+        BindableLayout.SetItemsSource(SavingsCollection, UserSavings);
+        BindableLayout.SetItemsSource(SubsCollectionView, Subscriptions);
     }
-
     private bool _isPulseRunning = false; // Флаг, чтобы не запускать анимацию дважды
 
     protected override async void OnAppearing()
@@ -222,6 +221,89 @@ public partial class MainPage : ContentPage
             Subscriptions.Clear();
             foreach (var s in subs) Subscriptions.Add(s);
 
+            // --- ИНТЕГРАЦИЯ АТЛАСА ДЛЯ ЦЕЛЕЙ И ПОДПИСОК ---
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                // 1. Управление блоком ПОДПИСОК
+                if (AtlasSubscriptionsPlaceholder != null && AtlasSubscriptionsSuggestionLabel != null)
+                {
+                    if (!Subscriptions.Any())
+                    {
+                        // Если подписок в базе нет — выводим системный монитор ожидания
+                        if (AtlasSubscriptionsTitleLabel != null)
+                            AtlasSubscriptionsTitleLabel.Text = "SYSTEM_MONITOR // ПОДПИСОК НЕ НАЙДЕНЫ";
+
+                        AtlasSubscriptionsSuggestionLabel.Text = "Атлас готов отслеживать твои регулярные списания. Добавь первую подписку, чтобы активировать трекер.";
+                        AtlasSubscriptionsPlaceholder.IsVisible = true;
+                    }
+                    else
+                    {
+                        // Если подписки появились — меняем заголовок на ИИ-аналитику
+                        if (AtlasSubscriptionsTitleLabel != null)
+                            AtlasSubscriptionsTitleLabel.Text = "ATLAS_AI // МОНИТОРИНГ РЕГУЛЯРНЫХ СПИСАНИЙ";
+
+                        // Считаем общую сумму всех подписок в месяц
+                        decimal totalSubsCost = Subscriptions.Sum(s => s.Price);
+
+                        // Формируем динамический совет от Атласа в зависимости от нагрузки на бюджет
+                        if (totalSubsCost < 500)
+                        {
+                            AtlasSubscriptionsSuggestionLabel.Text = $"Общая нагрузка: {totalSubsCost:N0} ₽ в месяц. Отличный показатель, подписки под контролем и не нагружают бюджет.";
+                        }
+                        else if (totalSubsCost <= 1500)
+                        {
+                            AtlasSubscriptionsSuggestionLabel.Text = $"Общая нагрузка: {totalSubsCost:N0} ₽ в месяц. Протоколы Monolith рекомендуют раз в квартал делать ревизию неиспользуемых сервисов.";
+                        }
+                        else
+                        {
+                            AtlasSubscriptionsSuggestionLabel.Text = $"Внимание: Найдено активных списаний на {totalSubsCost:N0} ₽ в месяц. Высокая нагрузка! Убедись, что все эти сервисы окупают себя.";
+                        }
+
+                        // Оставляем плашку ВСЕГДА видимой, чтобы она радовала глаз советами
+                        AtlasSubscriptionsPlaceholder.IsVisible = true;
+                    }
+                }
+
+                // 2. Управление блоком ЦЕЛЕЙ И КОПИЛОК
+                if (AtlasGoalsAnalyticsBox != null && AtlasGoalsSuggestionLabel != null)
+                {
+                    if (!UserSavings.Any())
+                    {
+                        // Если целей вообще нет
+                        AtlasGoalsSuggestionLabel.Text = "Протокол накоплений пуст. Поставь глобальную цель (например, новый девайс), и я помогу рассчитать план накоплений.";
+                        AtlasGoalsAnalyticsBox.IsVisible = true;
+                    }
+                    else
+                    {
+                        // Если целей больше нуля — берем первую (например, твой ПК) и выводим аналитику от Атласа
+                        var mainGoal = UserSavings.First();
+
+                        // Считаем процент выполнения цели
+                        double percent = 0;
+                        if (mainGoal.TargetAmount > 0)
+                        {
+                            percent = (double)(mainGoal.CurrentAmount / mainGoal.TargetAmount) * 100;
+                        }
+
+                        // Генерируем фразы в зависимости от прогресса накоплений
+                        if (percent == 0)
+                        {
+                            AtlasGoalsSuggestionLabel.Text = $"Анализ прогресса: Цель '{mainGoal.Name}' запущена (0%). Чтобы собрать {mainGoal.TargetAmount:N0} ₽ быстрее, сократи спонтанные расходы в этом периоде.";
+                        }
+                        else if (percent < 50)
+                        {
+                            AtlasGoalsSuggestionLabel.Text = $"Анализ прогресса: Отличный старт! Цель '{mainGoal.Name}' выполнена на {percent:N1}%. Рекомендуется настроить регулярный сейф-бокс.";
+                        }
+                        else
+                        {
+                            AtlasGoalsSuggestionLabel.Text = $"Анализ прогресса: Экватор пройден! Цель '{mainGoal.Name}' готова на {percent:N1}%. Финал протокола близок, удерживай темп.";
+                        }
+
+                        AtlasGoalsAnalyticsBox.IsVisible = true;
+                    }
+                }
+            });
+
             // Обновляем графики и баланс
             await UpdateDashboardUI();
         }
@@ -230,6 +312,7 @@ public partial class MainPage : ContentPage
             Debug.WriteLine($"[DB ERROR]: {ex.Message}");
         }
     }
+
     // Этот метод вызывается каждый раз, когда ты меняешь период в Пикере
     private void OnPeriodChanged(object sender, EventArgs e)
     {
@@ -496,18 +579,19 @@ public partial class MainPage : ContentPage
         MainThread.BeginInvokeOnMainThread(() =>
         {
             BalanceLabel.Text = $"{convBal:N0} {symbol}";
-            ChartLegendView.ItemsSource = expenseStats;
-
+            BindableLayout.SetItemsSource(ChartLegendView, expenseStats);
+            // Если в истории приложения глобально есть расходы с прошлых разов
             // Если в истории приложения глобально есть расходы с прошлых разов
             if (hasAnyExpensesInHistory)
             {
-                // ВКЛЮЧАЕМ всю область графика, ВЫКЛЮЧАЕМ плейсхолдер Атласа
-                if (ChartVisualElements != null) ChartVisualElements.IsVisible = true;
-                if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = false;
-
                 // Если есть конкретно расходы в выбранном периоде — отрисовываем кольцо диаграммы
                 if (expenseStats != null && expenseStats.Any())
                 {
+                    // Показываем график, скрываем заглушку Атласа
+                    if (ChartVisualElements != null) ChartVisualElements.IsVisible = true;
+                    if (AtlasPeriodPlaceholder != null) AtlasPeriodPlaceholder.IsVisible = false;
+                    if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = false;
+
                     var newEntries = expenseStats.Select(x => new ChartEntry(x.Sum)
                     {
                         Label = x.Category,
@@ -533,20 +617,33 @@ public partial class MainPage : ContentPage
                 }
                 else
                 {
-                    // Если глобально расходы есть, но в выбранном пустом месяце их 0
-                    ChartV.Chart = new DonutChart
+                    // ОБЪЕДИНЕННАЯ ИДЕЯ: Расходов в этом месяце нет. Скрываем график, выводим умную панель Атласа
+                    if (ChartVisualElements != null) ChartVisualElements.IsVisible = false;
+                    if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = false;
+                    if (AtlasPeriodPlaceholder != null) AtlasPeriodPlaceholder.IsVisible = true;
+
+                    // База фраз Атласа для пустых месяцев
+                    string[] atlasPhrases = new string[]
                     {
-                        Entries = new ChartEntry[] { new ChartEntry(1) { Color = SKColors.DarkGray, Label = "Нет данных" } },
-                        HoleRadius = 0.7f,
-                        BackgroundColor = SKColors.Transparent,
-                        LabelMode = LabelMode.None
+                    "Расходы за выбранный период равны 0 ₽. Идеальный баланс удерживается в штатном режиме.",
+                    "Анализ завершен: трат не зафиксировано. Отличный момент, чтобы пополнить цели или копилки!",
+                    "В этом месяце чисто. Твой кошелек под надежной защитой протоколов Monolith OS.",
+                    "Система фиксирует нулевую активность расходов. Твоя финансовая подушка безопасности растет."
                     };
+
+                    // Выбираем случайную реплику
+                    int randomIndex = new Random().Next(atlasPhrases.Length);
+                    if (AtlasPeriodSuggestionLabel != null)
+                    {
+                        AtlasPeriodSuggestionLabel.Text = atlasPhrases[randomIndex];
+                    }
                 }
             }
             else
             {
-                // База абсолютно чистая (первый запуск) -> Показываем Атласа и скрываем область графика
+                // База абсолютно чистая (самый первый запуск приложения) -> Большая карточка приветствия
                 if (ChartVisualElements != null) ChartVisualElements.IsVisible = false;
+                if (AtlasPeriodPlaceholder != null) AtlasPeriodPlaceholder.IsVisible = false;
                 if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = true;
                 ChartV.Chart = null;
             }

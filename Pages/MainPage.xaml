@@ -9,7 +9,7 @@
 
     <Grid RowDefinitions="*, Auto">
         <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="20" Spacing="15">
+            <VerticalStackLayout Padding="20" Spacing="25" VerticalOptions="Start">
 
                 <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
                     <Label x:Name="mode" Text="DARK MODE" FontAttributes="Bold" FontFamily="Inter" FontSize="10" TextColor="#A78BFA" VerticalOptions="Center" CharacterSpacing="1"/>
@@ -49,9 +49,8 @@
                 </Border>
 
                 <VerticalStackLayout x:Name="ChartContainer" Spacing="10">
-
                     <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-                        <Label Text="Период:"  FontFamily="Montserrat"  VerticalOptions="Center" TextColor="#A78BFA" />
+                        <Label Text="Период:" FontFamily="Montserrat" VerticalOptions="Center" TextColor="#A78BFA" />
                         <Picker x:Name="PeriodPicker" FontAttributes="Bold" SelectedIndex="0" SelectedIndexChanged="OnPeriodChanged" WidthRequest="150" TextColor="White" Title="Выберите период" FontFamily="Inter" TitleColor="#5A4A7A">
                             <Picker.ItemsSource>
                                 <x:Array Type="{x:Type x:String}">
@@ -74,15 +73,10 @@
                     </HorizontalStackLayout>
 
                     <Grid>
-
                         <VerticalStackLayout x:Name="ChartVisualElements" IsVisible="True" Spacing="10">
-
                             <VerticalStackLayout x:Name="MainDashboardView" IsVisible="True">
                                 <Grid HeightRequest="300" WidthRequest="300" HorizontalOptions="Center">
-                                    <micro:ChartView x:Name="ChartV" 
-                                                     HeightRequest="300" 
-                                                     WidthRequest="300"
-                                                     BackgroundColor="Transparent">
+                                    <micro:ChartView x:Name="ChartV" HeightRequest="300" WidthRequest="300" BackgroundColor="Transparent">
                                         <micro:ChartView.GestureRecognizers>
                                             <TapGestureRecognizer Tapped="OnChartTapped" />
                                         </micro:ChartView.GestureRecognizers>
@@ -90,16 +84,42 @@
                                 </Grid>
                             </VerticalStackLayout>
 
+                            <Border x:Name="AtlasPeriodPlaceholder" IsVisible="False" BackgroundColor="#140B2D" Stroke="#D946EF" StrokeThickness="1.5" StrokeShape="RoundRectangle 16" Padding="18" Margin="0,15,0,5" MaximumWidthRequest="320">
+                                <VerticalStackLayout Spacing="12">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <HorizontalStackLayout Grid.Column="0" Spacing="6">
+                                            <Label Text="🤖" FontSize="14" VerticalOptions="Center"/>
+                                            <Label Text="ATLAS_ANALYTICS_OS" TextColor="#2DD4BF" FontFamily="Orbitron" FontSize="11" FontAttributes="Bold" CharacterSpacing="1" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Column="2" Spacing="5" VerticalOptions="Center">
+                                            <BoxView WidthRequest="6" HeightRequest="6" Color="#2DD4BF" CornerRadius="3" VerticalOptions="Center">
+                                                <BoxView.Shadow>
+                                                    <Shadow Brush="#2DD4BF" Offset="0,0" Radius="8" Opacity="0.8"/>
+                                                </BoxView.Shadow>
+                                            </BoxView>
+                                            <Label Text="ONLINE" TextColor="#2DD4BF" FontFamily="JetBrainsMono" FontSize="9" FontAttributes="Bold" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+
+                                    <BoxView HeightRequest="1" Color="#3D2B5E" HorizontalOptions="Fill"/>
+
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="&gt; СКАНИРОВАНИЕ ПЕРИОДА..." TextColor="#5A4A7A" FontFamily="JetBrainsMono" FontSize="10" FontAttributes="Bold"/>
+                                        <Label x:Name="AtlasPeriodSuggestionLabel" Text="Инициализация аналитического модуля..." TextColor="#A78BFA" FontFamily="Inter" FontSize="13" FontAttributes="Bold" LineBreakMode="WordWrap" LineHeight="1.3"/>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+
                             <VerticalStackLayout x:Name="DetailedAnalyticsView" IsVisible="False" Padding="10">
                                 <HorizontalStackLayout Spacing="10" Margin="0,0,0,15">
                                     <Button Text="⬅ НАЗАД" FontFamily="Orbitron" FontAttributes="Bold" Clicked="OnBackToChartClicked" BackgroundColor="#2A1A4A" HeightRequest="40" />
                                     <Label x:Name="SelectedCategoryLabel" Text="Детализация" FontFamily="Orbitron" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" TextColor="White"/>
                                 </HorizontalStackLayout>
-                                <CollectionView x:Name="CategoryDetailsList" HeightRequest="150" />
+                                <VerticalStackLayout x:Name="CategoryDetailsList" BindableLayout.ItemsSource="{Binding .}" />
                             </VerticalStackLayout>
 
-                            <CollectionView x:Name="ChartLegendView" HeightRequest="120" HorizontalOptions="Center" WidthRequest="300">
-                                <CollectionView.ItemTemplate>
+                            <VerticalStackLayout x:Name="ChartLegendView" BindableLayout.ItemsSource="{Binding .}" HorizontalOptions="Center" WidthRequest="300">
+                                <BindableLayout.ItemTemplate>
                                     <DataTemplate>
                                         <HorizontalStackLayout Spacing="10" Margin="0,2">
                                             <BoxView WidthRequest="8" HeightRequest="8" Color="{Binding DisplayColor}" CornerRadius="4" VerticalOptions="Center"/>
@@ -114,63 +134,30 @@
                                             </Label>
                                         </HorizontalStackLayout>
                                     </DataTemplate>
-                                </CollectionView.ItemTemplate>
-                            </CollectionView>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
                         </VerticalStackLayout>
 
-                        <VerticalStackLayout x:Name="EmptyStatePlaceholder" 
-                                             IsVisible="False" 
-                                             VerticalOptions="Center" 
-                                             HorizontalOptions="Center" 
-                                             Spacing="15"
-                                             Margin="0,20">
-
-                            <Border x:Name="AtlasGreetingCard"
-                                    BackgroundColor="#140B2D" 
-                                    Stroke="#3D2B5E" 
-                                    StrokeThickness="1.5" 
-                                    StrokeShape="RoundRectangle 16" 
-                                    Padding="20"
-                                    MaximumWidthRequest="320">
-
+                        <VerticalStackLayout x:Name="EmptyStatePlaceholder" IsVisible="False" VerticalOptions="Center" HorizontalOptions="Center" Spacing="15" Margin="0,20">
+                            <Border x:Name="AtlasGreetingCard" BackgroundColor="#140B2D" Stroke="#3D2B5E" StrokeThickness="1.5" StrokeShape="RoundRectangle 16" Padding="20" MaximumWidthRequest="320">
                                 <VerticalStackLayout Spacing="12">
                                     <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
                                         <Label Text="🤖" FontSize="18" VerticalOptions="Center"/>
-                                        <Label Text="ATLAS AI" 
-                                               TextColor="#2DD4BF" 
-                                               FontAttributes="Bold" 
-                                               FontSize="14" 
-                                               CharacterSpacing="1.5"
-                                               VerticalOptions="Center"/>
+                                        <Label Text="ATLAS AI" TextColor="#2DD4BF" FontAttributes="Bold" FontSize="14" CharacterSpacing="1.5" VerticalOptions="Center"/>
                                     </HorizontalStackLayout>
-
                                     <BoxView HeightRequest="1" Color="#3D2B5E" HorizontalOptions="Fill"/>
-
-                                    <Label Text="Привет! Я проверил этот период, но транзакций пока нет.&#10;&#10;Добавь первую запись о расходах или доходах ниже, и я сразу составлю для тебя интерактивный неоновый график!" 
-                                           TextColor="#A78BFA" 
-                                           FontSize="13" 
-                                           FontAttributes="Bold"
-                                           LineBreakMode="WordWrap"
-                                           HorizontalTextAlignment="Center" 
-                                           LineHeight="1.3"/>
+                                    <Label Text="Привет! Я проверил этот период, но транзакций пока нет.&#10;&#10;Добавь первую запись о расходах или доходах ниже, и я сразу составлю для тебя интерактивный неоновый график!" TextColor="#A78BFA" FontSize="13" FontAttributes="Bold" LineBreakMode="WordWrap" HorizontalTextAlignment="Center" LineHeight="1.3"/>
                                 </VerticalStackLayout>
                             </Border>
-
-                            <Label Text="Ожидание первых данных..." 
-                                   TextColor="#5A4A7A" 
-                                   FontSize="11" 
-                                   FontFamily="Inter"
-                                   FontAttributes="Bold"
-                                   HorizontalOptions="Center"/>
+                            <Label Text="Ожидание первых данных..." TextColor="#5A4A7A" FontSize="11" FontFamily="Inter" FontAttributes="Bold" HorizontalOptions="Center"/>
                         </VerticalStackLayout>
-
                     </Grid>
                 </VerticalStackLayout>
 
                 <Border Stroke="#3D2B5E" Background="#140B2D" Padding="15" StrokeShape="RoundRectangle 15">
                     <VerticalStackLayout Spacing="12">
                         <Entry x:Name="DescriptionEntry" Placeholder="Описание" FontAttributes="Bold" FontFamily="Inter" PlaceholderColor="#5A4A7A" TextColor="White" />
-                        <Entry x:Name="AmountEntry" Placeholder="Сумма"  FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" PlaceholderColor="#5A4A7A" TextColor="#2DD4BF" />
+                        <Entry x:Name="AmountEntry" Placeholder="Сумма" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" PlaceholderColor="#5A4A7A" TextColor="#2DD4BF" />
 
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                             <Border x:Name="BtnExpenseBorder" Stroke="#D946EF" StrokeThickness="1" BackgroundColor="#2A1A4A" StrokeShape="RoundRectangle 10" HeightRequest="45">
@@ -229,67 +216,100 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Label Text="ЦЕЛИ И КОПИЛКИ" FontFamily="Orbitron" FontAttributes="Bold" FontSize="16" TextColor="#A78BFA" Margin="0,10,0,0" CharacterSpacing="1"/>
-                <Border Stroke="#3D2B5E" Padding="10" StrokeShape="RoundRectangle 12" BackgroundColor="#1A1033">
-                    <Grid ColumnDefinitions="*, *, Auto" ColumnSpacing="10">
-                        <Entry x:Name="GoalNameEntry" Placeholder="Название" FontAttributes="Bold"  FontFamily="Inter" TextColor="White" PlaceholderColor="#5A4A7A"/>
-                        <Entry Grid.Column="1" x:Name="GoalTargetEntry" Placeholder="Сумма" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="#2DD4BF" PlaceholderColor="#5A4A7A"/>
-                        <Button Grid.Column="2" Text="💲" Clicked="OnAddGoalClicked" BackgroundColor="#8B5CF6" WidthRequest="45" CornerRadius="10"/>
-                    </Grid>
-                </Border>
+                <VerticalStackLayout Spacing="25">
 
-                <CollectionView x:Name="SavingsCollection" HeightRequest="250">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" Margin="0,5" Padding="12" StrokeShape="RoundRectangle 15">
-                                <VerticalStackLayout Spacing="8">
-                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
-                                        <Label Text="🎯" FontSize="20" VerticalOptions="Center"/>
-                                        <VerticalStackLayout Grid.Column="1" Margin="10,0">
-                                            <Label Text="{Binding Name}" FontFamily="Montserrat" FontAttributes="Bold" TextColor="White"/>
-                                            <Label Text="{Binding ProgressText}" FontFamily="JetBrainsMono" FontAttributes="Bold" FontSize="11" TextColor="#A78BFA"/>
-                                        </VerticalStackLayout>
-                                        <HorizontalStackLayout Grid.Column="2" Spacing="5">
-                                            <Button Text="🚀" Clicked="OnDepositGoalClicked" CommandParameter="{Binding .}" BackgroundColor="#2DD4BF" TextColor="#0B011D" WidthRequest="32" HeightRequest="32" CornerRadius="16" Padding="0"/>
-                                            <Button Text="🗑️" Clicked="OnDeleteGoalClicked" CommandParameter="{Binding .}" BackgroundColor="#D946EF" WidthRequest="32" HeightRequest="32" CornerRadius="16" FontSize="10" Padding="0"/>
-                                        </HorizontalStackLayout>
-                                    </Grid>
-                                    <ProgressBar Progress="{Binding Progress}" ProgressColor="#8B5CF6" ScaleY="2"/>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="ЦЕЛИ И КОПИЛКИ" FontFamily="Orbitron" FontAttributes="Bold" FontSize="16" TextColor="#A78BFA" Margin="0,10,0,0" CharacterSpacing="1"/>
+                        <Border Stroke="#3D2B5E" Padding="10" StrokeShape="RoundRectangle 12" BackgroundColor="#1A1033">
+                            <Grid ColumnDefinitions="*, *, Auto" ColumnSpacing="10">
+                                <Entry x:Name="GoalNameEntry" Placeholder="Название" FontAttributes="Bold" FontFamily="Inter" TextColor="White" PlaceholderColor="#5A4A7A"/>
+                                <Entry Grid.Column="1" x:Name="GoalTargetEntry" Placeholder="Сумма" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="#2DD4BF" PlaceholderColor="#5A4A7A"/>
+                                <Button Grid.Column="2" Text="💲" Clicked="OnAddGoalClicked" BackgroundColor="#8B5CF6" WidthRequest="45" CornerRadius="10"/>
+                            </Grid>
+                        </Border>
+
+                        <Border x:Name="AtlasGoalsAnalyticsBox" BackgroundColor="#0F172A" Stroke="#2DD4BF" StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="18,16,18,16" Margin="0,5,0,0" MinimumHeightRequest="75">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Label Grid.Column="0" Text="⚡" TextColor="#2DD4BF" FontSize="16" Margin="0,0,10,0" VerticalOptions="Center"/>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="ATLAS_AI // СТРАТЕГИЯ ЦЕЛЕЙ" TextColor="#2DD4BF" FontFamily="Orbitron" FontSize="10" FontAttributes="Bold"/>
+                                    <Label x:Name="AtlasGoalsSuggestionLabel" Text="Анализ прогресса: Твоя цель 'ПК' запущена. Чтобы собрать 120 000 ₽ быстрее, попробуй сократить спонтанные расходы в этом месяце." TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" FontFamily="Inter" LineBreakMode="WordWrap"/>
                                 </VerticalStackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                            </Grid>
+                        </Border>
 
-                <Label Text="ПОДПИСКИ" FontFamily="Orbitron" FontAttributes="Bold" FontSize="16" TextColor="#A78BFA" Margin="0,15,0,0" CharacterSpacing="1"/>
-                <Border Stroke="#3D2B5E" Background="#1A1033" Padding="10" StrokeShape="RoundRectangle 12">
-                    <Grid ColumnDefinitions="*, 70, 70, Auto" ColumnSpacing="5">
-                        <Entry x:Name="SubNameEntry" Placeholder="Имя" FontFamily="Inter" FontAttributes="Bold" TextColor="White" PlaceholderColor="#5A4A7A"/>
-                        <Entry Grid.Column="1" x:Name="SubPriceEntry" Placeholder="Цена" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="#D946EF" PlaceholderColor="#5A4A7A"/>
-                        <DatePicker Grid.Column="2" x:Name="SubDatePicker" FontFamily="RobotoMono" FontAttributes="Bold" Format="dd/MM" TextColor="White" FontSize="10"/>
-                        <Button Grid.Column="3" Text="▶️" Clicked="OnAddSubscriptionClicked" BackgroundColor="#D946EF" WidthRequest="45" CornerRadius="10"/>
-                    </Grid>
-                </Border>
+                        <VerticalStackLayout x:Name="SavingsCollection" BindableLayout.ItemsSource="{Binding .}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" Margin="0,5" Padding="12" StrokeShape="RoundRectangle 15">
+                                        <VerticalStackLayout Spacing="8">
+                                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                                                <Label Text="🎯" FontSize="20" VerticalOptions="Center"/>
+                                                <VerticalStackLayout Grid.Column="1" Margin="10,0">
+                                                    <Label Text="{Binding Name}" FontFamily="Montserrat" FontAttributes="Bold" TextColor="White"/>
+                                                    <Label Text="{Binding ProgressText}" FontFamily="JetBrainsMono" FontAttributes="Bold" FontSize="11" TextColor="#A78BFA"/>
+                                                </VerticalStackLayout>
+                                                <HorizontalStackLayout Grid.Column="2" Spacing="5">
+                                                    <Button Text="🚀" Clicked="OnDepositGoalClicked" CommandParameter="{Binding .}" BackgroundColor="#2DD4BF" TextColor="#0B011D" WidthRequest="32" HeightRequest="32" CornerRadius="16" Padding="0"/>
+                                                    <Button Text="🗑️" Clicked="OnDeleteGoalClicked" CommandParameter="{Binding .}" BackgroundColor="#D946EF" WidthRequest="32" HeightRequest="32" CornerRadius="16" FontSize="10" Padding="0"/>
+                                                </HorizontalStackLayout>
+                                            </Grid>
+                                            <ProgressBar Progress="{Binding Progress}" ProgressColor="#8B5CF6" ScaleY="2"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
 
-                <CollectionView x:Name="SubsCollectionView" HeightRequest="200">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" Margin="0,5" Padding="12" StrokeShape="RoundRectangle 12">
-                                <Grid ColumnDefinitions="40, *, Auto, 40">
-                                    <Label Text="💳" FontSize="18" VerticalOptions="Center"/>
-                                    <Label Grid.Column="1" Text="{Binding Name}" FontFamily="Inter" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" Margin="10,0"/>
-                                    <Label Grid.Column="2" Text="{Binding DisplayPrice}" FontFamily="JetBrainsMono" FontAttributes="Bold" TextColor="#D946EF" FontSize="14" VerticalOptions="Center"/>
-                                    <Button Grid.Column="3" Text="✕" Clicked="OnDeleteSubscriptionClicked" CommandParameter="{Binding .}" BackgroundColor="Transparent" TextColor="#5A4A7A" FontSize="14"/>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="ПОДПИСКИ" FontFamily="Orbitron" FontAttributes="Bold" FontSize="16" TextColor="#A78BFA" Margin="0,5,0,0" CharacterSpacing="1"/>
+                        <Border Stroke="#3D2B5E" Background="#1A1033" Padding="10" StrokeShape="RoundRectangle 12">
+                            <Grid ColumnDefinitions="*, 70, 70, Auto" ColumnSpacing="5">
+                                <Entry x:Name="SubNameEntry" Placeholder="Имя" FontFamily="Inter" FontAttributes="Bold" TextColor="White" PlaceholderColor="#5A4A7A"/>
+                                <Entry Grid.Column="1" x:Name="SubPriceEntry" Placeholder="Цена" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="#D946EF" PlaceholderColor="#5A4A7A"/>
+                                <DatePicker Grid.Column="2" x:Name="SubDatePicker" FontFamily="RobotoMono" FontAttributes="Bold" Format="dd/MM" TextColor="White" FontSize="10"/>
+                                <Button Grid.Column="3" Text="▶️" Clicked="OnAddSubscriptionClicked" BackgroundColor="#D946EF" WidthRequest="45" CornerRadius="10"/>
+                            </Grid>
+                        </Border>
+
+                        <Border x:Name="AtlasSubscriptionsPlaceholder" IsVisible="True" BackgroundColor="#110724" Stroke="#D946EF" StrokeThickness="1.5" StrokeShape="RoundRectangle 14" Padding="18,16,18,16" Margin="0,5,0,0" MinimumHeightRequest="75">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Label Grid.Column="0" Text="🔮" FontSize="18" VerticalOptions="Center" Margin="0,0,10,0">
+                                    <Label.Shadow>
+                                        <Shadow Brush="#D946EF" Offset="0,0" Radius="10" Opacity="0.5"/>
+                                    </Label.Shadow>
+                                </Label>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label x:Name="AtlasSubscriptionsTitleLabel" Text="SYSTEM_MONITOR: ПОДПИСКИ НЕ НАЙДЕНЫ" TextColor="#D946EF" FontFamily="Orbitron" FontSize="10" FontAttributes="Bold" CharacterSpacing="0.5"/>
+                                    <Label x:Name="AtlasSubscriptionsSuggestionLabel" Text="Атлас готов отслеживать твои регулярные списания. Добавь первую подписку, чтобы активировать трекер." TextColor="#A78BFA" FontSize="12" FontAttributes="Bold" FontFamily="Inter" LineBreakMode="WordWrap"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <VerticalStackLayout x:Name="SubsCollectionView" BindableLayout.ItemsSource="{Binding .}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" Margin="0,5" Padding="12" StrokeShape="RoundRectangle 12">
+                                        <Grid ColumnDefinitions="40, *, Auto, 40">
+                                            <Label Text="💳" FontSize="18" VerticalOptions="Center"/>
+                                            <Label Grid.Column="1" Text="{Binding Name}" FontFamily="Inter" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" Margin="10,0"/>
+                                            <Label Grid.Column="2" Text="{Binding DisplayPrice}" FontFamily="JetBrainsMono" FontAttributes="Bold" TextColor="#D946EF" FontSize="14" VerticalOptions="Center"/>
+                                            <Button Grid.Column="3" Text="✕" Clicked="OnDeleteSubscriptionClicked" CommandParameter="{Binding .}" BackgroundColor="Transparent" TextColor="#5A4A7A" FontSize="14"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
 
             </VerticalStackLayout>
         </ScrollView>
 
-        <Grid x:Name="LoadingOverlay" 
+        <Grid Grid.Row="0" Grid.RowSpan="2"
+              x:Name="LoadingOverlay" 
               BackgroundColor="#0D081F" IsVisible="False" Opacity="0"
               RowDefinitions="*, Auto, Auto, *" 
               Padding="30"
@@ -305,9 +325,7 @@
                     BackgroundColor="#1A1033"
                     VerticalOptions="End"
                     Opacity="0">
-
                 <Image Source="logomain.png" Aspect="AspectFit" Margin="15" />
-
                 <Border.Shadow>
                     <Shadow x:Name="LogoGlow" Brush="#00F2FF" Opacity="0" Radius="0" />
                 </Border.Shadow>
@@ -315,7 +333,7 @@
 
             <Label Grid.Row="1" 
                    x:Name="TerminalText"
-                   Text="> MONOLITH_OS_BOOT..."
+                   Text="&gt; MONOLITH_OS_BOOT..."
                    FontFamily="JetBrainsMono"
                    FontSize="13"
                    TextColor="#00F2FF"
