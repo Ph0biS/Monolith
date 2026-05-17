@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+<<<<<<< HEAD
     <PropertyGroup>
         <TargetFrameworks>net9.0-maccatalyst</TargetFrameworks>
         <MtouchNoXcodeCheck>True</MtouchNoXcodeCheck>
@@ -16,6 +17,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+=======
+	<PropertyGroup>
+		<TargetFrameworks>net9.0-windows10.0.19041.0;net9.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+>>>>>>> main
 
         <ApplicationId>com.ph0bis.monolith</ApplicationId>
         <CodesignKey>-</CodesignKey>
@@ -41,6 +48,7 @@
         <MauiAsset Include="Resources/Raw/**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
 
+<<<<<<< HEAD
     <ItemGroup>
       <MauiImage Update="Resources/Images/logomain.png">
         <Color>#121212</Color>
@@ -53,3 +61,30 @@
         </PropertyGroup>
     </Target>
 </Project>
+=======
+	<ItemGroup>
+		<MauiIcon Include="Resources\AppIcon\appicon.png" Color="#121212" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#121212" BaseSize="128,128" />
+		<MauiImage Include="Resources\Images\*" />
+		<MauiFont Include="Resources\Fonts\*" />
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiImage Update="Resources\Images\logomain.png">
+	    <Color>#121212</Color>
+	  </MauiImage>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Pages\AchievementsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Properties\" />
+	</ItemGroup>
+
+</Project>
+>>>>>>> main
