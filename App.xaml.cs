@@ -37,30 +37,35 @@ public partial class App : Application
         }
     }
     // Добавляем этот метод для управления окном
-    protected override Window CreateWindow(IActivationState activationState)
+  protected override Window CreateWindow(IActivationState? activationState)
+{
+    var window = base.CreateWindow(activationState);
+
+    // Базовые размеры для кроссплатформы
+    window.Width = 1100;
+    window.Height = 800;
+    window.MinimumWidth = 950;
+    window.MinimumHeight = 700;
+
+#if MACCATALYST
+    Microsoft.Maui.Handlers.WindowHandler.Mapper.AppendToMapping("CustomWindowSize", (handler, view) =>
     {
-        var window = base.CreateWindow(activationState);
-
-#if WINDOWS
-        
-        const int width = 900; 
-        const int height = 1000;
-
-        window.Width = width;
-        window.Height = height;
-
-        
-        window.MinimumWidth = width;
-        window.MaximumWidth = width;
-        window.MinimumHeight = height;
-        window.MaximumHeight = height;
-
-        
-        var displayInfo = DeviceDisplay.Current.MainDisplayInfo;
-        window.X = (displayInfo.Width / displayInfo.Density - width) / 2;
-        window.Y = (displayInfo.Height / displayInfo.Density - height) / 2;
+        var mauiWindow = handler.VirtualView;
+        if (mauiWindow == window)
+        {
+            var nativeWindow = handler.PlatformView;
+            
+            // Задаем жесткие рамки для сцены macOS
+            nativeWindow.WindowScene.SizeRestrictions.MinimumSize = new CoreGraphics.CGSize(900, 700);
+            nativeWindow.WindowScene.SizeRestrictions.MaximumSize = new CoreGraphics.CGSize(1100, 800);
+            
+            // Напрямую меняем фрейм окна без использования SetFrame
+            var frame = nativeWindow.Frame;
+            nativeWindow.Frame = new CoreGraphics.CGRect(frame.X, frame.Y, 1100, 800);
+        }
+    });
 #endif
 
-        return window;
-    }
+    return window;
+}
 }
