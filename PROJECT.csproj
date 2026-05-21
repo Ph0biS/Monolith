@@ -1,90 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-<<<<<<< HEAD
-    <PropertyGroup>
-        <TargetFrameworks>net9.0-maccatalyst</TargetFrameworks>
-        <MtouchNoXcodeCheck>True</MtouchNoXcodeCheck>
-<NoXcodeCheck>True</NoXcodeCheck>
-<EnableCodeSigning>false</EnableCodeSigning>
-        <HttpConfigureOnDemand>false</HttpConfigureOnDemand>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::IsOSPlatform('macOS'))">15.0</SupportedOSPlatformVersion>
-        <OutputType>Exe</OutputType>
-        <RootNamespace>PROJECT</RootNamespace>
-        <AssemblyName>PROJECT</AssemblyName>
-        <ApplicationTitle>Monolith</ApplicationTitle>   
-        <UseMaui>true</UseMaui>
-        <SingleProject>true</SingleProject>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>disable</Nullable>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-=======
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-windows10.0.19041.0;net9.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
->>>>>>> main
+		<TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>
+		<OutputType>Exe</OutputType>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<WindowsPackageType>None</WindowsPackageType>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-        <ApplicationId>com.ph0bis.monolith</ApplicationId>
-        <CodesignKey>-</CodesignKey>
-        <CodesignProvision>-</CodesignProvision>
-        
-        <MauiVersion>9.0.30</MauiVersion>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-        <PackageReference Include="Microcharts.Maui" Version="0.9.5.9" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
-        <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.10" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <MauiIcon Include="Resources/AppIcon/appicon.png" Color="#121212" />
-        <MauiSplashScreen Include="Resources/Splash/splash.svg" Color="#121212" BaseSize="128,128" />
-        <MauiImage Include="Resources/Images/*" />
-        <MauiFont Include="Resources/Fonts/*" />
-        <MauiAsset Include="Resources/Raw/**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-    </ItemGroup>
-
-<<<<<<< HEAD
-    <ItemGroup>
-      <MauiImage Update="Resources/Images/logomain.png">
-        <Color>#121212</Color>
-      </MauiImage>
-    </ItemGroup>
-<Target Name="_DetectXcodeVersion" Condition="$([MSBuild]::IsOSPlatform('macOS'))">
-        <PropertyGroup>
-            <XcodeVersion>26.4</XcodeVersion>
-            <SdkMajorVersiondotnet>26</SdkMajorVersiondotnet>
-        </PropertyGroup>
-    </Target>
-</Project>
-=======
 	<ItemGroup>
-		<MauiIcon Include="Resources\AppIcon\appicon.png" Color="#121212" />
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#121212" BaseSize="128,128" />
-		<MauiImage Include="Resources\Images\*" />
-		<MauiFont Include="Resources\Fonts\*" />
-		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+		<PackageReference Include="Microcharts.Maui" Version="0.9.5.9" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.10" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiImage Update="Resources\Images\logomain.png">
-	    <Color>#121212</Color>
-	  </MauiImage>
+		<MauiIcon Include="Resources/AppIcon/appicon.png" Color="#121212" />
+		<MauiSplashScreen Include="Resources/Splash/splash.svg" Color="#121212" BaseSize="128,128" />
+		<MauiImage Include="Resources/Images/*" />
+		<MauiFont Include="Resources/Fonts/*" />
+		<MauiAsset Include="Resources/Raw/**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Pages\AchievementsPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
+		<MauiImage Update="Resources/Images/logomain.png">
+			<Color>#121212</Color>
+		</MauiImage>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Properties\" />
+		<MauiXaml Update="Pages/AchievementsPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 	</ItemGroup>
 
 </Project>
->>>>>>> main

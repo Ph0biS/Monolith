@@ -1,16 +1,19 @@
-﻿using PROJECT;
-using Microcharts;
+﻿using Microcharts;
+using Microsoft.VisualBasic;
+using PROJECT;
 using PROJECT.Models;
 using PROJECT.Services;
 using SkiaSharp;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Windows.Input;
 namespace PROJECT.Pages;
 
-public partial class MainPage : ContentPage
+public partial class MainPage : ContentPage, INotifyPropertyChanged
 {
     private double _usdRate = 92.50; // Значение по умолчанию
     private double _eurRate = 101.20; // Значение по умолчанию
@@ -56,80 +59,93 @@ public partial class MainPage : ContentPage
         InitializeComponent();
         _isReady = true;
 
-        BindingContext = this;
-
+        this.BindingContext = this;
+        UserSavings = new ObservableCollection<SavingsGoal>();
         // Даем Mac Catalyst непустой список при старте, чтобы инициализировать оверлей
         CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
         CategoryPicker.SelectedIndex = 0;
+        CurrencyPicker.SelectedItem = "RUB";
+        PeriodPicker.SelectedItem = "Все время";
+        // Вставьте этот исправленный код:
+        // УДАЛИТЕ ЭТИ СТРОКИ:
 
-        // Явная привязка источников данных для стабильности
         BindableLayout.SetItemsSource(SavingsCollection, UserSavings);
-        BindableLayout.SetItemsSource(SubsCollectionView, Subscriptions);
+        Subscriptions = new ObservableCollection<Subscription>();
     }
     private bool _isPulseRunning = false; // Флаг, чтобы не запускать анимацию дважды
+    public int TotalDataCount => Subscriptions.Count + TransactionHistory.Count + UserSavings.Count;
 
+    // Свойства для XAML (их теперь проще поддерживать)
+    public bool HasData => TotalDataCount > 0;
+    public bool HasNoData => TotalDataCount == 0;
+    public void RefreshUI()
+    {
+        OnPropertyChanged(nameof(TotalDataCount)); // Уведомляем об изменении количества
+        OnPropertyChanged(nameof(HasData));        // Обновляет видимость
+        OnPropertyChanged(nameof(HasNoData));      // Обновляет видимость
+    }
     protected override async void OnAppearing()
-{
-    base.OnAppearing();
-    _isPageVisible = true;
-
-    // По умолчанию ни один режим (Доход/Расход) не выбран, пикер категорий пуст
-    isIncomeMode = false; 
-    CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
+    {
+        base.OnAppearing();
+        _isPageVisible = true;
+        await LoadDataFromDatabase();
+        // По умолчанию ни один режим (Доход/Расход) не выбран, пикер категорий пуст
+        isIncomeMode = false;
+        CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
         CategoryPicker.SelectedIndex = 0;
 
-    // Явно принуждаем плашку приветствия ИИ быть видимой
-    if (AtlasLoadingView != null)
-    {
-        AtlasLoadingView.IsVisible = true;
-        AtlasLoadingView.Opacity = 1;
-    }
+        // Явно принуждаем плашку приветствия ИИ быть видимой
+        if (AtlasLoadingView != null)
+        {
+            AtlasLoadingView.IsVisible = true;
+            AtlasLoadingView.Opacity = 1;
+        }
 
-    #if MACCATALYST
+#if MACCATALYST
     await Task.Delay(150); // Увеличенный таймаут для стабильного рендеринга на Mac
-    #else
-    await Task.Delay(20);
-    #endif
+#else
+        await Task.Delay(20);
+#endif
 
-    if (App.IsFirstLaunch)
-    {
-        LoadingOverlay.IsVisible = true;
-        LoadingOverlay.Opacity = 1;
-        await RunCyberpunkBootloader();
-        App.IsFirstLaunch = false;
-    }
-    else
-    {
-        LoadingOverlay.IsVisible = false;
-    }
+        if (App.IsFirstLaunch)
+        {
+            LoadingOverlay.IsVisible = true;
+            LoadingOverlay.Opacity = 1;
+            await RunCyberpunkBootloader();
+            App.IsFirstLaunch = false;
+        }
+        else
+        {
+            LoadingOverlay.IsVisible = false;
+        }
 
-    // Возвращаем видимость интерфейса аналитики после загрузчика
-    if (AtlasLoadingView != null) 
-        AtlasLoadingView.IsVisible = true;
+        // Возвращаем видимость интерфейса аналитики после загрузчика
+        if (AtlasLoadingView != null)
+            AtlasLoadingView.IsVisible = true;
 
-    // ВРУЧНУЮ тушим ОБЕ кнопки (нейтральное стартовое состояние)
-    if (BtnIncomeBorder != null && BtnExpenseBorder != null)
-    {
-        // Потухший РАСХОД (темный фон, тусклый розовый контур и текст)
-        BtnExpenseBorder.BackgroundColor = Color.FromArgb("#140B2D");
-        BtnExpenseBorder.Stroke = Color.FromArgb("#3D1D4A"); 
-        LblExpense.TextColor = Color.FromArgb("#7A2D6A");   
+        // ВРУЧНУЮ тушим ОБЕ кнопки (нейтральное стартовое состояние)
+        if (BtnIncomeBorder != null && BtnExpenseBorder != null)
+        {
+            // Потухший РАСХОД (темный фон, тусклый розовый контур и текст)
+            BtnExpenseBorder.BackgroundColor = Color.FromArgb("#140B2D");
+            BtnExpenseBorder.Stroke = Color.FromArgb("#3D1D4A");
+            LblExpense.TextColor = Color.FromArgb("#7A2D6A");
 
-        // Потухший ДОХОД (темный фон, тусклый бирюзовый контур и текст)
-        BtnIncomeBorder.BackgroundColor = Color.FromArgb("#140B2D");
-        BtnIncomeBorder.Stroke = Color.FromArgb("#1F3A3A"); 
-        LblIncome.TextColor = Color.FromArgb("#1E6B60");    
-    }
+            // Потухший ДОХОД (темный фон, тусклый бирюзовый контур и текст)
+            BtnIncomeBorder.BackgroundColor = Color.FromArgb("#140B2D");
+            BtnIncomeBorder.Stroke = Color.FromArgb("#1F3A3A");
+            LblIncome.TextColor = Color.FromArgb("#1E6B60");
+        }
 
-    // Загружаем данные из локальной БД и обновляем графики
-    await LoadDataFromDatabase();
-    await UpdateDashboardUI();
+        // Загружаем данные из локальной БД и обновляем графики
+        await LoadDataFromDatabase();
+        await UpdateDashboardUI();
 
-    // Запрос курсов валют в фоновом потоке
-    _ = Task.Run(async () => {
-        try { await LoadCurrencyRates(); }
-        catch { /* Игнорируем ошибки сети */ }
-    });
+        // Запрос курсов валют в фоновом потоке
+        _ = Task.Run(async () => {
+            try { await LoadCurrencyRates(); }
+            catch { /* Игнорируем ошибки сети */ }
+        });
 
         // Запускаем заставку только если это первый вход
         if (_isFirstLoad)
@@ -156,14 +172,15 @@ public partial class MainPage : ContentPage
             await BalanceLabel.FadeTo(1.0, 1500, Easing.SinInOut);
         }
     }
-    
+
     private async Task RunCyberpunkBootloader()
     {
-        // Блокируем навигацию, пока идет загрузка (чтобы не уйти в момент анимации)
+        // Блокируем навигацию
         _isAnimating = true;
 
         try
         {
+            // Убедитесь, что SplashLogo — это имя поля в классе (обычно создается автоматически)
             await SplashLogo.FadeTo(1.0, 800, Easing.BounceOut);
 
             LogoGlow.Radius = 25;
@@ -177,25 +194,28 @@ public partial class MainPage : ContentPage
         };
 
             double maxWidth = 250.0;
-            TerminalText.Text = ""; // Очищаем перед стартом
+            TerminalText.Text = "";
 
             for (int i = 0; i < logs.Length; i++)
             {
-                // Проверка: если страница закрывается, выходим из цикла немедленно
                 if (!_isPageVisible) return;
 
                 TerminalText.Text += (i == 0 ? "" : Environment.NewLine) + logs[i];
 
                 double targetWidth = maxWidth * ((i + 1.0) / logs.Length);
 
-                // Останавливаем предыдущую итерацию анимации перед запуском новой
-                ProgressBar.AbortAnimation("progress");
+                // ИСПОЛЬЗУЕМ ССЫЛКУ НА ЭКЗЕМПЛЯР (this.ProgressBar)
+                // Если ProgressBar — это поле страницы, обращайтесь к нему напрямую:
+                this.ProgressBar.AbortAnimation("progress");
 
-                ProgressBar.Animate("progress",
-                    d => ProgressBar.WidthRequest = d,
-                    ProgressBar.WidthRequest,
+                // Передаем this.ProgressBar в метод анимации
+                this.ProgressBar.Animate("progress",
+                    d => {
+                        this.ProgressBar.WidthRequest = d;
+                    },
+                    this.ProgressBar.WidthRequest,
                     targetWidth,
-                    32, // Увеличили шаг (реже обновление - легче процессору)
+                    32,
                     400,
                     Easing.CubicOut);
 
@@ -205,11 +225,10 @@ public partial class MainPage : ContentPage
             await Task.Delay(300);
             await LoadingOverlay.FadeTo(0, 400);
             LoadingOverlay.IsVisible = false;
-
         }
         finally
         {
-            _isAnimating = false; // Разблокируем всё
+            _isAnimating = false;
         }
     }
     protected override void OnDisappearing()
@@ -221,7 +240,7 @@ public partial class MainPage : ContentPage
 
         // Убиваем график при уходе. Когда вернешься через //, 
         // OnAppearing создаст его заново — это чище для процессора.
-        
+
     }
     #endregion
 
@@ -231,104 +250,83 @@ public partial class MainPage : ContentPage
     {
         try
         {
+            // 1. Асинхронное получение данных из БД
             var transactions = await App.Database.GetTransactionsAsync();
             var goals = await App.Database.GetGoalsAsync();
             var subs = await App.Database.GetSubscriptionsAsync();
 
-            // Работаем с ObservableCollection (они автоматически уведомляют UI)
-            TransactionHistory.Clear();
-            foreach (var t in transactions) TransactionHistory.Add(t);
-
-            UserSavings.Clear();
-            foreach (var g in goals) UserSavings.Add(g);
-
-            Subscriptions.Clear();
-            foreach (var s in subs) Subscriptions.Add(s);
-
-            // --- ИНТЕГРАЦИЯ АТЛАСА ДЛЯ ЦЕЛЕЙ И ПОДПИСОК ---
-            MainThread.BeginInvokeOnMainThread(() =>
+            // 2. Обновление UI и логика Атласа (в одном потоке)
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
+                // Очищаем и наполняем коллекции
+                TransactionHistory.Clear();
+                foreach (var t in transactions) TransactionHistory.Add(t);
+
+                UserSavings.Clear();
+                foreach (var g in goals) UserSavings.Add(g);
+
+                Subscriptions.Clear();
+                foreach (var s in subs) Subscriptions.Add(s);
+                SubsCollectionView.ItemsSource = null;
+                SubsCollectionView.ItemsSource = Subscriptions;
+
+                // --- ИНТЕГРАЦИЯ АТЛАСА (Логика уведомлений) ---
+                RefreshUI();
                 // 1. Управление блоком ПОДПИСОК
-                if (AtlasSubscriptionsPlaceholder != null && AtlasSubscriptionsSuggestionLabel != null)
+                if (AtlasSubscriptionsPlaceholder != null)
                 {
                     if (!Subscriptions.Any())
                     {
-                        // Если подписок в базе нет — выводим системный монитор ожидания
-                        if (AtlasSubscriptionsTitleLabel != null)
-                            AtlasSubscriptionsTitleLabel.Text = "SYSTEM_MONITOR // ПОДПИСОК НЕ НАЙДЕНЫ";
-
-                        AtlasSubscriptionsSuggestionLabel.Text = "Атлас готов отслеживать твои регулярные списания. Добавь первую подписку, чтобы активировать трекер.";
+                        if (AtlasSubscriptionsTitleLabel != null) AtlasSubscriptionsTitleLabel.Text = "SYSTEM_MONITOR // ПОДПИСОК НЕ НАЙДЕНЫ";
+                        if (AtlasSubscriptionsSuggestionLabel != null) AtlasSubscriptionsSuggestionLabel.Text = "Атлас готов отслеживать твои регулярные списания. Добавь первую подписку, чтобы активировать трекер.";
                         AtlasSubscriptionsPlaceholder.IsVisible = true;
                     }
                     else
                     {
-                        // Если подписки появились — меняем заголовок на ИИ-аналитику
-                        if (AtlasSubscriptionsTitleLabel != null)
-                            AtlasSubscriptionsTitleLabel.Text = "ATLAS_AI // МОНИТОРИНГ РЕГУЛЯРНЫХ СПИСАНИЙ";
+                        if (AtlasSubscriptionsTitleLabel != null) AtlasSubscriptionsTitleLabel.Text = "ATLAS_AI // МОНИТОРИНГ РЕГУЛЯРНЫХ СПИСАНИЙ";
 
-                        // Считаем общую сумму всех подписок в месяц
                         decimal totalSubsCost = Subscriptions.Sum(s => s.Price);
-
-                        // Формируем динамический совет от Атласа в зависимости от нагрузки на бюджет
-                        if (totalSubsCost < 500)
+                        if (AtlasSubscriptionsSuggestionLabel != null)
                         {
-                            AtlasSubscriptionsSuggestionLabel.Text = $"Общая нагрузка: {totalSubsCost:N0} ₽ в месяц. Отличный показатель, подписки под контролем и не нагружают бюджет.";
+                            if (totalSubsCost < 500)
+                                AtlasSubscriptionsSuggestionLabel.Text = $"Общая нагрузка: {totalSubsCost:N0} ₽/мес. Подписки под контролем.";
+                            else if (totalSubsCost <= 1500)
+                                AtlasSubscriptionsSuggestionLabel.Text = $"Общая нагрузка: {totalSubsCost:N0} ₽/мес. Рекомендуется ревизия сервисов.";
+                            else
+                                AtlasSubscriptionsSuggestionLabel.Text = $"Внимание: {totalSubsCost:N0} ₽/мес. Высокая нагрузка на бюджет!";
                         }
-                        else if (totalSubsCost <= 1500)
-                        {
-                            AtlasSubscriptionsSuggestionLabel.Text = $"Общая нагрузка: {totalSubsCost:N0} ₽ в месяц. Протоколы Monolith рекомендуют раз в квартал делать ревизию неиспользуемых сервисов.";
-                        }
-                        else
-                        {
-                            AtlasSubscriptionsSuggestionLabel.Text = $"Внимание: Найдено активных списаний на {totalSubsCost:N0} ₽ в месяц. Высокая нагрузка! Убедись, что все эти сервисы окупают себя.";
-                        }
-
-                        // Оставляем плашку ВСЕГДА видимой, чтобы она радовала глаз советами
                         AtlasSubscriptionsPlaceholder.IsVisible = true;
                     }
                 }
 
-                // 2. Управление блоком ЦЕЛЕЙ И КОПИЛОК
-                if (AtlasGoalsAnalyticsBox != null && AtlasGoalsSuggestionLabel != null)
+                // 2. Управление блоком ЦЕЛЕЙ (Копилок)
+                if (AtlasGoalsAnalyticsBox != null)
                 {
                     if (!UserSavings.Any())
                     {
-                        // Если целей вообще нет
-                        AtlasGoalsSuggestionLabel.Text = "Протокол накоплений пуст. Поставь глобальную цель (например, новый девайс), и я помогу рассчитать план накоплений.";
+                        if (AtlasGoalsSuggestionLabel != null) AtlasGoalsSuggestionLabel.Text = "Протокол накоплений пуст. Поставь цель, и я помогу рассчитать план.";
                         AtlasGoalsAnalyticsBox.IsVisible = true;
                     }
                     else
                     {
-                        // Если целей больше нуля — берем первую (например, твой ПК) и выводим аналитику от Атласа
                         var mainGoal = UserSavings.First();
+                        double percent = (mainGoal.TargetAmount > 0) ? (double)(mainGoal.CurrentAmount / mainGoal.TargetAmount) * 100 : 0;
 
-                        // Считаем процент выполнения цели
-                        double percent = 0;
-                        if (mainGoal.TargetAmount > 0)
+                        if (AtlasGoalsSuggestionLabel != null)
                         {
-                            percent = (double)(mainGoal.CurrentAmount / mainGoal.TargetAmount) * 100;
+                            if (percent == 0)
+                                AtlasGoalsSuggestionLabel.Text = $"Цель '{mainGoal.Name}' запущена. Время начать накопления!";
+                            else if (percent < 50)
+                                AtlasGoalsSuggestionLabel.Text = $"Прогресс '{mainGoal.Name}': {percent:N1}%. Отличный старт!";
+                            else
+                                AtlasGoalsSuggestionLabel.Text = $"Экватор пройден! '{mainGoal.Name}' готова на {percent:N1}%. Финал близок.";
                         }
-
-                        // Генерируем фразы в зависимости от прогресса накоплений
-                        if (percent == 0)
-                        {
-                            AtlasGoalsSuggestionLabel.Text = $"Анализ прогресса: Цель '{mainGoal.Name}' запущена (0%). Чтобы собрать {mainGoal.TargetAmount:N0} ₽ быстрее, сократи спонтанные расходы в этом периоде.";
-                        }
-                        else if (percent < 50)
-                        {
-                            AtlasGoalsSuggestionLabel.Text = $"Анализ прогресса: Отличный старт! Цель '{mainGoal.Name}' выполнена на {percent:N1}%. Рекомендуется настроить регулярный сейф-бокс.";
-                        }
-                        else
-                        {
-                            AtlasGoalsSuggestionLabel.Text = $"Анализ прогресса: Экватор пройден! Цель '{mainGoal.Name}' готова на {percent:N1}%. Финал протокола близок, удерживай темп.";
-                        }
-
                         AtlasGoalsAnalyticsBox.IsVisible = true;
                     }
                 }
             });
 
-            // Обновляем графики и баланс
+            // 3. Обновляем графики (если метод вызывается отдельно)
             await UpdateDashboardUI();
         }
         catch (Exception ex)
@@ -349,77 +347,77 @@ public partial class MainPage : ContentPage
     #region --- 4. ЛОГИКА ТРАНЗАКЦИЙ ---
 
     private async void OnAddTransactionClicked(object sender, EventArgs e)
-{
-    // 1. КРИТИЧЕСКАЯ ПРОВЕРКА: выбран ли режим и категория
-    // Так как при старте ничего не горит, ItemsSource у пикера равен null.
-    // ПРОВЕРКА: Если выбрана заглушка или ничего не выбрано — стопим процесс
-        if (CategoryPicker.SelectedItem == null || 
-            CategoryPicker.SelectedItem.ToString().StartsWith("[") || 
+    {
+        // 1. КРИТИЧЕСКАЯ ПРОВЕРКА: выбран ли режим и категория
+        // Так как при старте ничего не горит, ItemsSource у пикера равен null.
+        // ПРОВЕРКА: Если выбрана заглушка или ничего не выбрано — стопим процесс
+        if (CategoryPicker.SelectedItem == null ||
+            CategoryPicker.SelectedItem.ToString().StartsWith("[") ||
             CategoryPicker.ItemsSource == null)
         {
             await DisplayAlert("Monolith OS", "Пожалуйста, выберите режим (Доход или Расход) перед добавлением записи.", "OK");
             return;
         }
 
-    // 2. Проверка корректности введенной суммы
-    if (decimal.TryParse(AmountEntry.Text, out decimal amt))
-    {
-        // Создаем транзакцию с выбранной категорией
-        var newTransaction = new Transaction
+        // 2. Проверка корректности введенной суммы
+        if (decimal.TryParse(AmountEntry.Text, out decimal amt))
         {
-            Description = string.IsNullOrWhiteSpace(DescriptionEntry.Text) ? "Без описания" : DescriptionEntry.Text,
-            Amount = amt,
-            IsIncome = isIncomeMode,
-            Category = CategoryPicker.SelectedItem.ToString(),
-            Date = DateTime.Now
-        };
+            // Создаем транзакцию с выбранной категорией
+            var newTransaction = new Transaction
+            {
+                Description = string.IsNullOrWhiteSpace(DescriptionEntry.Text) ? "Без описания" : DescriptionEntry.Text,
+                Amount = amt,
+                IsIncome = isIncomeMode,
+                Category = CategoryPicker.SelectedItem.ToString(),
+                Date = DateTime.Now
+            };
 
-        // Сохраняем в локальную БД
-        await App.Database.SaveTransactionAsync(newTransaction);
+            // Сохраняем в локальную БД
+            await App.Database.SaveTransactionAsync(newTransaction);
 
-        // Получаем историю для расчета достижений
-        var history = await App.Database.GetTransactionsAsync();
-        var achievements = AchievementService.CalculateAchievements(history);
+            // Получаем историю для расчета достижений
+            var history = await App.Database.GetTransactionsAsync();
+            var achievements = AchievementService.CalculateAchievements(history);
 
-        // Проверка конкретной ачивки "Saver"
-        var saverAchievement = achievements.FirstOrDefault(a => a.Name == "Saver");
-        if (newTransaction.Amount >= 50000 && saverAchievement != null && !saverAchievement.IsUnlocked)
-        {
-            await DisplayAlert("ACHIEVEMENT UNLOCKED!", "Вы получили ачивку: Сберегатель 💰", "КРУТО!");
-        }
+            // Проверка конкретной ачивки "Saver"
+            var saverAchievement = achievements.FirstOrDefault(a => a.Name == "Saver");
+            if (newTransaction.Amount >= 50000 && saverAchievement != null && !saverAchievement.IsUnlocked)
+            {
+                await DisplayAlert("ACHIEVEMENT UNLOCKED!", "Вы получили ачивку: Сберегатель 💰", "КРУТО!");
+            }
 
-        // 3. Очистка полей ввода
-        AmountEntry.Text = string.Empty;
-        DescriptionEntry.Text = string.Empty;
+            // 3. Очистка полей ввода
+            AmountEntry.Text = string.Empty;
+            DescriptionEntry.Text = string.Empty;
 
-        // Сбрасываем выбранный элемент пикера
-        CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
+            // Сбрасываем выбранный элемент пикера
+            CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
             CategoryPicker.SelectedIndex = 0;
 
             // Тушим кнопки обратно в нейтральное состояние
             BtnExpenseBorder.BackgroundColor = Color.FromArgb("#140B2D");
-            BtnExpenseBorder.Stroke = Color.FromArgb("#3D1D4A"); 
-            LblExpense.TextColor = Color.FromArgb("#7A2D6A");   
+            BtnExpenseBorder.Stroke = Color.FromArgb("#3D1D4A");
+            LblExpense.TextColor = Color.FromArgb("#7A2D6A");
 
             BtnIncomeBorder.BackgroundColor = Color.FromArgb("#140B2D");
-            BtnIncomeBorder.Stroke = Color.FromArgb("#1F3A3A"); 
+            BtnIncomeBorder.Stroke = Color.FromArgb("#1F3A3A");
             LblIncome.TextColor = Color.FromArgb("#1E6B60");
-
-        // Дополнительный фикс для десктопа: если нужно полностью сбросить пикер в дефолт
-        #if MACCATALYST
+            RefreshUI();
+            // Дополнительный фикс для десктопа: если нужно полностью сбросить пикер в дефолт
+#if MACCATALYST
         CategoryPicker.ItemsSource = null; // Полностью очищаем до следующего выбора Дохода/Расхода
-        #endif
+#endif
 
-        // Обновляем ачивки и интерфейс графиков
-        await CheckNewAchievements();
-        await LoadDataFromDatabase(); // Мгновенное обновление всей аналитики и баланса
+            // Обновляем ачивки и интерфейс графиков
+            await CheckNewAchievements();
+            await LoadDataFromDatabase(); // Мгновенное обновление всей аналитики и баланса
+        }
+        else
+        {
+            // Если пользователь ввел буквы или оставил поле суммы пустым
+            await DisplayAlert("Monolith OS", "Пожалуйста, введите корректную сумму операции.", "OK");
+        }
     }
-    else
-    {
-        // Если пользователь ввел буквы или оставил поле суммы пустым
-        await DisplayAlert("Monolith OS", "Пожалуйста, введите корректную сумму операции.", "OK");
-    }
-}
     private async Task CheckNewAchievements()
     {
         var history = await App.Database.GetTransactionsAsync();
@@ -510,7 +508,7 @@ public partial class MainPage : ContentPage
                 Name = name,
                 TargetAmount = target,
                 CurrentAmount = 0,
-                Icon = "💰"
+                
             };
 
             await App.Database.SaveGoalAsync(newGoal);
@@ -551,50 +549,105 @@ public partial class MainPage : ContentPage
             await LoadDataFromDatabase();
         }
     }
+    private decimal GetCurrentBalance()
+    {
+        // Парсим текст из BalanceLabel
+        string balanceText = BalanceLabel.Text.Replace(" ₽", "").Trim();
 
+        if (decimal.TryParse(balanceText, out decimal balance))
+            return balance;
+
+        return 0;
+    }
     private async void OnDepositGoalClicked(object sender, EventArgs e)
     {
-        if ((sender as Button)?.CommandParameter is SavingsGoal goal)
+        if ((sender as Button)?.CommandParameter is not SavingsGoal goal)
+            return;
+
+        string result = await DisplayPromptAsync(
+            "Пополнение",
+            $"Сколько добавим в '{goal.Name}'?",
+            "Добавить", "Отмена",
+            keyboard: Keyboard.Numeric);
+
+        if (string.IsNullOrWhiteSpace(result))
+            return;
+
+        if (!decimal.TryParse(result, out decimal amount) || amount <= 0)
         {
-            string result = await DisplayPromptAsync("Пополнение",
-                $"Сколько добавим в '{goal.Name}'?", "Добавить", "Отмена", keyboard: Keyboard.Numeric);
+            await DisplayAlert("Ошибка", "Введите корректную сумму", "OK");
+            return;
+        }
 
-            if (decimal.TryParse(result, out decimal amount) && amount > 0)
+        try
+        {
+            // ВАЖНО: проверяем баланс перед пополнением
+            var currentBalance = GetCurrentBalance();
+            if (currentBalance < amount)
             {
-                // 1. Обновляем саму цель (копилку)
-                goal.CurrentAmount += amount;
-                await App.Database.SaveGoalAsync(goal);
-
-                // 2. СОЗДАЕМ ТРАНЗАКЦИЮ РАСХОДА (чтобы деньги ушли с баланса и попали в график)
-                var goalTx = new Transaction
-                {
-                    Amount = amount,
-                    IsIncome = false, // ВАЖНО: это расход
-                    Category = "🎯 Цели",
-                    Description = $"В копилку: {goal.Name}",
-                    Date = DateTime.Now
-                };
-
-                await App.Database.SaveTransactionAsync(goalTx);
-
-                // 3. Обновляем всё
-                await LoadDataFromDatabase();
-
-                // Теперь UpdateDashboardUI внутри LoadDataFromDatabase увидит новую транзакцию,
-                // вычтет её из баланса и добавит в сектор диаграммы.
+                await DisplayAlert("Ошибка", "Недостаточно средств на балансе", "OK");
+                return;
             }
+
+            // 1. Обновляем саму цель (копилку)
+            goal.CurrentAmount += amount;
+            await App.Database.SaveGoalAsync(goal);
+
+            // 2. СОЗДАЕМ ТРАНЗАКЦИЮ РАСХОДА (деньги уходят с баланса в копилку)
+            var goalTransaction = new Transaction
+            {
+                Amount = amount,
+                IsIncome = false,
+                Category = "🎯 Цели",
+                Description = $"В копилку: {goal.Name}",
+                Date = DateTime.Now,
+                GoalId = goal.Id  // Связываем с целью
+            };
+
+            await App.Database.SaveTransactionAsync(goalTransaction);
+
+            // 3. Обновляем коллекцию целей
+            int index = UserSavings.IndexOf(goal);
+            if (index >= 0)
+            {
+                UserSavings[index] = goal;  // Обновляем элемент в коллекции
+            }
+
+            // 4. Перезагружаем все данные и обновляем UI
+            await LoadDataFromDatabase();
+
+            await DisplayAlert("Успех", $"Добавлено {amount} ₽ в '{goal.Name}'", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", $"Не удалось пополнить цель: {ex.Message}", "OK");
         }
     }
 
     private async void OnDeleteGoalClicked(object sender, EventArgs e)
     {
-        if ((sender as Button)?.CommandParameter is SavingsGoal goal)
+        if ((sender as Button)?.CommandParameter is not SavingsGoal goal)
+            return;
+
+        bool confirm = await DisplayAlert(
+            "Удаление",
+            $"Удалить цель '{goal.Name}'? Это действие необратимо.",
+            "Да", "Нет");
+
+        if (!confirm)
+            return;
+
+        try
         {
-            if (await DisplayAlert("Удаление", $"Удалить цель '{goal.Name}'?", "Да", "Нет"))
-            {
-                await App.Database.DeleteGoalAsync(goal);
-                await LoadDataFromDatabase();
-            }
+            await App.Database.DeleteGoalAsync(goal);
+            UserSavings.Remove(goal);
+            await LoadDataFromDatabase();
+
+            await DisplayAlert("Успех", "Цель удалена", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", $"Не удалось удалить цель: {ex.Message}", "OK");
         }
     }
 
@@ -603,12 +656,32 @@ public partial class MainPage : ContentPage
     #region --- 6. ЛОГИКА ПОДПИСОК ---
     private async void OnDeleteSubscriptionClicked(object sender, EventArgs e)
     {
-        if ((sender as Button)?.CommandParameter is Subscription sub)
+        if ((sender as Button)?.CommandParameter is not Subscription sub)
+            return;
+
+        bool confirm = await DisplayAlert(
+            "Удаление",
+            $"Удалить подписку '{sub.Name}'?",
+            "Да", "Нет");
+
+        if (!confirm)
+            return;
+
+        try
         {
             await App.Database.DeleteSubscriptionAsync(sub);
+            Subscriptions.Remove(sub);
             await LoadDataFromDatabase();
+
+            await DisplayAlert("Успех", "Подписка удалена", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", $"Не удалось удалить подписку: {ex.Message}", "OK");
         }
     }
+
+
 
     #endregion
 
@@ -619,107 +692,92 @@ public partial class MainPage : ContentPage
         if (ChartV == null || BalanceLabel == null || TransactionHistory == null) return;
 
         // 1. Считаем всё в фоне
-        var (convBal, symbol, expenseStats, hasAnyExpensesInHistory) = await Task.Run(() =>
+        var result = await Task.Run(() =>
         {
             decimal r = 1.0m;
             string s = "₽";
             if (_currentCurrency == "USD") { r = (decimal)_usdRate; s = "$"; }
             else if (_currentCurrency == "EUR") { r = (decimal)_eurRate; s = "€"; }
 
-            // ПРОВЕРКА 1: Проверяем наличие РАСХОДОВ вообще во всей истории базы (игнорируя выбранный период/месяц)
-            bool globalExpensesExist = TransactionHistory.Any(t => !t.IsIncome);
-
-            // Расчет общего баланса
-            decimal rawBal = TransactionHistory.Sum(t => t.IsIncome ? t.Amount : -t.Amount);
-            decimal finalBal = rawBal / r;
-
-            // Группируем расходы (локально для выбранного на UI периода)
             var stats = TransactionHistory
                 .Where(t => !t.IsIncome)
                 .GroupBy(t => t.Category)
                 .Select(g => new ExpenseCategoryItem
                 {
                     Category = g.Key,
-                    Sum = (float)(g.Sum(t => t.Amount) / r),
+                    Sum = g.Sum(t => t.Amount) / r,
                     AmountText = (g.Sum(t => t.Amount) / r).ToString("N0") + " " + s,
                     DisplayColor = GetColorForCategory(g.Key)
                 })
                 .OrderByDescending(x => x.Sum)
                 .ToList();
 
-            return (finalBal, s, stats, globalExpensesExist);
+            return new
+            {
+                Balance = TransactionHistory.Sum(t => t.IsIncome ? t.Amount : -t.Amount) / r,
+                Symbol = s,
+                Stats = stats
+            };
         });
 
-        // 2. Обновляем UI в главном потоке
+        // 2. Обновляем UI
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            BalanceLabel.Text = $"{convBal:N0} {symbol}";
-            BindableLayout.SetItemsSource(ChartLegendView, expenseStats);
-            // Если в истории приложения глобально есть расходы с прошлых разов
-            // Если в истории приложения глобально есть расходы с прошлых разов
-            if (hasAnyExpensesInHistory)
+            BalanceLabel.Text = $"{result.Balance:N0} {result.Symbol}";
+
+            // ПРОВЕРКА: Если список пуст, показываем Атласа. Если есть данные — рисуем график.
+            if (result.Stats != null && result.Stats.Any())
             {
-                // Если есть конкретно расходы в выбранном периоде — отрисовываем кольцо диаграммы
-                if (expenseStats != null && expenseStats.Any())
+                // --- РИСУЕМ ГРАФИК ---
+                decimal totalSum = result.Stats.Sum(x => x.Sum);
+                foreach (var item in result.Stats)
                 {
-                    // Показываем график, скрываем заглушку Атласа
-                    if (ChartVisualElements != null) ChartVisualElements.IsVisible = true;
-                    if (AtlasPeriodPlaceholder != null) AtlasPeriodPlaceholder.IsVisible = false;
-                    if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = false;
+                    item.Percentage = totalSum > 0 ? (double)(item.Sum / totalSum * 100) : 0.0;
+                }
 
-                    var newEntries = expenseStats.Select(x => new ChartEntry(x.Sum)
-                    {
-                        Label = x.Category,
-                        ValueLabel = x.AmountText,
-                        Color = SKColor.Parse(x.DisplayColor.ToHex())
-                    }).ToArray();
+                if (ChartVisualElements != null) ChartVisualElements.IsVisible = true;
+                if (AtlasPeriodPlaceholder != null) AtlasPeriodPlaceholder.IsVisible = false;
+                if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = false;
+                if (ChartInstructionBorder != null) ChartInstructionBorder.IsVisible = true; // Показываем наш бордер
 
-                    if (ChartV.Chart is DonutChart existingChart)
-                    {
-                        existingChart.Entries = newEntries;
-                    }
-                    else
-                    {
-                        ChartV.Chart = new DonutChart
-                        {
-                            Entries = newEntries,
-                            HoleRadius = 0.7f,
-                            BackgroundColor = SKColors.Transparent,
-                            LabelMode = LabelMode.None,
-                            Typeface = SKTypeface.FromFamilyName("Orbitron")
-                        };
-                    }
+                var newEntries = result.Stats.Select(x => new ChartEntry((float)x.Sum)
+                {
+                    Label = x.Category,
+                    ValueLabel = x.AmountText,
+                    Color = new SKColor((byte)(x.DisplayColor.Red * 255), (byte)(x.DisplayColor.Green * 255), (byte)(x.DisplayColor.Blue * 255), 255)
+                }).ToArray();
+
+                if (ChartV.Chart is DonutChart existingChart)
+                {
+                    existingChart.Entries = newEntries;
                 }
                 else
                 {
-                    // ОБЪЕДИНЕННАЯ ИДЕЯ: Расходов в этом месяце нет. Скрываем график, выводим умную панель Атласа
-                    if (ChartVisualElements != null) ChartVisualElements.IsVisible = false;
-                    if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = false;
-                    if (AtlasPeriodPlaceholder != null) AtlasPeriodPlaceholder.IsVisible = true;
-
-                    // База фраз Атласа для пустых месяцев
-                    string[] atlasPhrases = new string[]
-                    {
-                    "Расходы за выбранный период равны 0 ₽. Идеальный баланс удерживается в штатном режиме.",
-                    "Анализ завершен: трат не зафиксировано. Отличный момент, чтобы пополнить цели или копилки!",
-                    "В этом месяце чисто. Твой кошелек под надежной защитой протоколов Monolith OS.",
-                    "Система фиксирует нулевую активность расходов. Твоя финансовая подушка безопасности растет."
-                    };
-
-                    // Выбираем случайную реплику
-                    int randomIndex = new Random().Next(atlasPhrases.Length);
-                    if (AtlasPeriodSuggestionLabel != null)
-                    {
-                        AtlasPeriodSuggestionLabel.Text = atlasPhrases[randomIndex];
-                    }
+                    ChartV.Chart = new DonutChart { Entries = newEntries, HoleRadius = 0.7f, BackgroundColor = SKColors.Transparent, LabelMode = LabelMode.None, Typeface = SKTypeface.FromFamilyName("Orbitron") };
                 }
             }
             else
             {
-                // База абсолютно чистая (самый первый запуск приложения) -> Большая карточка приветствия
+                // --- ПОКАЗЫВАЕМ АТЛАСА ---
                 if (ChartVisualElements != null) ChartVisualElements.IsVisible = false;
-                if (AtlasPeriodPlaceholder != null) AtlasPeriodPlaceholder.IsVisible = false;
-                if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = true;
+                if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = false;
+                if (ChartInstructionBorder != null) ChartInstructionBorder.IsVisible = false;
+
+                if (AtlasPeriodPlaceholder != null)
+                {
+                    AtlasPeriodPlaceholder.IsVisible = true;
+
+                    // Случайная фраза
+                    string[] atlasPhrases = {
+                    "Расходы за выбранный период равны 0. Идеальный баланс.",
+                    "Анализ завершен: трат не зафиксировано.",
+                    "В этом месяце чисто. Твой кошелек в безопасности.",
+                    "Система фиксирует нулевую активность расходов."
+                };
+                    if (AtlasPeriodSuggestionLabel != null)
+                        AtlasPeriodSuggestionLabel.Text = atlasPhrases[new Random().Next(atlasPhrases.Length)];
+                }
+
                 ChartV.Chart = null;
             }
         });
@@ -875,7 +933,7 @@ public partial class MainPage : ContentPage
         }
 
         // Создаем записи для диаграммы на основе твоих данных из легенды
-        var entries = data.Select(d => new ChartEntry(d.Sum)
+        var entries = data.Select(d => new ChartEntry((float)d.Sum)
         {
             Label = d.Category,
             ValueLabel = d.AmountText,
@@ -926,7 +984,7 @@ public partial class MainPage : ContentPage
             // или FileSaver, если вы используете CommunityToolkit.
             // Самый универсальный способ для старта — сохранить во временную папку и «поделиться»
             string fileName = $"Отчет_{DateTime.Now:yyyyMMdd_HHmm}.csv";
-            string tempPath = Path.Combine(FileSystem.CacheDirectory, fileName);
+            string tempPath = Path.Combine(Microsoft.Maui.Storage.FileSystem.CacheDirectory, fileName);
 
             await File.WriteAllBytesAsync(tempPath, fileBytes);
 

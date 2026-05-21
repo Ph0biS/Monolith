@@ -7,11 +7,10 @@
     Shell.FlyoutBehavior="Disabled"
     Title="Monolith"
     Shell.NavBarIsVisible="False"
-    Shell.PresentationMode="NotAnimated"
-    BackgroundColor="#1A1033"
     Shell.TabBarBackgroundColor="#1A1033"
-    Shell.TabBarForegroundColor="#D946EF"
-    Shell.TabBarUnselectedColor="#4D3B6D">
+    Shell.TabBarForegroundColor="Transparent"
+    Shell.TabBarUnselectedColor="#4D3B6D"
+    Shell.TabBarTitleColor="Transparent">
 
     <Shell.Resources>
         <ResourceDictionary>
@@ -26,19 +25,19 @@
     </Shell.Resources>
 
     <TabBar>
-        <Tab Title="Кошелек 💰" Route="MainPage">
+        <Tab Route="MainPage">
             <ShellContent ContentTemplate="{DataTemplate pages:MainPage}" />
         </Tab>
-        <Tab Title="История 📜" Route="HistoryPage">
+        <Tab Route="HistoryPage">
             <ShellContent ContentTemplate="{DataTemplate pages:HistoryPage}" />
         </Tab>
-        <Tab Title="Анализ 📊" Route="AnalyticsPage">
+        <Tab  Route="AnalyticsPage">
             <ShellContent ContentTemplate="{DataTemplate pages:AnalyticsPage}" />
         </Tab>
-        <Tab Title="Прогноз 📈" Route="ForecastPage">
+        <Tab  Route="ForecastPage">
             <ShellContent ContentTemplate="{DataTemplate pages:ForecastPage}" />
         </Tab>
-        <Tab Title="Достижения 🏆" Route="AchievementsPage">
+        <Tab Route="AchievementsPage">
             <ShellContent ContentTemplate="{DataTemplate pages:AchievementsPage}" />
         </Tab>
     </TabBar>

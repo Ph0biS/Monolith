@@ -1,8 +1,10 @@
-﻿using SQLite;
+﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using SQLite;
 using System;
 using System.Collections.Generic;
-using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Controls;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 namespace PROJECT.Models
 {
     public class Transaction
@@ -11,6 +13,7 @@ namespace PROJECT.Models
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public string Category { get; set; }
+        public int? GoalId { get; set; }
         public string Description { get; set; }
         public decimal Amount { get; set; }
         public bool IsIncome { get; set; }
@@ -25,21 +28,47 @@ namespace PROJECT.Models
         public string Type { get; internal set; }
     }
 
-    public class SavingsGoal
+    public class SavingsGoal : INotifyPropertyChanged
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public decimal TargetAmount { get; set; }
-        public decimal CurrentAmount { get; set; }
-        public string Icon { get; set; } = "💰";
 
-        // Эти свойства вычисляются на лету для интерфейса
+        // Используем только свойства с большой буквы
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set { _name = value; OnPropertyChanged(); }
+        }
+
+        public decimal TargetAmount { get; set; }
+
+        private decimal _currentAmount;
+        public decimal CurrentAmount // <-- Главное свойство
+        {
+            get => _currentAmount;
+            set
+            {
+                if (_currentAmount != value)
+                {
+                    _currentAmount = value;
+                    OnPropertyChanged(); // Обновит UI для CurrentAmount
+                    OnPropertyChanged(nameof(Progress)); // Обновит ProgressBar
+                    OnPropertyChanged(nameof(ProgressText)); // Обновит Label
+                }
+            }
+        }
+
+        // События для обновления интерфейса
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
         [Ignore]
         public double Progress => (double)(TargetAmount > 0 ? CurrentAmount / TargetAmount : 0);
+
         [Ignore]
-        public string ProgressText =>
-    $"{CurrentAmount * Subscription.CurrentRate:N0} / {TargetAmount * Subscription.CurrentRate:N0} {Subscription.CurrentSymbol}";
+        public string ProgressText => $"{CurrentAmount:N0} / {TargetAmount:N0} ₽";
     }
 
     public class Subscription
@@ -50,7 +79,7 @@ namespace PROJECT.Models
         public decimal Price { get; set; } // Оставляем Price, как было у тебя
         public int PaymentDay { get; set; } // Это добавляем
         public DateTime NextPaymentDate { get; set; } // Это было в твоем коде
-
+        public bool IsActive { get; set; }
         // Для вывода в списке
         [Ignore]
         public string PaymentInfo => $"Списание: {NextPaymentDate:dd.MM.yyyy}";
@@ -69,12 +98,25 @@ namespace PROJECT.Models
         public string AmountText { get; set; }
         public Color DisplayColor { get; set; }
     }
-    public class ExpenseCategoryItem
+    public class ExpenseCategoryItem : INotifyPropertyChanged
     {
         public string Category { get; set; }
-        public float Sum { get; set; }
+
+        // Используем decimal для точности денег
+        public decimal Sum { get; set; }
         public string AmountText { get; set; }
         public Color DisplayColor { get; set; }
+
+        private double _percentage;
+        public double Percentage
+        {
+            get => _percentage;
+            set { _percentage = value; OnPropertyChanged(); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
     public class Achievement
     {

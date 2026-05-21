@@ -42,8 +42,8 @@ public partial class App : Application
     var window = base.CreateWindow(activationState);
 
     // Базовые размеры для кроссплатформы
-    window.Width = 1100;
-    window.Height = 800;
+    window.Width = 900;
+    window.Height = 1000;
     window.MinimumWidth = 950;
     window.MinimumHeight = 700;
 
