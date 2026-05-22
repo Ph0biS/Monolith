@@ -120,13 +120,17 @@ public partial class AnalyticsPage : ContentPage
     {
         return category switch
         {
-            "🛒 Продукты" => Color.FromArgb("#4CAF50"),
-            "🚌 Транспорт" => Color.FromArgb("#2196F3"),
-            "🎮 Развлечения" => Color.FromArgb("#9C27B0"),
-            "🎯 Копилка" => Color.FromArgb("#FF5722"),
-            "🏠 Дом" => Color.FromArgb("#FF9800"),
-            "💊 Здоровье" => Color.FromArgb("#F44336"),
-            _ => Color.FromArgb("#808080")
+            "🛒 Продукты" => Color.FromArgb("#2DD4BF"), // Бирюзовый
+            "🚌 Транспорт" => Color.FromArgb("#3B82F6"), // Синий
+            "🎮 Развлечения" => Color.FromArgb("#8B5CF6"), // Фиолетовый
+            "🏠 Дом" => Color.FromArgb("#FB923C"),       // Оранжевый
+            "💊 Здоровье" => Color.FromArgb("#EF4444"),   // Красный
+            "🍔 Еда" => Color.FromArgb("#FFD700"),        // Золотой
+            "👕 Одежда" => Color.FromArgb("#EC4899"),     // Розовый
+            "📱 Связь" => Color.FromArgb("#06B6D4"),      // Голубой
+            "💰 Зарплата" => Color.FromArgb("#22C55E"),   // Зеленый
+            "🎁 Подарок" => Color.FromArgb("#F59E0B"),    // Янтарный
+            _ => Color.FromArgb("#94A3B8")                // Серый (для остальных)
         };
     }
 }

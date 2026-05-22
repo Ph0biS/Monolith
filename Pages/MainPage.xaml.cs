@@ -22,7 +22,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     private Dictionary<string, double> _rates = new() { { "USD", 92.0 }, { "EUR", 100.0 } };
     private readonly CurrencyService _currencyService = new();
     private bool _isReady = false;
-    private bool isIncomeMode = false;
+    private bool? isIncomeMode = null;
     private bool _isGlowRunning = false;
     private string _currentCurrency = "RUB";
     private IEnumerable<ChartEntry> entries;
@@ -67,8 +67,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         CurrencyPicker.SelectedItem = "RUB";
         PeriodPicker.SelectedItem = "Все время";
         // Вставьте этот исправленный код:
-        // УДАЛИТЕ ЭТИ СТРОКИ:
-
+      
         BindableLayout.SetItemsSource(SavingsCollection, UserSavings);
         Subscriptions = new ObservableCollection<Subscription>();
     }
@@ -80,33 +79,23 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     public bool HasNoData => TotalDataCount == 0;
     public void RefreshUI()
     {
-        OnPropertyChanged(nameof(TotalDataCount)); // Уведомляем об изменении количества
-        OnPropertyChanged(nameof(HasData));        // Обновляет видимость
-        OnPropertyChanged(nameof(HasNoData));      // Обновляет видимость
+        // Отладочный вывод
+        Debug.WriteLine($"[DEBUG] RefreshUI: TotalCount = {TotalDataCount}, HasData = {HasData}, HasNoData = {HasNoData}");
+
+        OnPropertyChanged(nameof(TotalDataCount));
+        OnPropertyChanged(nameof(HasData));
+        OnPropertyChanged(nameof(HasNoData));
     }
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         _isPageVisible = true;
-        await LoadDataFromDatabase();
-        // По умолчанию ни один режим (Доход/Расход) не выбран, пикер категорий пуст
-        isIncomeMode = false;
-        CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
-        CategoryPicker.SelectedIndex = 0;
 
-        // Явно принуждаем плашку приветствия ИИ быть видимой
-        if (AtlasLoadingView != null)
-        {
-            AtlasLoadingView.IsVisible = true;
-            AtlasLoadingView.Opacity = 1;
-        }
+        // 1. Сразу сбрасываем всё в Нейтральное состояние
+        // Это наш "Эталон" для запуска
+        SetNeutralState();
 
-#if MACCATALYST
-    await Task.Delay(150); // Увеличенный таймаут для стабильного рендеринга на Mac
-#else
-        await Task.Delay(20);
-#endif
-
+        // 2. Логика первого запуска (Загрузчик)
         if (App.IsFirstLaunch)
         {
             LoadingOverlay.IsVisible = true;
@@ -119,48 +108,25 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             LoadingOverlay.IsVisible = false;
         }
 
-        // Возвращаем видимость интерфейса аналитики после загрузчика
-        if (AtlasLoadingView != null)
-            AtlasLoadingView.IsVisible = true;
-
-        // ВРУЧНУЮ тушим ОБЕ кнопки (нейтральное стартовое состояние)
-        if (BtnIncomeBorder != null && BtnExpenseBorder != null)
-        {
-            // Потухший РАСХОД (темный фон, тусклый розовый контур и текст)
-            BtnExpenseBorder.BackgroundColor = Color.FromArgb("#140B2D");
-            BtnExpenseBorder.Stroke = Color.FromArgb("#3D1D4A");
-            LblExpense.TextColor = Color.FromArgb("#7A2D6A");
-
-            // Потухший ДОХОД (темный фон, тусклый бирюзовый контур и текст)
-            BtnIncomeBorder.BackgroundColor = Color.FromArgb("#140B2D");
-            BtnIncomeBorder.Stroke = Color.FromArgb("#1F3A3A");
-            LblIncome.TextColor = Color.FromArgb("#1E6B60");
-        }
-
-        // Загружаем данные из локальной БД и обновляем графики
+        // 3. Загружаем данные ОДИН РАЗ
         await LoadDataFromDatabase();
         await UpdateDashboardUI();
 
-        // Запрос курсов валют в фоновом потоке
+        // 4. Возвращаем видимость аналитики
+        if (AtlasLoadingView != null)
+            AtlasLoadingView.IsVisible = true;
+
+        // 5. Валюты (фоном)
         _ = Task.Run(async () => {
             try { await LoadCurrencyRates(); }
-            catch { /* Игнорируем ошибки сети */ }
+            catch { /* Игнорируем */ }
         });
 
-        // Запускаем заставку только если это первый вход
-        if (_isFirstLoad)
-        {
-            LoadingOverlay.IsVisible = true;
-            await RunCyberpunkBootloader();
-            _isFirstLoad = false;
-        }
-
-        // Обновляем интерфейс и графики
-
+        // 6. Запуск пульса
         if (!_isPulseRunning)
         {
             _isPulseRunning = true;
-            //_ = PulseBalanceGlow();
+            // _ = PulseBalanceGlow();
         }
     }
     private async Task PulseBalanceGlow()
@@ -245,20 +211,21 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     #endregion
 
     #region --- 3. РАБОТА С БАЗОЙ ДАННЫХ (ОБНОВЛЕНИЕ СПИСКОВ) ---
-
+   
     private async Task LoadDataFromDatabase()
     {
         try
         {
-            // 1. Асинхронное получение данных из БД
+            // 1. Получаем данные
             var transactions = await App.Database.GetTransactionsAsync();
             var goals = await App.Database.GetGoalsAsync();
             var subs = await App.Database.GetSubscriptionsAsync();
 
-            // 2. Обновление UI и логика Атласа (в одном потоке)
+            // 2. Обновление UI
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                // Очищаем и наполняем коллекции
+                
+                // --- ОБНОВЛЕНИЕ КОЛЛЕКЦИЙ ---
                 TransactionHistory.Clear();
                 foreach (var t in transactions) TransactionHistory.Add(t);
 
@@ -267,44 +234,44 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
                 Subscriptions.Clear();
                 foreach (var s in subs) Subscriptions.Add(s);
+
+                // Принудительное обновление для CollectionView
                 SubsCollectionView.ItemsSource = null;
                 SubsCollectionView.ItemsSource = Subscriptions;
 
-                // --- ИНТЕГРАЦИЯ АТЛАСА (Логика уведомлений) ---
-                RefreshUI();
-                // 1. Управление блоком ПОДПИСОК
+                // --- ЛОГИКА ГРАФИКОВ (Chart vs Empty) ---
+                
+                // --- ЛОГИКА ПОДПИСОК ---
                 if (AtlasSubscriptionsPlaceholder != null)
                 {
+                    // Показываем блок подписок всегда, либо скрывай по условию (как нужно тебе)
+                    AtlasSubscriptionsPlaceholder.IsVisible = true;
+
                     if (!Subscriptions.Any())
                     {
-                        if (AtlasSubscriptionsTitleLabel != null) AtlasSubscriptionsTitleLabel.Text = "SYSTEM_MONITOR // ПОДПИСОК НЕ НАЙДЕНЫ";
-                        if (AtlasSubscriptionsSuggestionLabel != null) AtlasSubscriptionsSuggestionLabel.Text = "Атлас готов отслеживать твои регулярные списания. Добавь первую подписку, чтобы активировать трекер.";
-                        AtlasSubscriptionsPlaceholder.IsVisible = true;
+                        AtlasSubscriptionsTitleLabel.Text = "SYSTEM_MONITOR // ПОДПИСОК НЕ НАЙДЕНЫ";
+                        AtlasSubscriptionsSuggestionLabel.Text = "Атлас готов отслеживать твои регулярные списания. Добавь первую подписку, чтобы активировать трекер.";
                     }
                     else
                     {
-                        if (AtlasSubscriptionsTitleLabel != null) AtlasSubscriptionsTitleLabel.Text = "ATLAS_AI // МОНИТОРИНГ РЕГУЛЯРНЫХ СПИСАНИЙ";
-
+                        AtlasSubscriptionsTitleLabel.Text = "ATLAS_AI // МОНИТОРИНГ РЕГУЛЯРНЫХ СПИСАНИЙ";
                         decimal totalSubsCost = Subscriptions.Sum(s => s.Price);
-                        if (AtlasSubscriptionsSuggestionLabel != null)
-                        {
-                            if (totalSubsCost < 500)
-                                AtlasSubscriptionsSuggestionLabel.Text = $"Общая нагрузка: {totalSubsCost:N0} ₽/мес. Подписки под контролем.";
-                            else if (totalSubsCost <= 1500)
-                                AtlasSubscriptionsSuggestionLabel.Text = $"Общая нагрузка: {totalSubsCost:N0} ₽/мес. Рекомендуется ревизия сервисов.";
-                            else
-                                AtlasSubscriptionsSuggestionLabel.Text = $"Внимание: {totalSubsCost:N0} ₽/мес. Высокая нагрузка на бюджет!";
-                        }
-                        AtlasSubscriptionsPlaceholder.IsVisible = true;
+
+                        if (totalSubsCost < 500)
+                            AtlasSubscriptionsSuggestionLabel.Text = $"Общая нагрузка: {totalSubsCost:N0} ₽/мес. Подписки под контролем.";
+                        else if (totalSubsCost <= 1500)
+                            AtlasSubscriptionsSuggestionLabel.Text = $"Общая нагрузка: {totalSubsCost:N0} ₽/мес. Рекомендуется ревизия.";
+                        else
+                            AtlasSubscriptionsSuggestionLabel.Text = $"Внимание: {totalSubsCost:N0} ₽/мес. Высокая нагрузка!";
                     }
                 }
 
-                // 2. Управление блоком ЦЕЛЕЙ (Копилок)
+                // --- ЛОГИКА ЦЕЛЕЙ ---
                 if (AtlasGoalsAnalyticsBox != null)
                 {
                     if (!UserSavings.Any())
                     {
-                        if (AtlasGoalsSuggestionLabel != null) AtlasGoalsSuggestionLabel.Text = "Протокол накоплений пуст. Поставь цель, и я помогу рассчитать план.";
+                        AtlasGoalsSuggestionLabel.Text = "Протокол накоплений пуст. Поставь цель, и я помогу рассчитать план.";
                         AtlasGoalsAnalyticsBox.IsVisible = true;
                     }
                     else
@@ -312,18 +279,23 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
                         var mainGoal = UserSavings.First();
                         double percent = (mainGoal.TargetAmount > 0) ? (double)(mainGoal.CurrentAmount / mainGoal.TargetAmount) * 100 : 0;
 
-                        if (AtlasGoalsSuggestionLabel != null)
-                        {
-                            if (percent == 0)
-                                AtlasGoalsSuggestionLabel.Text = $"Цель '{mainGoal.Name}' запущена. Время начать накопления!";
-                            else if (percent < 50)
-                                AtlasGoalsSuggestionLabel.Text = $"Прогресс '{mainGoal.Name}': {percent:N1}%. Отличный старт!";
-                            else
-                                AtlasGoalsSuggestionLabel.Text = $"Экватор пройден! '{mainGoal.Name}' готова на {percent:N1}%. Финал близок.";
-                        }
+                        if (percent == 0)
+                            AtlasGoalsSuggestionLabel.Text = $"Цель '{mainGoal.Name}' запущена. Время начать накопления!";
+                        else if (percent < 50)
+                            AtlasGoalsSuggestionLabel.Text = $"Прогресс '{mainGoal.Name}': {percent:N1}%. Отличный старт!";
+                        else
+                            AtlasGoalsSuggestionLabel.Text = $"Экватор пройден! '{mainGoal.Name}' готова на {percent:N1}%. Финал близок.";
+
                         AtlasGoalsAnalyticsBox.IsVisible = true;
                     }
                 }
+                bool hasTransactions = TransactionHistory.Any();
+                // Для hasStats можно просто передать true/false, если логика внутри UpdateDashboardUI
+                // Но лучше вычислять тут, чтобы знать точно.
+                bool hasStats = TransactionHistory.Any(t => !t.IsIncome);
+
+                // 4. ФИНАЛЬНЫЙ ВЫЗОВ (в самом конце!)
+                UpdateLayoutVisibility(hasTransactions, hasStats);
             });
 
             // 3. Обновляем графики (если метод вызывается отдельно)
@@ -367,7 +339,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             {
                 Description = string.IsNullOrWhiteSpace(DescriptionEntry.Text) ? "Без описания" : DescriptionEntry.Text,
                 Amount = amt,
-                IsIncome = isIncomeMode,
+                IsIncome = (bool)isIncomeMode,
                 Category = CategoryPicker.SelectedItem.ToString(),
                 Date = DateTime.Now
             };
@@ -388,6 +360,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
             // 3. Очистка полей ввода
             AmountEntry.Text = string.Empty;
+            SetNeutralState();
             DescriptionEntry.Text = string.Empty;
 
             // Сбрасываем выбранный элемент пикера
@@ -450,44 +423,145 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             await DisplayAlert("⚔️ MANIAC!", "5 операций за день! Вот это активность!", "УРА!");
         }
     }
+    private Brush GetNeonGradient(bool isIncome, bool isActive)
+    {
+        if (!isActive)
+        {
+            // Пассивное состояние: оставляем темный фон
+            return new SolidColorBrush(Color.FromArgb("#140B2D"));
+        }
+
+        // Активное состояние: создаем градиент
+        if (isIncome) // Доход (Бирюзово-Мятный)
+        {
+            return new LinearGradientBrush(
+                new GradientStopCollection {
+                new GradientStop(Color.FromArgb("#2DD4BF"), 0.0f), // Яркий бирюзовый
+                new GradientStop(Color.FromArgb("#06B6D4"), 1.0f)  // Глубокий циановый
+                },
+                new Point(0, 0), new Point(1, 0));
+        }
+        else // Расход (Розово-Фиолетовый)
+        {
+            return new LinearGradientBrush(
+                new GradientStopCollection {
+                new GradientStop(Color.FromArgb("#D946EF"), 0.0f), // Розовый
+                new GradientStop(Color.FromArgb("#8B5CF6"), 1.0f)  // Фиолетовый
+                },
+                new Point(0, 0), new Point(1, 0));
+        }
+    }
+    // Обрати внимание: bool? (с вопросиком) означает, что переменная может быть null
+    private void UpdateButtonStyles(bool? isIncomeSelected)
+    {
+        // Одинаковый для всех "неактивный" стиль
+        var inactiveBackground = new SolidColorBrush(Color.FromArgb("#140B2D"));
+        var inactiveStroke = Color.FromArgb("#3D1D4A"); // Или свой цвет для границ
+        var inactiveTextColor = Color.FromArgb("#7A2D6A");
+
+        if (isIncomeSelected == null)
+        {
+            // СБРОС: Обе кнопки выглядят как "выключенные"
+            BtnExpenseBorder.Background = inactiveBackground;
+            BtnExpenseBorder.Stroke = inactiveStroke;
+            LblExpense.TextColor = inactiveTextColor;
+
+            BtnIncomeBorder.Background = inactiveBackground;
+            BtnIncomeBorder.Stroke = inactiveStroke;
+            LblIncome.TextColor = inactiveTextColor;
+        }
+        else if (isIncomeSelected == false)
+        {
+            // ВЫБРАН РАСХОД: Расход яркий, Доход тусклый
+            BtnExpenseBorder.Background = GetNeonGradient(false, true); // Активный
+            BtnExpenseBorder.Stroke = Colors.Transparent;
+            LblExpense.TextColor = Colors.White;
+
+            BtnIncomeBorder.Background = inactiveBackground; // Неактивный
+            BtnIncomeBorder.Stroke = Color.FromArgb("#1F3A3A");
+            LblIncome.TextColor = Color.FromArgb("#1E6B60");
+        }
+        else if (isIncomeSelected == true)
+        {
+            // ВЫБРАН ДОХОД: Доход яркий, Расход тусклый
+            BtnExpenseBorder.Background = inactiveBackground; // Неактивный
+            BtnExpenseBorder.Stroke = Color.FromArgb("#3D1D4A");
+            LblExpense.TextColor = Color.FromArgb("#7A2D6A");
+
+            BtnIncomeBorder.Background = GetNeonGradient(true, true); // Активный
+            BtnIncomeBorder.Stroke = Colors.Transparent;
+            LblIncome.TextColor = Colors.White;
+        }
+    }
+    private void ResetButtons()
+    {
+        // Задаем "неактивные" цвета один раз
+        var inactiveBackground = new SolidColorBrush(Color.FromArgb("#140B2D"));
+        var inactiveStroke = Color.FromArgb("#3D1D4A");
+        var inactiveTextColor = Color.FromArgb("#7A2D6A");
+
+        // Красим Расход
+        BtnExpenseBorder.Background = inactiveBackground;
+        BtnExpenseBorder.Stroke = inactiveStroke;
+        LblExpense.TextColor = inactiveTextColor;
+
+        // Красим Доход
+        BtnIncomeBorder.Background = inactiveBackground;
+        BtnIncomeBorder.Stroke = inactiveStroke;
+        LblIncome.TextColor = inactiveTextColor;
+
+        // Сбрасываем Пикер
+        CategoryPicker.IsEnabled = false;
+        CategoryPicker.Title = "Сначала выберите тип";
+        //CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите тип ]" };
+        CategoryPicker.SelectedIndex = 0;
+    }
+    private void SetTransactionMode(bool isIncome)
+    {
+        isIncomeMode = isIncome;
+
+        // 1. Обновляем визуальный стиль кнопок (подсветку)
+        UpdateButtonStyles(isIncome);
+
+        // 2. Выбираем нужный список
+        // Важно: в списках incomeCategories и expenseCategories НЕ должно быть заглушек!
+        var list = isIncome ? incomeCategories : expenseCategories;
+
+        // 3. Обновляем Picker
+        CategoryPicker.ItemsSource = list;
+        CategoryPicker.IsEnabled = true; // Разблокируем пикер
+
+        // 4. Устанавливаем выбор
+        if (list != null && list.Count > 0)
+        {
+            CategoryPicker.SelectedIndex = 0; // Выбираем первую категорию
+           //CategoryPicker.Title = "Выберите категорию"; // Подсказка при выборе
+        }
+    }
+
+    private void SetNeutralState()
+    {
+        isIncomeMode = null;
+        // 1. "Выключаем" визуальное выделение
+        UpdateButtonStyles(null);
+
+        // 2. Блокируем пикер
+        CategoryPicker.IsEnabled = false;
+
+        // Это твой хак для Mac Catalyst:
+       // CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
+        CategoryPicker.SelectedIndex = 0;
+    }
     private void OnExpenseClicked(object s, EventArgs e)
     {
-        isIncomeMode = false;
-        if (BtnExpenseBorder == null || BtnIncomeBorder == null) return;
-
-        // Активное состояние для РАСХОД
-        BtnExpenseBorder.BackgroundColor = Color.FromArgb("#2A1A4A");
-        BtnExpenseBorder.Stroke = Color.FromArgb("#D946EF");
-        LblExpense.TextColor = Color.FromArgb("#D946EF");
-
-        // Пассивное состояние для ДОХОД
-        BtnIncomeBorder.BackgroundColor = Color.FromArgb("#140B2D");
-        BtnIncomeBorder.Stroke = Color.FromArgb("#1F3A3A");
-        LblIncome.TextColor = Color.FromArgb("#1E6B60");
-
-        // Прямое переназначение коллекции без зануления
-        CategoryPicker.ItemsSource = expenseCategories;
-        CategoryPicker.SelectedIndex = 0; // Сразу выбираем первую реальную категорию для удобства
+        // Просто говорим: "Включи режим Расход"
+        SetTransactionMode(false);
     }
 
     private void OnIncomeClicked(object s, EventArgs e)
     {
-        isIncomeMode = true;
-        if (BtnIncomeBorder == null || BtnExpenseBorder == null) return;
-
-        // Активное состояние для ДОХОД
-        BtnIncomeBorder.BackgroundColor = Color.FromArgb("#2A1A4A");
-        BtnIncomeBorder.Stroke = Color.FromArgb("#2DD4BF");
-        LblIncome.TextColor = Color.FromArgb("#2DD4BF");
-
-        // Пассивное состояние для РАСХОД
-        BtnExpenseBorder.BackgroundColor = Color.FromArgb("#140B2D");
-        BtnExpenseBorder.Stroke = Color.FromArgb("#3D1D4A");
-        LblExpense.TextColor = Color.FromArgb("#7A2D6A");
-
-        // Прямое переназначение коллекции без зануления
-        CategoryPicker.ItemsSource = incomeCategories;
-        CategoryPicker.SelectedIndex = 0; // Сразу выбираем первую реальную категорию для удобства
+        // Просто говорим: "Включи режим Доход"
+        SetTransactionMode(true);
     }
 
     #endregion
@@ -691,7 +765,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     {
         if (ChartV == null || BalanceLabel == null || TransactionHistory == null) return;
 
-        // 1. Считаем всё в фоне
         var result = await Task.Run(() =>
         {
             decimal r = 1.0m;
@@ -712,34 +785,21 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
                 .OrderByDescending(x => x.Sum)
                 .ToList();
 
-            return new
-            {
-                Balance = TransactionHistory.Sum(t => t.IsIncome ? t.Amount : -t.Amount) / r,
-                Symbol = s,
-                Stats = stats
-            };
+            return new { Balance = TransactionHistory.Sum(t => t.IsIncome ? t.Amount : -t.Amount) / r, Symbol = s, Stats = stats };
         });
 
-        // 2. Обновляем UI
         MainThread.BeginInvokeOnMainThread(() =>
         {
             BalanceLabel.Text = $"{result.Balance:N0} {result.Symbol}";
 
-            // ПРОВЕРКА: Если список пуст, показываем Атласа. Если есть данные — рисуем график.
-            if (result.Stats != null && result.Stats.Any())
+            bool hasStats = result.Stats != null && result.Stats.Any();
+
+            // 1. Вызываем наш "пульт управления" видимостью
+            UpdateLayoutVisibility(TransactionHistory.Any(), hasStats);
+
+            // 2. Рисуем график, только если есть данные
+            if (hasStats)
             {
-                // --- РИСУЕМ ГРАФИК ---
-                decimal totalSum = result.Stats.Sum(x => x.Sum);
-                foreach (var item in result.Stats)
-                {
-                    item.Percentage = totalSum > 0 ? (double)(item.Sum / totalSum * 100) : 0.0;
-                }
-
-                if (ChartVisualElements != null) ChartVisualElements.IsVisible = true;
-                if (AtlasPeriodPlaceholder != null) AtlasPeriodPlaceholder.IsVisible = false;
-                if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = false;
-                if (ChartInstructionBorder != null) ChartInstructionBorder.IsVisible = true; // Показываем наш бордер
-
                 var newEntries = result.Stats.Select(x => new ChartEntry((float)x.Sum)
                 {
                     Label = x.Category,
@@ -758,25 +818,15 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             }
             else
             {
-                // --- ПОКАЗЫВАЕМ АТЛАСА ---
-                if (ChartVisualElements != null) ChartVisualElements.IsVisible = false;
-                if (EmptyStatePlaceholder != null) EmptyStatePlaceholder.IsVisible = false;
-                if (ChartInstructionBorder != null) ChartInstructionBorder.IsVisible = false;
-
-                if (AtlasPeriodPlaceholder != null)
-                {
-                    AtlasPeriodPlaceholder.IsVisible = true;
-
-                    // Случайная фраза
-                    string[] atlasPhrases = {
-                    "Расходы за выбранный период равны 0. Идеальный баланс.",
-                    "Анализ завершен: трат не зафиксировано.",
-                    "В этом месяце чисто. Твой кошелек в безопасности.",
-                    "Система фиксирует нулевую активность расходов."
-                };
-                    if (AtlasPeriodSuggestionLabel != null)
-                        AtlasPeriodSuggestionLabel.Text = atlasPhrases[new Random().Next(atlasPhrases.Length)];
-                }
+                // Случайная фраза, если данных нет
+                string[] atlasPhrases = {
+                "Расходы за выбранный период равны 0. Идеальный баланс.",
+                "Анализ завершен: трат не зафиксировано.",
+                "В этом месяце чисто. Твой кошелек в безопасности.",
+                "Система фиксирует нулевую активность расходов."
+            };
+                if (AtlasPeriodSuggestionLabel != null)
+                    AtlasPeriodSuggestionLabel.Text = atlasPhrases[new Random().Next(atlasPhrases.Length)];
 
                 ChartV.Chart = null;
             }
@@ -843,6 +893,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             await LoadDataFromDatabase();
 
             await DisplayAlert("Готово", "Статистика успешно сброшена", "OK");
+            
         }
     }
     private async void OnMonthChanged(object sender, EventArgs e)
@@ -1048,6 +1099,24 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     private async void OnStatisticsTapped(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("//StatisticsPage");
+    }
+    private void UpdateLayoutVisibility(bool hasTransactions, bool hasStats)
+    {
+        // 1. Уровень контейнеров (переключаем между "Пусто" и "Есть контент")
+        ChartVisualElements.IsVisible = hasTransactions;
+        EmptyStatePlaceholder.IsVisible = !hasTransactions;
+
+        // 2. Если внутри контента есть данные, решаем, что показать
+        if (hasTransactions)
+        {
+            // Если есть статистика (hasStats == true) -> Показываем графики и анализатор
+            MainDashboardView.IsVisible = hasStats;
+            AtlasLoadingView.IsVisible = hasStats; // Тот самый анализатор
+            ChartInstructionBorder.IsVisible = hasStats;
+
+            // Если статистики нет (hasStats == false) -> Показываем заглушку Атласа
+            AtlasPeriodPlaceholder.IsVisible = !hasStats;
+        }
     }
 }
     #endregion
