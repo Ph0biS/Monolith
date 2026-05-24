@@ -1,5 +1,5 @@
 # 🌌 MONOLITH 
-### *— Cyberpunk Cross-Platform Financial Dashboard —*
+### *— Cyberpunk Cross-Platform Financial Manager —*
 
 <p align="center">
   <img src="https://img.shields.io/badge/OS-MONOLITH__OS__v1.0-FF007F?style=for-the-badge&logo=target&logoColor=white" alt="OS">
