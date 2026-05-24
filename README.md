@@ -113,14 +113,20 @@
 
 ---
 
-## 📊 Системная Активность (System Metrics)
+## 🔄 Потоки Данных (Data Pipeline)
 
-<p align="center">
-  <img src="https://img.shields.io/github/repo-size/Ph0biS/Monolith?style=for-the-badge&label=SIZE&color=FF007F" alt="Repo Size">
-  <img src="https://img.shields.io/github/directory-file-count/Ph0biS/Monolith?style=for-the-badge&label=FILES&color=00F5FF" alt="File Count">
-  <img src="https://img.shields.io/github/last-commit/Ph0biS/Monolith?style=for-the-badge&label=LAST__UPDATE&color=22C55E" alt="Last Commit">
-</p>
+```mermaid
+graph TD
+    UI[📱 XAML View / UI] -->|Ввод транзакции| VM[🧠 MVVM ViewModel]
+    VM -->|Запрос аналитики| Atlas[🤖 Atlas AI Engine]
+    VM -->|Запись логов| DB[(🗄️ SQLite Secure Vault)]
+    DB -->|Экспорт данных| Render[📊 SkiaSharp Graphics]
+    Render -->|Динамический график| UI
 
+    classDef neon1 fill:#0b0813,stroke:#FF007F,stroke-width:2px,color:#fff;
+    classDef neon2 fill:#0b0813,stroke:#00F5FF,stroke-width:2px,color:#fff;
+    class UI,VM,Render neon1;
+    class Atlas,DB neon2;
 ---
 
 ### Подготовка репозитория
