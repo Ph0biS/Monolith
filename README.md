@@ -116,9 +116,12 @@
 ## 📊 Системная Активность (System Metrics)
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=Ph0bi$&show_icons=true&theme=tokyonight&count_private=true" width="48%" alt="GitHub Stats">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Ph0bi$&layout=compact&theme=tokyonight&langs_count=6" width="48%" alt="Top Languages">
+  <img src="https://img.shields.io/github/repo-size/Ph0bi$/Monolith?style=for-the-badge&label=SIZE&color=FF007F" alt="Repo Size">
+  <img src="https://img.shields.io/github/directory-file-count/Ph0bi$/Monolith?style=for-the-badge&label=FILES&color=00F5FF" alt="File Count">
+  <img src="https://img.shields.io/github/last-commit/Ph0bi$/Monolith?style=for-the-badge&label=LAST__UPDATE&color=22C55E" alt="Last Commit">
 </p>
+
+---
 
 ### Подготовка репозитория
 ```bash
