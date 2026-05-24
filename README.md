@@ -115,10 +115,15 @@
 
 ## 📊 Системная Активность (System Metrics)
 
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=Ph0biS&show_icons=true&theme=tokyonight&count_private=true" width="48%" alt="GitHub Stats">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs?username=Ph0biS&layout=compact&theme=tokyonight&langs_count=6" width="48%" alt="Top Languages">
-</p>
+🎨
+[SYSTEM_INFO]: Инициализация сбора метрик профиля...
+=====================================================================
+💻 ОСНОВНОЙ СТЕК     ::  C# 12 | .NET MAUI | XAML | SQLite
+⚙️ СТАТУС СБОРКИ    ::  Пройдены все локальные тесты [SUCCESS]
+📂 РЕПОЗИТОРИЙ      ::  Публичный монолитный фин-движок
+=====================================================================
+[STATUS]: Данные синхронизированы. Система готова к деплою.
+
 ---
 
 ### Подготовка репозитория
