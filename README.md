@@ -113,20 +113,12 @@
 
 ---
 
-## 🔄 Потоки Данных (Data Pipeline)
+## 📊 Системная Активность (System Metrics)
 
-```mermaid
-graph TD
-    UI[📱 XAML View / UI] -->|Ввод транзакции| VM[🧠 MVVM ViewModel]
-    VM -->|Запрос аналитики| Atlas[🤖 Atlas AI Engine]
-    VM -->|Запись логов| DB[(🗄️ SQLite Secure Vault)]
-    DB -->|Экспорт данных| Render[📊 SkiaSharp Graphics]
-    Render -->|Динамический график| UI
-
-    classDef neon1 fill:#0b0813,stroke:#FF007F,stroke-width:2px,color:#fff;
-    classDef neon2 fill:#0b0813,stroke:#00F5FF,stroke-width:2px,color:#fff;
-    class UI,VM,Render neon1;
-    class Atlas,DB neon2;
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=Ph0biS&show_icons=true&theme=tokyonight&count_private=true" width="48%" alt="GitHub Stats">
+  <img src="https://github-readme-stats.vercel.app/api/top-langs?username=Ph0biS&layout=compact&theme=tokyonight&langs_count=6" width="48%" alt="Top Languages">
+</p>
 ---
 
 ### Подготовка репозитория
