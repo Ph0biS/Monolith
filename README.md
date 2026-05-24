@@ -41,12 +41,12 @@
 
 | 📁 КАТЕГОРИЯ | 🌌 НЕОНОВЫЙ ТЕГ | HEX | ВИЗУАЛЬНЫЙ МАРКЕР |
 | :--- | :--- | :--- | :---: |
-| **🛒 Продукты** | Neon Teal | `#2DD4BF` | ![](https://via.placeholder.com/40x20/2DD4BF/2DD4BF.png) |
-| **🚌 Транспорт** | Cyber Blue | `#3B82F6` | ![](https://via.placeholder.com/40x20/3B82F6/3B82F6.png) |
-| **🎮 Развлечения** | Synth Purple | `#8B5CF6` | ![](https://via.placeholder.com/40x20/8B5CF6/8B5CF6.png) |
-| **🏠 Дом** | Neon Orange | `#FB923C` | ![](https://via.placeholder.com/40x20/FB923C/FB923C.png) |
-| **💊 Здоровье** | Laser Red | `#EF4444` | ![](https://via.placeholder.com/40x20/EF4444/EF4444.png) |
-| **💰 Зарплата** | Matrix Green | `#22C55E` | ![](https://via.placeholder.com/40x20/22C55E/22C55E.png) |
+| **🛒 Продукты** | Neon Teal | `#2DD4BF` | 
+| **🚌 Транспорт** | Cyber Blue | `#3B82F6` | 
+| **🎮 Развлечения** | Synth Purple | `#8B5CF6` | 
+| **🏠 Дом** | Neon Orange | `#FB923C` | 
+| **💊 Здоровье** | Laser Red | `#EF4444` |
+| **💰 Зарплата** | Matrix Green | `#22C55E` | 
 
 ---
 ## 🔮 Интерфейс Системы (UI Preview)
