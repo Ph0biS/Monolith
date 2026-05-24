@@ -76,10 +76,4 @@
 
 ---
 
-## 🛠 Технологический Стек (Tech Stack)
 
-```🎨
-📟 CORE_ENGINE:    .NET MAUI (Multi-platform App UI)
-💻 ARCHITECTURE:   C# 12 / XAML (MVVM Pattern)
-🗄️ CYBER_VAULT:    SQLite (Локальное зашифрованное хранилище через ORM)
-📈 VISUALIZATION:  Microcharts / SkiaSharp Graphics Engine
