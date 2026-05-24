@@ -104,8 +104,8 @@
 ## 📊 Системная Активность (System Metrics)
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=Ph0Bi$&show_icons=true&theme=tokyonight&count_private=true" width="48%" alt="GitHub Stats">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Ph0Bi$&layout=compact&theme=tokyonight&langs_count=6" width="48%" alt="Top Languages">
+  <img src="https://github-readme-stats.vercel.app/api?username=Ph0biS&show_icons=true&theme=tokyonight&count_private=true" width="48%" alt="GitHub Stats">
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Ph0biS&layout=compact&theme=tokyonight&langs_count=6" width="48%" alt="Top Languages">
 </p>
 
 ### Подготовка репозитория
