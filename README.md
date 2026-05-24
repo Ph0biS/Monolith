@@ -2,16 +2,28 @@
 ### *— Cyberpunk Cross-Platform Financial Manager —*
 
 <p align="center">
-  <img src="https://img.shields.io/badge/OS-MONOLITH__OS__v1.0-FF007F?style=for-the-badge&logo=target&logoColor=white" alt="OS">
-  <img src="https://img.shields.io/badge/Platform-.NET%20MAUI%208.0%20%2F%209.0-8A2BE2?style=for-the-badge&logo=dotnet&logoColor=white" alt="Platform">
-  <img src="https://img.shields.io/badge/Aesthetics-Synthwave%20%7C%20Y2K%20%7C%20Cyberpunk-00F5FF?style=for-the-badge" alt="Aesthetics">
+  <img src="https://img.shields.io/badge/OS-MONOLITH__OS__v1.0-FF007F?style=for-the-badge&logo=esphome&logoColor=white" alt="OS">
+  <img src="https://img.shields.io/badge/CORE__STATUS-ONLINE-22C55E?style=for-the-badge&logo=statuspage&logoColor=white" alt="Status">
+  <img src="https://img.shields.io/badge/AI__ASSISTANT-ATLAS__CONNECTED-00F5FF?style=for-the-badge&logo=openai&logoColor=white" alt="AI">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=F50057" alt="macOS">
-  <img src="https://img.shields.io/badge/iOS-1F1F1F?style=for-the-badge&logo=ios&logoColor=00FFFF" alt="iOS">
-  <img src="https://img.shields.io/badge/Android-000000?style=for-the-badge&logo=android&logoColor=A6FF00" alt="Android">
-  <img src="https://img.shields.io/badge/Windows-1F1F1F?style=for-the-badge&logo=windows&logoColor=00E5FF" alt="Windows">
+  <img src="https://img.shields.io/badge/FRAMEWORK-.NET%20MAUI%208.0%20%2F%209.0-8A2BE2?style=for-the-badge&logo=dotnet&logoColor=white" alt="Platform">
+  <img src="https://img.shields.io/badge/LANGUAGE-C%20%23%2012-4B0082?style=for-the-badge&logo=csharp&logoColor=white" alt="Language">
+  <img src="https://img.shields.io/badge/ARCHITECTURE-MVVM%20%7C%20XAML-9400D3?style=for-the-badge" alt="Architecture">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/VAULT-SQLITE%20%5BSECURE%5D-00E5FF?style=for-the-badge&logo=sqlite&logoColor=white" alt="Database">
+  <img src="https://img.shields.io/badge/RENDER-SKIASHARP%20%7C%20CHARTS-FF00AA?style=for-the-badge&logo=skia&logoColor=white" alt="Render">
+  <img src="https://img.shields.io/badge/STYLE-SYNTHWAVE%20%7C%20Y2K-FF7700?style=for-the-badge" alt="Style">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/macOS-COMPATIBLE-000000?style=for-the-badge&logo=apple&logoColor=F50057" alt="macOS">
+  <img src="https://img.shields.io/badge/iOS-ACTIVE-1F1F1F?style=for-the-badge&logo=ios&logoColor=00FFFF" alt="iOS">
+  <img src="https://img.shields.io/badge/Android-READY-000000?style=for-the-badge&logo=android&logoColor=A6FF00" alt="Android">
+  <img src="https://img.shields.io/badge/Windows-SUPPORTED-1F1F1F?style=for-the-badge&logo=windows&logoColor=00E5FF" alt="Windows">
 </p>
 
 ---
