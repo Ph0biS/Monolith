@@ -115,14 +115,11 @@
 
 ## 📊 Системная Активность (System Metrics)
 
-```🎨
-[SYSTEM_INFO]: Инициализация сбора метрик профиля...
-=====================================================================
-💻 ОСНОВНОЙ СТЕК     ::  C# 12 | .NET MAUI | XAML | SQLite
-⚙️ СТАТУС СБОРКИ    ::  Пройдены все локальные тесты [SUCCESS]
-📂 РЕПОЗИТОРИЙ      ::  Публичный монолитный фин-движок
-=====================================================================
-[STATUS]: Данные синхронизированы. Система готова к деплою.
+<p align="center">
+  <img src="https://img.shields.io/badge/ENGINE_CORE-RUNNING-22C55E?style=for-the-badge&logo=render&logoColor=white" alt="Engine">
+  <img src="https://img.shields.io/badge/MEMORY_VAULT-ENCRYPTED-00F5FF?style=for-the-badge&logo=sqlite&logoColor=white" alt="Vault">
+  <img src="https://img.shields.io/badge/UI_REFRESH-OPTIMIZED-FF007F?style=for-the-badge&logo=skia&logoColor=white" alt="UI">
+</p>
 
 ---
 
