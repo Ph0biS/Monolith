@@ -99,6 +99,15 @@
 * **SDK:** Наличие установленного `.NET SDK 8.0` или `.NET SDK 9.0`.
 * **Важно для Apple сред:** Для компиляции под macOS/iOS физически необходим компьютер Mac с развернутым актуальным **Xcode**.
 
+---
+
+## 📊 Системная Активность (System Metrics)
+
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=Ph0Bi$&show_icons=true&theme=tokyonight&count_private=true" width="48%" alt="GitHub Stats">
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Ph0Bi$&layout=compact&theme=tokyonight&langs_count=6" width="48%" alt="Top Languages">
+</p>
+
 ### Подготовка репозитория
 ```bash
 # Клонируйте репозиторий в локальную директорию
