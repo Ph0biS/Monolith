@@ -32,7 +32,18 @@
   <mark><b>Monolith</b></mark> — это футуристический кроссплатформенный финансовый менеджер, созданный на базе фреймворка <b>.NET MAUI (C# / XAML)</b>. Приложение объединяет в себе строгий контроль личного бюджета, продвинутый анализ данных под управлением ИИ-помощника <b>Atlas</b>, систему геймификации и кастомный неоновый интерфейс в стиле <i>Synthwave / Y2K</i>.
 </p>
 
-> 🤖 **[ATLAS_AI_LOG]:** > *"Система активна. Все твои копилки закрываются строго по графику. Баланс подписок стабилен. Отличный уровень контроля, продолжаем движение, консорциум одобряет!"*
+---
+
+<details>
+  <summary>🤖 <b>[ВХОД В СИСТЕМУ ATLAS_AI]: Нажмите для расшифровки протокола...</b></summary>
+  <br>
+  <pre style="background-color: #0b0813; color: #00F5FF; padding: 15px; border-left: 3px solid #FF007F; font-family: monospace;">
+[LOG]: Инициализация нейросети... OK
+[LOG]: Синхронизация с зашифрованным хранилищем SQLite... OK
+[STATUS]: Анализ транзакций завершен. Баланс подписок стабилен.
+[ATLAS]: "Система активна. Все твои копилки закрываются строго по графику. Отличный уровень контроля, продолжай движение, оператор!"
+  </pre>
+</details>
 
 ---
 
@@ -63,6 +74,7 @@
 | **Logic & UI** | `C# 12 / XAML (MVVM Engine)` | `🟢 STABLE` |
 | **Cyber Vault** | `SQLite (Encrypted Local DB)` | `🔵 SECURED` |
 | **Graphics Render** | `Microcharts / SkiaSharp` | `🟣 OPTIMIZED` |
+
 
 ---
 
@@ -104,8 +116,8 @@
 ## 📊 Системная Активность (System Metrics)
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=Ph0biS&show_icons=true&theme=tokyonight&count_private=true" width="48%" alt="GitHub Stats">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Ph0biS&layout=compact&theme=tokyonight&langs_count=6" width="48%" alt="Top Languages">
+  <img src="https://github-readme-stats.vercel.app/api?username=Ph0bi$&show_icons=true&theme=tokyonight&count_private=true" width="48%" alt="GitHub Stats">
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Ph0bi$&layout=compact&theme=tokyonight&langs_count=6" width="48%" alt="Top Languages">
 </p>
 
 ### Подготовка репозитория
@@ -116,3 +128,5 @@ cd Monolith
 
 # Восстановите все связанные NuGet зависимости проекта
 dotnet restore
+
+
