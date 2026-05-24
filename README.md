@@ -24,16 +24,6 @@
 
 ---
 
-## 🔮 Интерфейс Системы (UI Preview)
-
-<p align="center">
-  <img src="images/screenshot.png" width="90%" alt="Monolith Dashboard Interface" onerror="this.src='https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000&q=80'">
-  <br>
-  <sub><i>Загрузи скриншот своего приложения в папку <code>images/screenshot.png</code> вашего репозитория, чтобы он автоматически отобразился здесь. По умолчанию активна кибер-заглушка.</i></sub>
-</p>
-
----
-
 ## ⚡ Основной Функционал (Core Features)
 
 * **💻 Cyberpunk UI & Bootloader**
