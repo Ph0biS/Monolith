@@ -1,27 +1,40 @@
 ﻿using System.Windows.Input;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace PROJECT;
 
-public partial class AppShell : Shell
+public partial class AppShell : Shell, INotifyPropertyChanged
 {
     public ICommand GoToCommand { get; }
+
+    private string _currentTime = DateTime.Now.ToString("HH:mm");
+    public string CurrentTime
+    {
+        get => _currentTime;
+        private set
+        {
+            if (_currentTime != value)
+            {
+                _currentTime = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private readonly System.Timers.Timer _clockTimer;
 
     public AppShell()
     {
         InitializeComponent();
 
-        // УДАЛИ регистрации MainPage, HistoryPage, AnalyticsPage, ForecastPage, AchievementsPage.
-        // Они уже есть в XAML (ShellContent Route="...").
-
-        // ОСТАВЬ только StatisticsPage, так как её нет в нижнем меню:
         Routing.RegisterRoute("StatisticsPage", typeof(Pages.StatisticsPage));
         VisualStateManager.SetVisualStateGroups(this, new VisualStateGroupList());
+
         GoToCommand = new Command<string>(async (route) =>
         {
             try
             {
-                // Для вкладок лучше использовать префикс /// или //
-                // Если route прилетает как "MainPage", превращаем его в "///MainPage"
                 string finalRoute = route.StartsWith("//") ? route : $"///{route}";
                 await Shell.Current.GoToAsync(finalRoute);
             }
@@ -31,14 +44,28 @@ public partial class AppShell : Shell
             }
         });
 
+        // Таймер реального времени
+        _clockTimer = new System.Timers.Timer(1000);
+        _clockTimer.Elapsed += (s, e) =>
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                CurrentTime = DateTime.Now.ToString("HH:mm");
+            });
+        };
+        _clockTimer.Start();
+
         BindingContext = this;
     }
+
     protected override void OnNavigated(ShellNavigatedEventArgs args)
     {
         base.OnNavigated(args);
-
-        // Принудительно уведомляем систему, что состояние вкладок изменилось
-        // Это лечит баг, когда две вкладки подсвечены одновременно
         OnPropertyChanged("CurrentItem");
     }
+
+    // INotifyPropertyChanged
+    public new event PropertyChangedEventHandler? PropertyChanged;
+    protected void OnPropertyChanged([CallerMemberName] string? name = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

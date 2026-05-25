@@ -216,9 +216,9 @@
                                    VerticalOptions="Center" Margin="5,0,0,0"/>
                         </HorizontalStackLayout>
                         <Label Grid.Column="2"
-                               Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{0:HH:mm}'}"
-                               FontFamily="JetBrainsMono" FontSize="14" TextColor="#4D3B6D"
-                               VerticalOptions="Center" />
+       Text="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.CurrentTime}"
+       FontFamily="JetBrainsMono" FontSize="14" TextColor="#4D3B6D"
+       VerticalOptions="Center" />
                     </Grid>
 
                     <ContentPresenter Grid.Row="1" />
