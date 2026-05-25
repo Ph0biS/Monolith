@@ -7,7 +7,7 @@
              x:Class="PROJECT.Pages.MainPage"
              x:DataType="local:MainPage"
              xmlns:models="clr-namespace:PROJECT.Models"
-             BackgroundColor="#0B011D">
+             BackgroundColor="{DynamicResource ActiveBackground}">
     <Grid RowDefinitions="*, Auto">
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="20" Spacing="25" VerticalOptions="Start">
@@ -34,8 +34,8 @@
                                 </Label.Shadow>
                             </Label>
 
-                            <Border Stroke="Transparent" BackgroundColor="#2A1A4A" StrokeShape="RoundRectangle 8" Padding="10,0" HeightRequest="40" VerticalOptions="Center">
-                                <Picker x:Name="CurrencyPicker" SelectedIndex="0" FontFamily="RobotoMono" FontAttributes="Bold" TitleColor="#A78BFA" TextColor="White" SelectedIndexChanged="OnCurrencyChanged" VerticalOptions="Center">
+                            <Border Stroke="Transparent" StrokeThickness="0" BackgroundColor="#2A1A4A" StrokeShape="RoundRectangle 8" Padding="10,0" HeightRequest="40" VerticalOptions="Center">
+                                <Picker x:Name="CurrencyPicker" Margin="-12" SelectedIndex="0" FontFamily="RobotoMono" FontAttributes="Bold" TitleColor="#A78BFA" TextColor="White" SelectedIndexChanged="OnCurrencyChanged" VerticalOptions="Center">
                                     <Picker.ItemsSource>
                                         <x:Array Type="{x:Type x:String}">
                                             <x:String>RUB</x:String>
@@ -57,9 +57,9 @@
              
                 <VerticalStackLayout x:Name="ChartContainer" Spacing="15">
                     <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                        <Label Text="Период:" FontFamily="Montserrat" VerticalOptions="Center" TextColor="#A78BFA" />
+                        <Label Text="Период:" FontFamily="Inter" FontAttributes="Bold" VerticalOptions="Center" TextColor="#A78BFA" />
                         <Border Stroke="#3D2B5E" BackgroundColor="#1A1033" StrokeShape="RoundRectangle 8" Padding="10,0" HeightRequest="40">
-                            <Picker x:Name="PeriodPicker" FontAttributes="Bold" SelectedIndex="0" SelectedIndexChanged="OnPeriodChanged" WidthRequest="150" TextColor="White" FontFamily="Inter" TitleColor="#5A4A7A" VerticalOptions="Center">
+                            <Picker x:Name="PeriodPicker" Margin="-12" FontAttributes="Bold" SelectedIndex="0" SelectedIndexChanged="OnPeriodChanged" WidthRequest="150" TextColor="White" FontFamily="Inter" TitleColor="#5A4A7A" VerticalOptions="Center">
                                 <Picker.ItemsSource>
                                     <x:Array Type="{x:Type x:String}">
                                         <x:String>Все время</x:String>
@@ -166,23 +166,36 @@
 
                 <Border Stroke="#3D2B5E" Background="#140B2D" Padding="20" StrokeShape="RoundRectangle 15" Margin="0,10,0,5">
                     <VerticalStackLayout Spacing="12">
-                        <Border Stroke="#3D2B5E" BackgroundColor="#0B011D" StrokeShape="RoundRectangle 8" Padding="10,2">
-                            <Entry x:Name="DescriptionEntry" Placeholder="Описание" FontAttributes="Bold" FontFamily="Inter" PlaceholderColor="#5A4A7A" TextColor="White"/>
+                        <Border Stroke="#3D2B5E" StrokeThickness="0" BackgroundColor="#0B011D" StrokeShape="RoundRectangle 8" Padding="10,2">
+                            <Entry x:Name="DescriptionEntry" Margin="-9.5" Placeholder="Описание" FontAttributes="Bold" FontFamily="Inter" PlaceholderColor="#5A4A7A" TextColor="White"/>
                         </Border>
 
-                        <Border Stroke="#3D2B5E" BackgroundColor="#0B011D" StrokeShape="RoundRectangle 8" Padding="10,2">
-                            <Entry x:Name="AmountEntry" Placeholder="Сумма" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" PlaceholderColor="#5A4A7A" TextColor="#2DD4BF"/>
+                        <Border Stroke="#3D2B5E" StrokeThickness="0" BackgroundColor="#0B011D" StrokeShape="RoundRectangle 8" Padding="10,2">
+                            <Entry x:Name="AmountEntry" Placeholder="Сумма" Margin="-9.5" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" PlaceholderColor="#5A4A7A" TextColor="#2DD4BF"/>
                         </Border>
 
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                            <Border x:Name="BtnExpenseBorder" Stroke="#D946EF" StrokeThickness="1" BackgroundColor="#140B2D" StrokeShape="RoundRectangle 10" HeightRequest="45">
+
+                            <Border x:Name="BtnExpenseBorder" Stroke="#D946EF" StrokeThickness="1" StrokeShape="RoundRectangle 10" HeightRequest="45">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#2A1A4A" Offset="0.0" />
+                                        <GradientStop Color="#140B2D" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnExpenseClicked" />
                                 </Border.GestureRecognizers>
                                 <Label x:Name="LblExpense" Text="💸 РАСХОД" FontFamily="Orbitron" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="#7A2D6A" FontSize="13"/>
                             </Border>
 
-                            <Border x:Name="BtnIncomeBorder" Grid.Column="1" Stroke="#2DD4BF" StrokeThickness="1" BackgroundColor="#140B2D" StrokeShape="RoundRectangle 10" HeightRequest="45">
+                            <Border x:Name="BtnIncomeBorder" Grid.Column="1" Stroke="#2DD4BF" StrokeThickness="1" StrokeShape="RoundRectangle 10" HeightRequest="45">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#162D2A" Offset="0.0" />
+                                        <GradientStop Color="#140B2D" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnIncomeClicked" />
                                 </Border.GestureRecognizers>
@@ -190,14 +203,8 @@
                             </Border>
                         </Grid>
 
-                        <Border Stroke="#3D2B5E" BackgroundColor="#1A1033" Padding="10,0" StrokeShape="RoundRectangle 11" HeightRequest="45">
-                            <Picker x:Name="CategoryPicker"
-                                    FontAttributes="Bold" 
-                                    FontFamily="Inter"
-                                    TextColor="White"
-                                    TitleColor="#A78BFA"
-                                    HorizontalOptions="Fill"
-                                    VerticalOptions="Center"/>
+                        <Border Stroke="#3D2B5E" StrokeThickness="0" BackgroundColor="#1A1033" Padding="10,0" StrokeShape="RoundRectangle 11" HeightRequest="45">
+                            <Picker x:Name="CategoryPicker" Margin="-9.5" FontAttributes="Bold" FontFamily="Inter" TextColor="White" TitleColor="#A78BFA" HorizontalOptions="Fill" VerticalOptions="Center"/>
                         </Border>
 
                         <Button x:Name="AddTransactionBtn" Text="ДОБАВИТЬ ЗАПИСЬ" FontAttributes="Bold" FontFamily="Orbitron" Clicked="OnAddTransactionClicked" TextColor="White" HeightRequest="50" CharacterSpacing="1" Margin="0,5,0,0">
@@ -207,6 +214,9 @@
                                     <GradientStop Color="#D946EF" Offset="1.0" />
                                 </LinearGradientBrush>
                             </Button.Background>
+                            <Button.Shadow>
+                                <Shadow Brush="#D946EF" Offset="0,0" Radius="15" Opacity="0.3" />
+                            </Button.Shadow>
                         </Button>
                     </VerticalStackLayout>
                 </Border>

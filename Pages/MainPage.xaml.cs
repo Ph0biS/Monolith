@@ -29,7 +29,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     private bool _isAnimating = false;
     private bool _isPageVisible;
     // Те самые коллекции, которые теперь 100% привязаны к UI
-
+    private CancellationTokenSource _animationCts;
     public ObservableCollection<Transaction> TransactionHistory { get; set; } = new();
     public ObservableCollection<SavingsGoal> UserSavings { get; set; } = new();
     public ObservableCollection<Subscription> Subscriptions { get; set; } = new();
@@ -86,11 +86,51 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         OnPropertyChanged(nameof(HasData));
         OnPropertyChanged(nameof(HasNoData));
     }
+    private async Task RunPulseAnimation(View view, CancellationToken token)
+    {
+        try
+        {
+            while (!token.IsCancellationRequested)
+            {
+                // Плавное изменение прозрачности (эффект пульсации)
+                await Task.WhenAll(
+    view.FadeTo(0.7, 1000, Easing.CubicInOut),
+    view.ScaleTo(0.9, 1000, Easing.CubicInOut) // Немного уменьшаем
+);
+                await Task.WhenAll(
+                    view.FadeTo(1.0, 1000, Easing.CubicInOut),
+                    view.ScaleTo(1.0, 1000, Easing.CubicInOut) // Возвращаем в исходный размер
+                );
+
+                // Можно добавить небольшую паузу, если нужно
+                // await Task.Delay(500, token);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Это ожидаемое исключение при отмене токена, просто игнорируем
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Ошибка анимации: {ex.Message}");
+        }
+    }
+    private void Switch_Toggled(object sender, ToggledEventArgs e)
+    {
+        // 1. Получаем Grid из шаблона (если он назван)
+        // Либо просто меняем общий ресурс, который использует твой шаблон
+
+        // Если твой шаблон использует StaticResource/DynamicResource:
+        Application.Current.Resources["ActiveBackground"] = e.Value ?
+            Application.Current.Resources["DarkGradient"] :
+            Application.Current.Resources["LightGradient"];
+    }
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         _isPageVisible = true;
-
+        _animationCts = new CancellationTokenSource();
+        _ = RunPulseAnimation(BalanceLabel, _animationCts.Token);
         // 1. Сразу сбрасываем всё в Нейтральное состояние
         // Это наш "Эталон" для запуска
         SetNeutralState();
@@ -122,22 +162,9 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             catch { /* Игнорируем */ }
         });
 
-        // 6. Запуск пульса
-        if (!_isPulseRunning)
-        {
-            _isPulseRunning = true;
-            // _ = PulseBalanceGlow();
-        }
+        
     }
-    private async Task PulseBalanceGlow()
-    {
-        // Цикл будет работать ТОЛЬКО пока страница действительно видна
-        while (_isPageVisible)
-        {
-            await BalanceLabel.FadeTo(0.7, 1500, Easing.SinInOut);
-            await BalanceLabel.FadeTo(1.0, 1500, Easing.SinInOut);
-        }
-    }
+    
 
     private async Task RunCyberpunkBootloader()
     {
@@ -203,7 +230,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         _isPageVisible = false;
         _isAnimating = false;
         _isPulseRunning = false;
-
+        _animationCts?.Cancel();
+        _animationCts?.Dispose();
         // Убиваем график при уходе. Когда вернешься через //, 
         // OnAppearing создаст его заново — это чище для процессора.
 
@@ -856,7 +884,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         _ => Color.FromArgb("#94A3B8")                // Серый (для остальных)
     };
 
-    private void Switch_Toggled(object s, ToggledEventArgs e) => Application.Current.UserAppTheme = e.Value ? AppTheme.Dark : AppTheme.Light;
+    
 
     private async void OnCurrencyChanged(object s, EventArgs e)
     {

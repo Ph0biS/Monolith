@@ -18,7 +18,23 @@ public partial class App : Application
             return _database;
         }
     }
+    public static class ThemeManager
+    {
+        [Obsolete]
+        public static void SetTheme(bool isDark)
+        {
+            // Находим нужные цвета/градиенты из ресурсов
+            var dict = Application.Current.Resources;
+            var gradient = isDark ? dict["DarkGradient"] : dict["LightGradient"];
 
+            // Меняем фон во всех открытых окнах (если нужно)
+            Application.Current.UserAppTheme = isDark ? AppTheme.Dark : AppTheme.Light;
+
+            // Прямая установка для твоего шаблона (по ключу или свойству)
+            // Но лучше всего - использовать прослойку:
+            MessagingCenter.Send(Current, "ThemeChanged", gradient);
+        }
+    }
     public App()
     {
         InitializeComponent();

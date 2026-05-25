@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
-<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:PROJECT"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -11,6 +10,25 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <LinearGradientBrush x:Key="DarkGradient" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Offset="0.0" Color="#060310" />
+                <GradientStop Offset="0.4" Color="#110828" />
+                <GradientStop Offset="0.7" Color="#1E1038" />
+                <GradientStop Offset="1.0" Color="#110828" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="LightGradient" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Offset="0.0" Color="#FFF5F7" />
+                <GradientStop Offset="1.0" Color="#FFD1DC" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="ActiveBackground" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Offset="0.0" Color="#060310" />
+                <GradientStop Offset="0.35" Color="#110828" />
+                <GradientStop Offset="0.65" Color="#1E1038" />
+                <GradientStop Offset="1.0" Color="#090518" />
+            </LinearGradientBrush>
 
             <Style x:Key="TransactionCardStyle" TargetType="Border">
                 <Setter Property="BackgroundColor" Value="#251B4E" />
@@ -56,70 +74,150 @@
                 <Setter Property="FontAttributes" Value="Bold" />
                 <Setter Property="FontSize" Value="13" />
                 <Setter Property="HorizontalOptions" Value="Fill" />
-
-                <Setter Property="VisualStateManager.VisualStateGroups">
-                    <VisualStateGroupList>
-                        <VisualStateGroup x:Name="CommonStates">
-
-                            <VisualState x:Name="Normal">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#2D1B5A" />
-                                    <Setter Property="BorderColor" Value="#D946EF" />
-                                </VisualState.Setters>
-                            </VisualState>
-
-                            <VisualState x:Name="PointerOver">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#2D1B5A" />
-                                    <Setter Property="BorderColor" Value="#D946EF" />
-                                    <Setter Property="TextColor" Value="White" />
-                                </VisualState.Setters>
-                            </VisualState>
-
-                            <VisualState x:Name="Pressed">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#1A1033" />
-                                    <Setter Property="BorderColor" Value="#00F2FF" />
-                                </VisualState.Setters>
-                            </VisualState>
-
-                        </VisualStateGroup>
-                    </VisualStateGroupList>
-                </Setter>
             </Style>
 
             <ControlTemplate x:Key="MainPageTemplate">
-                <Grid RowDefinitions="60, *, 85" BackgroundColor="#1A1033">
+                <Grid RowDefinitions="60, *, 85">
+
+                    <!-- ── СЛОЙ 0: Базовый тёмный фон ── -->
+                    <BoxView Grid.RowSpan="3"
+                             Background="{DynamicResource ActiveBackground}" />
+
+                    <!-- ── СЛОЙ 1: Глубокое свечение из центра (основной объём) ── -->
+                    <BoxView Grid.RowSpan="3"
+                             InputTransparent="True"
+                             Opacity="0.50">
+                        <BoxView.Background>
+                            <RadialGradientBrush Center="0.5,0.5" Radius="0.75">
+                                <GradientStop Offset="0.0" Color="#2E1260" />
+                                <GradientStop Offset="0.5" Color="#1A0D40" />
+                                <GradientStop Offset="1.0" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </BoxView.Background>
+                    </BoxView>
+
+                    <!-- ── СЛОЙ 2: Верхний левый источник света (холодно-фиолетовый) ── -->
+                    <BoxView Grid.RowSpan="3"
+                             InputTransparent="True"
+                             Opacity="0.38">
+                        <BoxView.Background>
+                            <RadialGradientBrush Center="0.1,0.15" Radius="0.55">
+                                <GradientStop Offset="0.0" Color="#4A1FA8" />
+                                <GradientStop Offset="0.6" Color="#220E50" />
+                                <GradientStop Offset="1.0" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </BoxView.Background>
+                    </BoxView>
+
+                    <!-- ── СЛОЙ 3: Нижний правый источник света (тёплый пурпур) ── -->
+                    <BoxView Grid.RowSpan="3"
+                             InputTransparent="True"
+                             Opacity="0.35">
+                        <BoxView.Background>
+                            <RadialGradientBrush Center="0.9,0.85" Radius="0.5">
+                                <GradientStop Offset="0.0" Color="#5E0F88" />
+                                <GradientStop Offset="0.55" Color="#2A0848" />
+                                <GradientStop Offset="1.0" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </BoxView.Background>
+                    </BoxView>
+
+                    <!-- ── СЛОЙ 4: Верхний правый акцент (киановое «эхо») ── -->
+                    <BoxView Grid.RowSpan="3"
+                             InputTransparent="True"
+                             Opacity="0.13">
+                        <BoxView.Background>
+                            <RadialGradientBrush Center="0.88,0.08" Radius="0.35">
+                                <GradientStop Offset="0.0" Color="#00F2FF" />
+                                <GradientStop Offset="1.0" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </BoxView.Background>
+                    </BoxView>
+
+                    <!-- ── СЛОЙ 5: Нижний левый акцент (розово-магентовый отблеск) ── -->
+                    <BoxView Grid.RowSpan="3"
+                             InputTransparent="True"
+                             Opacity="0.15">
+                        <BoxView.Background>
+                            <RadialGradientBrush Center="0.05,0.92" Radius="0.35">
+                                <GradientStop Offset="0.0" Color="#D946EF" />
+                                <GradientStop Offset="1.0" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </BoxView.Background>
+                    </BoxView>
+
+                    <!-- ── СЛОЙ 6: Центральный «туман» — добавляет ощущение глубины ── -->
+                    <BoxView Grid.RowSpan="3"
+                             InputTransparent="True"
+                             Opacity="0.10">
+                        <BoxView.Background>
+                            <RadialGradientBrush Center="0.5,0.5" Radius="0.3">
+                                <GradientStop Offset="0.0" Color="#6B21C8" />
+                                <GradientStop Offset="1.0" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </BoxView.Background>
+                    </BoxView>
+
+                    <!-- ── СЛОЙ 7: Тонкий бликовый ореол сверху ── -->
+                    <BoxView Grid.RowSpan="3"
+                             InputTransparent="True"
+                             Opacity="0.18">
+                        <BoxView.Background>
+                            <RadialGradientBrush Center="0.5,0">
+                                <GradientStop Offset="0.0" Color="#7C5AC8" />
+                                <GradientStop Offset="1.0" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </BoxView.Background>
+                    </BoxView>
+
+                    <!-- ── Header ── -->
                     <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Padding="20,10,20,0">
                         <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                            <Border Stroke="#00F2FF" StrokeThickness="2" HeightRequest="40" WidthRequest="40" StrokeShape="RoundRectangle 10" BackgroundColor="#1A1033">
+                            <Border Stroke="#00F2FF" StrokeThickness="2" HeightRequest="40" WidthRequest="40"
+                                    StrokeShape="RoundRectangle 10" BackgroundColor="#1A1033">
                                 <Image Source="logomain.png" Aspect="AspectFit" Margin="5" />
                                 <Border.Shadow>
                                     <Shadow Brush="#00F2FF" Opacity="0.8" Radius="15" Offset="0,0" />
                                 </Border.Shadow>
                             </Border>
-                            <Label Text="MONOLITH" FontSize="22" TextColor="White" FontFamily="Orbitron" FontAttributes="Bold" VerticalOptions="Center" Margin="5,0,0,0"/>
+                            <Label Text="MONOLITH" FontSize="22" TextColor="White"
+                                   FontFamily="Orbitron" FontAttributes="Bold"
+                                   VerticalOptions="Center" Margin="5,0,0,0"/>
                         </HorizontalStackLayout>
-                        <Label Grid.Column="2" Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{0:HH:mm}'}" FontFamily="JetBrainsMono" FontSize="14" TextColor="#4D3B6D" VerticalOptions="Center" />
+                        <Label Grid.Column="2"
+                               Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{0:HH:mm}'}"
+                               FontFamily="JetBrainsMono" FontSize="14" TextColor="#4D3B6D"
+                               VerticalOptions="Center" />
                     </Grid>
 
                     <ContentPresenter Grid.Row="1" />
 
+                    <!-- ── Nav bar ── -->
                     <Border Grid.Row="2" BackgroundColor="#1A1033" StrokeThickness="0" Padding="10,5">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="20,20,0,0" />
                         </Border.StrokeShape>
                         <FlexLayout JustifyContent="SpaceEvenly" AlignItems="Center">
-                            <Button Text="Кошелек 👜" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3" Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}" CommandParameter="//MainPage" />
-                            <Button Text="История 📜" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3" Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}" CommandParameter="//HistoryPage" />
-                            <Button Text="Анализ 📊" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3" Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}" CommandParameter="//AnalyticsPage" />
-                            <Button Text="Прогноз 📈" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3" Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}" CommandParameter="//ForecastPage" />
-                            <Button Text="Достижения 🏆" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3" Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}" CommandParameter="//AchievementsPage" />
+                            <Button Text="Кошелек 👜" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
+                                    CommandParameter="//MainPage" />
+                            <Button Text="История 📜" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
+                                    CommandParameter="//HistoryPage" />
+                            <Button Text="Анализ 📊" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
+                                    CommandParameter="//AnalyticsPage" />
+                            <Button Text="Прогноз 📈" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
+                                    CommandParameter="//ForecastPage" />
+                            <Button Text="Достижения 🏆" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
+                                    CommandParameter="//AchievementsPage" />
                         </FlexLayout>
                     </Border>
+
                 </Grid>
             </ControlTemplate>
-
         </ResourceDictionary>
     </Application.Resources>
 </Application>
