@@ -239,7 +239,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
                     if (!Subscriptions.Any())
                     {
                         AtlasSubscriptionsTitleLabel.Text = "SYSTEM_MONITOR // ПОДПИСОК НЕ НАЙДЕНЫ";
-                        AtlasSubscriptionsSuggestionLabel.Text = "Атлас готов отслеживать твои регулярные списания. Добавь первую подписку, чтобы активировать трекер.";
+                        AtlasSubscriptionsSuggestionLabel.Text = "Атлас готов отслеживать ваши регулярные списания. Добавьте первую подписку, чтобы активировать трекер.";
                     }
                     else
                     {
@@ -260,7 +260,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
                 {
                     if (!UserSavings.Any())
                     {
-                        AtlasGoalsSuggestionLabel.Text = "Протокол накоплений пуст. Поставь цель, и я помогу рассчитать план.";
+                        AtlasGoalsSuggestionLabel.Text = "Протокол накоплений пуст. Поставьте цель, и я помогу рассчитать план.";
                         AtlasGoalsAnalyticsBox.IsVisible = true;
                     }
                     else
@@ -482,29 +482,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             LblIncome.TextColor = Colors.White;
         }
     }
-    private void ResetButtons()
-    {
-        // Задаем "неактивные" цвета один раз
-        var inactiveBackground = new SolidColorBrush(Color.FromArgb("#140B2D"));
-        var inactiveStroke = Color.FromArgb("#3D1D4A");
-        var inactiveTextColor = Color.FromArgb("#7A2D6A");
-
-        // Красим Расход
-        BtnExpenseBorder.Background = inactiveBackground;
-        BtnExpenseBorder.Stroke = inactiveStroke;
-        LblExpense.TextColor = inactiveTextColor;
-
-        // Красим Доход
-        BtnIncomeBorder.Background = inactiveBackground;
-        BtnIncomeBorder.Stroke = inactiveStroke;
-        LblIncome.TextColor = inactiveTextColor;
-
-        // Сбрасываем Пикер
-        CategoryPicker.IsEnabled = false;
-        CategoryPicker.Title = "Сначала выберите тип";
-        //CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите тип ]" };
-        CategoryPicker.SelectedIndex = 0;
-    }
+    
     private void SetTransactionMode(bool isIncome)
     {
         isIncomeMode = isIncome;
@@ -863,7 +841,39 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         _ => Color.FromArgb("#94A3B8")                // Серый (для остальных)
     };
 
-    
+    // ===== HOVER: РАСХОД =====
+    private async void OnExpenseHoverEnter(object sender, PointerEventArgs e)
+    {
+        BtnExpenseBorder.Stroke = new SolidColorBrush(Color.FromArgb("#FF00FF"));
+        BtnExpenseBorder.StrokeThickness = 2;
+        LblExpense.TextColor = Color.FromArgb("#D946EF");
+        await BtnExpenseBorder.ScaleTo(1.008, 120, Easing.CubicOut);
+    }
+
+    private async void OnExpenseHoverExit(object sender, PointerEventArgs e)
+    {
+        BtnExpenseBorder.Stroke = new SolidColorBrush(Color.FromArgb("#D946EF"));
+        BtnExpenseBorder.StrokeThickness = 1;
+        LblExpense.TextColor = Color.FromArgb("#7A2D6A");
+        await BtnExpenseBorder.ScaleTo(1.0, 120, Easing.CubicOut);
+    }
+
+    // ===== HOVER: ДОХОД =====
+    private async void OnIncomeHoverEnter(object sender, PointerEventArgs e)
+    {
+        BtnIncomeBorder.Stroke = new SolidColorBrush(Color.FromArgb("#00FFE5"));
+        BtnIncomeBorder.StrokeThickness = 2;
+        LblIncome.TextColor = Color.FromArgb("#2DD4BF");
+        await BtnIncomeBorder.ScaleTo(1.008, 120, Easing.CubicOut);
+    }
+
+    private async void OnIncomeHoverExit(object sender, PointerEventArgs e)
+    {
+        BtnIncomeBorder.Stroke = new SolidColorBrush(Color.FromArgb("#2DD4BF"));
+        BtnIncomeBorder.StrokeThickness = 1;
+        LblIncome.TextColor = Color.FromArgb("#1E6B60");
+        await BtnIncomeBorder.ScaleTo(1.0, 120, Easing.CubicOut);
+    }
 
     private async void OnCurrencyChanged(object s, EventArgs e)
     {

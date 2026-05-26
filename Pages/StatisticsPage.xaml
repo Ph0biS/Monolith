@@ -8,7 +8,7 @@
              BackgroundColor="#0B011D">
 
     <ScrollView>
-        <VerticalStackLayout Spacing="20" Padding="20">
+        <VerticalStackLayout Spacing="15" Padding="20">
 
             <Label Text="РАСПРЕДЕЛЕНИЕ" FontAttributes="Bold"
                    FontFamily="Orbitron" 
@@ -37,7 +37,7 @@
             <CollectionView x:Name="StatisticsLegend">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Stroke="#3D2B5E" StrokeThickness="1" Background="#1A1033" Margin="0,5" Padding="15" StrokeShape="RoundRectangle 12">
+                        <Border Stroke="#3D2B5E" StrokeThickness="1" Background="#1A1033" Margin="0,8" Padding="15" StrokeShape="RoundRectangle 12">
                             <Grid ColumnDefinitions="Auto, *, Auto">
                                 <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" 
                                          Color="{Binding Color}" VerticalOptions="Center"/>

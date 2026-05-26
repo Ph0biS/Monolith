@@ -19,8 +19,9 @@
             </LinearGradientBrush>
 
             <LinearGradientBrush x:Key="LightGradient" StartPoint="0,0" EndPoint="0,1">
-                <GradientStop Offset="0.0" Color="#FFF5F7" />
-                <GradientStop Offset="1.0" Color="#FFD1DC" />
+                <GradientStop Offset="0.0" Color="#C8BFFF" />
+                <GradientStop Offset="0.5" Color="#E8A8D8" />
+                <GradientStop Offset="1.0" Color="#FFD0A0" />
             </LinearGradientBrush>
 
             <LinearGradientBrush x:Key="ActiveBackground" StartPoint="0,0" EndPoint="1,1">
@@ -77,7 +78,13 @@
                 <Setter Property="VisualStateManager.VisualStateGroups">
                     <VisualStateGroupList>
                         <VisualStateGroup x:Name="CommonStates">
-
+                            <VisualState x:Name="PointerOver">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#3D2570" />
+                                    <Setter Property="BorderColor" Value="#00F2FF" />
+                                    <Setter Property="Scale" Value="1.03" />
+                                </VisualState.Setters>
+                            </VisualState>
                             <VisualState x:Name="Normal">
                                 <VisualState.Setters>
                                     <Setter Property="BackgroundColor" Value="#2D1B5A" />
@@ -202,23 +209,24 @@
                     </BoxView>
 
                     <!-- ── Header ── -->
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Padding="20,10,20,0">
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Padding="20,8">
                         <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                            <Border Stroke="#00F2FF" StrokeThickness="2" HeightRequest="40" WidthRequest="40"
-                                    StrokeShape="RoundRectangle 10" BackgroundColor="#1A1033">
-                                <Image Source="logomain.png" Aspect="AspectFit" Margin="5" />
+                            <Border Stroke="#00F2FF" StrokeThickness="2" HeightRequest="44" WidthRequest="44"
+                StrokeShape="RoundRectangle 12" BackgroundColor="Transparent"
+                VerticalOptions="Center">
+                                <Image Source="logomain.png" Aspect="AspectFit" />
                                 <Border.Shadow>
                                     <Shadow Brush="#00F2FF" Opacity="0.8" Radius="15" Offset="0,0" />
                                 </Border.Shadow>
                             </Border>
                             <Label Text="MONOLITH" FontSize="22" TextColor="White"
-                                   FontFamily="Orbitron" FontAttributes="Bold"
-                                   VerticalOptions="Center" Margin="5,0,0,0"/>
+               FontFamily="Orbitron" FontAttributes="Bold"
+               VerticalOptions="Center" Margin="5,0,0,0"/>
                         </HorizontalStackLayout>
                         <Label Grid.Column="2"
-       Text="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.CurrentTime}"
-       FontFamily="JetBrainsMono" FontSize="14" TextColor="#4D3B6D"
-       VerticalOptions="Center" />
+           Text="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.CurrentTime}"
+           FontFamily="JetBrainsMono" FontSize="14" TextColor="#4D3B6D"
+           VerticalOptions="Center" />
                     </Grid>
 
                     <ContentPresenter Grid.Row="1" />
