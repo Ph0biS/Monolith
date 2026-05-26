@@ -8,7 +8,7 @@ namespace PROJECT.Services
 {
     public class DatabaseService
     {
-        private SQLiteAsyncConnection _database;
+        private static SQLiteAsyncConnection? _database;
 
         private async Task Init()
         {

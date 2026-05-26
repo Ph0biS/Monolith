@@ -1,6 +1,6 @@
 ﻿using Android.App;
 using Android.Runtime;
-
+[assembly: Android.App.UsesPermission(Android.Manifest.Permission.Internet)]
 namespace PROJECT
 {
     [Application]

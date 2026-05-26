@@ -1,15 +1,18 @@
 ﻿using System.Collections.ObjectModel;
 using PROJECT.Models;
 using PROJECT.Services;
-
+using PROJECT.Pages;
 namespace PROJECT;
 
 public partial class App : Application
 {
     public static bool IsFirstLaunch { get; set; } = true;
-    private static DatabaseService _database;
+    private static DatabaseService? _database;
     public static ObservableCollection<Transaction> GlobalHistory { get; set; } = new ObservableCollection<Transaction>();
-
+    public static AppShell? PreloadedShell { get; set; }
+    public static List<Transaction>? PreloadedTransactions { get; set; }
+    public static List<SavingsGoal>? PreloadedGoals { get; set; }
+    public static List<Subscription>? PreloadedSubscriptions { get; set; }
     public static DatabaseService Database
     {
         get
@@ -38,7 +41,10 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
-        MainPage = new AppShell();
+        _database = new DatabaseService();
+        // LoadingPage сама создаёт AppShell параллельно — здесь ничего лишнего не нужно
+        Resources["ActiveBackground"] = Resources["DarkGradient"];
+        MainPage = new LoadingPage();
     }
     private async void OnTabTapped(object sender, EventArgs e)
     {

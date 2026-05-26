@@ -135,26 +135,44 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         // Это наш "Эталон" для запуска
         SetNeutralState();
 
-        // 2. Логика первого запуска (Загрузчик)
-        if (App.IsFirstLaunch)
+        if (App.PreloadedTransactions != null)
         {
-            LoadingOverlay.IsVisible = true;
-            LoadingOverlay.Opacity = 1;
-            await RunCyberpunkBootloader();
-            App.IsFirstLaunch = false;
+            var transactions = App.PreloadedTransactions;
+            var goals = App.PreloadedGoals ?? new List<SavingsGoal>();
+            var subs = App.PreloadedSubscriptions ?? new List<Subscription>();
+
+            // Сбрасываем кэш сразу чтобы следующий OnAppearing пошёл в БД
+            App.PreloadedTransactions = null;
+            App.PreloadedGoals = null;
+            App.PreloadedSubscriptions = null;
+
+            // Заполняем коллекции напрямую без запроса к БД
+            TransactionHistory.Clear();
+            foreach (var t in transactions) TransactionHistory.Add(t);
+
+            UserSavings.Clear();
+            foreach (var g in goals) UserSavings.Add(g);
+
+            Subscriptions.Clear();
+            foreach (var s in subs) Subscriptions.Add(s);
+
+            SubsCollectionView.ItemsSource = null;
+            SubsCollectionView.ItemsSource = Subscriptions;
+
+            // Обновляем UI без повторного похода в БД
+            await UpdateDashboardUI();
+
+            if (AtlasLoadingView != null)
+                AtlasLoadingView.IsVisible = true;
         }
         else
         {
-            LoadingOverlay.IsVisible = false;
+            // Обычный путь — возврат на страницу после навигации
+            await LoadDataFromDatabase();
+
+            if (AtlasLoadingView != null)
+                AtlasLoadingView.IsVisible = true;
         }
-
-        // 3. Загружаем данные ОДИН РАЗ
-        await LoadDataFromDatabase();
-        await UpdateDashboardUI();
-
-        // 4. Возвращаем видимость аналитики
-        if (AtlasLoadingView != null)
-            AtlasLoadingView.IsVisible = true;
 
         // 5. Валюты (фоном)
         _ = Task.Run(async () => {
@@ -166,64 +184,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     }
     
 
-    private async Task RunCyberpunkBootloader()
-    {
-        // Блокируем навигацию
-        _isAnimating = true;
-
-        try
-        {
-            // Убедитесь, что SplashLogo — это имя поля в классе (обычно создается автоматически)
-            await SplashLogo.FadeTo(1.0, 800, Easing.BounceOut);
-
-            LogoGlow.Radius = 25;
-            LogoGlow.Opacity = 0.8f;
-
-            string[] logs = {
-            "> INITIALIZING DATABASE...",
-            "> LOADING ASSETS...",
-            "> SECURING CONNECTION...",
-            "> SYSTEM READY."
-        };
-
-            double maxWidth = 250.0;
-            TerminalText.Text = "";
-
-            for (int i = 0; i < logs.Length; i++)
-            {
-                if (!_isPageVisible) return;
-
-                TerminalText.Text += (i == 0 ? "" : Environment.NewLine) + logs[i];
-
-                double targetWidth = maxWidth * ((i + 1.0) / logs.Length);
-
-                // ИСПОЛЬЗУЕМ ССЫЛКУ НА ЭКЗЕМПЛЯР (this.ProgressBar)
-                // Если ProgressBar — это поле страницы, обращайтесь к нему напрямую:
-                this.ProgressBar.AbortAnimation("progress");
-
-                // Передаем this.ProgressBar в метод анимации
-                this.ProgressBar.Animate("progress",
-                    d => {
-                        this.ProgressBar.WidthRequest = d;
-                    },
-                    this.ProgressBar.WidthRequest,
-                    targetWidth,
-                    32,
-                    400,
-                    Easing.CubicOut);
-
-                await Task.Delay(600);
-            }
-
-            await Task.Delay(300);
-            await LoadingOverlay.FadeTo(0, 400);
-            LoadingOverlay.IsVisible = false;
-        }
-        finally
-        {
-            _isAnimating = false;
-        }
-    }
+   
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
@@ -791,16 +752,19 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
     private async Task UpdateDashboardUI()
     {
-        if (ChartV == null || BalanceLabel == null || TransactionHistory == null) return;
+        if (ChartV == null || BalanceLabel == null) return;
+
+        // Снимок коллекции на главном потоке ДО Task.Run — устраняет "Collection was modified"
+        var snapshot = TransactionHistory?.ToList() ?? new List<Transaction>();
+
+        decimal r = 1.0m;
+        string s = "₽";
+        if (_currentCurrency == "USD") { r = (decimal)_usdRate; s = "$"; }
+        else if (_currentCurrency == "EUR") { r = (decimal)_eurRate; s = "€"; }
 
         var result = await Task.Run(() =>
         {
-            decimal r = 1.0m;
-            string s = "₽";
-            if (_currentCurrency == "USD") { r = (decimal)_usdRate; s = "$"; }
-            else if (_currentCurrency == "EUR") { r = (decimal)_eurRate; s = "€"; }
-
-            var stats = TransactionHistory
+            var stats = snapshot
                 .Where(t => !t.IsIncome)
                 .GroupBy(t => t.Category)
                 .Select(g => new ExpenseCategoryItem
@@ -813,50 +777,65 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
                 .OrderByDescending(x => x.Sum)
                 .ToList();
 
-            return new { Balance = TransactionHistory.Sum(t => t.IsIncome ? t.Amount : -t.Amount) / r, Symbol = s, Stats = stats };
+            decimal balance = snapshot.Sum(t => t.IsIncome ? t.Amount : -t.Amount) / r;
+
+            return new { Balance = balance, Symbol = s, Stats = stats };
         });
 
-        MainThread.BeginInvokeOnMainThread(() =>
+        // Все UI-операции строго на главном потоке
+        await MainThread.InvokeOnMainThreadAsync(() =>
         {
             BalanceLabel.Text = $"{result.Balance:N0} {result.Symbol}";
 
+            bool hasTransactions = snapshot.Any();
             bool hasStats = result.Stats != null && result.Stats.Any();
 
-            // 1. Вызываем наш "пульт управления" видимостью
-            UpdateLayoutVisibility(TransactionHistory.Any(), hasStats);
+            UpdateLayoutVisibility(hasTransactions, hasStats);
 
-            // 2. Рисуем график, только если есть данные
             if (hasStats)
             {
                 var newEntries = result.Stats.Select(x => new ChartEntry((float)x.Sum)
                 {
                     Label = x.Category,
                     ValueLabel = x.AmountText,
-                    Color = new SKColor((byte)(x.DisplayColor.Red * 255), (byte)(x.DisplayColor.Green * 255), (byte)(x.DisplayColor.Blue * 255), 255)
+                    Color = new SKColor(
+                        (byte)(x.DisplayColor.Red * 255),
+                        (byte)(x.DisplayColor.Green * 255),
+                        (byte)(x.DisplayColor.Blue * 255),
+                        255)
                 }).ToArray();
 
+                // Переиспользуем существующий график если он уже есть — не пересоздаём
                 if (ChartV.Chart is DonutChart existingChart)
                 {
                     existingChart.Entries = newEntries;
                 }
                 else
                 {
-                    ChartV.Chart = new DonutChart { Entries = newEntries, HoleRadius = 0.7f, BackgroundColor = SKColors.Transparent, LabelMode = LabelMode.None, Typeface = SKTypeface.FromFamilyName("Orbitron") };
+                    ChartV.Chart = new DonutChart
+                    {
+                        Entries = newEntries,
+                        HoleRadius = 0.7f,
+                        BackgroundColor = SKColors.Transparent,
+                        LabelMode = LabelMode.None,
+                        Typeface = SKTypeface.FromFamilyName("Orbitron")
+                    };
                 }
             }
             else
             {
-                // Случайная фраза, если данных нет
-                string[] atlasPhrases = {
-                "Расходы за выбранный период равны 0. Идеальный баланс.",
-                "Анализ завершен: трат не зафиксировано.",
-                "В этом месяце чисто. Твой кошелек в безопасности.",
-                "Система фиксирует нулевую активность расходов."
-            };
-                if (AtlasPeriodSuggestionLabel != null)
-                    AtlasPeriodSuggestionLabel.Text = atlasPhrases[new Random().Next(atlasPhrases.Length)];
-
                 ChartV.Chart = null;
+
+                if (AtlasPeriodSuggestionLabel != null)
+                {
+                    string[] atlasPhrases = {
+                    "Расходы за выбранный период равны 0. Идеальный баланс.",
+                    "Анализ завершен: трат не зафиксировано.",
+                    "В этом месяце чисто. Твой кошелек в безопасности.",
+                    "Система фиксирует нулевую активность расходов."
+                };
+                    AtlasPeriodSuggestionLabel.Text = atlasPhrases[new Random().Next(atlasPhrases.Length)];
+                }
             }
         });
     }

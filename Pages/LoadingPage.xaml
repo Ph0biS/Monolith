@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PROJECT.LoadingPage"
+             BackgroundColor="#0D081F"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="*, Auto, Auto, *" Padding="30">
+
+        <Border Grid.Row="0"
+                x:Name="SplashLogo"
+                Stroke="#00F2FF"
+                StrokeThickness="2"
+                HeightRequest="100"
+                WidthRequest="100"
+                StrokeShape="RoundRectangle 20"
+                BackgroundColor="#1A1033"
+                VerticalOptions="End"
+                HorizontalOptions="Center"
+                Opacity="0">
+            <Image Source="logomain.png" Aspect="AspectFit" Margin="15" />
+            <Border.Shadow>
+                <Shadow x:Name="LogoGlow" Brush="#00F2FF" Opacity="0" Radius="0" />
+            </Border.Shadow>
+        </Border>
+
+        <Label Grid.Row="1"
+               x:Name="TerminalText"
+               Text="&gt; MONOLITH_OS_BOOT..."
+               FontFamily="JetBrainsMono"
+               FontSize="13"
+               TextColor="#00F2FF"
+               HorizontalOptions="Center"
+               Margin="0,40,0,0" />
+
+        <Grid Grid.Row="2"
+              WidthRequest="250"
+              HeightRequest="6"
+              Margin="0,20,0,0"
+              HorizontalOptions="Center"
+              VerticalOptions="Start">
+            <BoxView BackgroundColor="#2A1B4E" CornerRadius="3" />
+            <BoxView x:Name="BootProgressBar"
+                     BackgroundColor="#D946EF"
+                     HorizontalOptions="Start"
+                     WidthRequest="0"
+                     CornerRadius="3" />
+        </Grid>
+
+        <Label Grid.Row="3"
+               Text="v1.0.0-SYSTEM_READY"
+               FontFamily="JetBrainsMono"
+               FontSize="10"
+               TextColor="#4D3B6D"
+               HorizontalOptions="Center"
+               VerticalOptions="End" />
+    </Grid>
+</ContentPage>
