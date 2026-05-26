@@ -246,7 +246,7 @@
                                 <Label Grid.Column="0" Text="⚡" TextColor="#2DD4BF" FontSize="16" Margin="0,0,10,0" VerticalOptions="Center"/>
                                 <VerticalStackLayout Grid.Column="1" Spacing="2">
                                     <Label Text="ATLAS_AI // СТРАТЕГИЯ ЦЕЛЕЙ" TextColor="#2DD4BF" FontFamily="Orbitron" FontSize="10" FontAttributes="Bold"/>
-                                    <Label x:Name="AtlasGoalsSuggestionLabel" Text="Анализ прогресса: Твоя цель 'ПК' запущена. Чтобы собрать 120 000 ₽ быстрее, попробуй сократить спонтанные расходы в этом месяце." TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" FontFamily="Inter" LineBreakMode="WordWrap"/>
+                                    <Label x:Name="AtlasGoalsSuggestionLabel" Text="Анализ прогресса: Ваша цель 'ПК' запущена. Чтобы собрать 120 000 ₽ быстрее, попробуй сократить спонтанные расходы в этом месяце." TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" FontFamily="Inter" LineBreakMode="WordWrap"/>
                                 </VerticalStackLayout>
                             </Grid>
                         </Border>

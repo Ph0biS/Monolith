@@ -809,7 +809,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
                     string[] atlasPhrases = {
                     "Расходы за выбранный период равны 0. Идеальный баланс.",
                     "Анализ завершен: трат не зафиксировано.",
-                    "В этом месяце чисто. Твой кошелек в безопасности.",
+                    "В этом месяце чисто. Ваш кошелек в безопасности.",
                     "Система фиксирует нулевую активность расходов."
                 };
                     AtlasPeriodSuggestionLabel.Text = atlasPhrases[new Random().Next(atlasPhrases.Length)];
