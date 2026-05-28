@@ -142,7 +142,27 @@
                                  HorizontalOptions="Center"
                                  Spacing="10"
                                  Margin="0,0,0,10">
-
+                <Label Text="─────────────────────"
+           FontFamily="JetBrainsMono"
+           FontSize="12"
+           TextColor="#2A1B4E"
+           HorizontalOptions="Center" />
+                <Label Text="&gt; ALL SYSTEMS NOMINAL"
+           FontFamily="JetBrainsMono"
+           FontSize="11"
+           TextColor="#4D3B6D"
+           HorizontalOptions="Center" />
+                <Label Text="&gt; MEMORY: 128MB ALLOCATED"
+           FontFamily="JetBrainsMono"
+           FontSize="11"
+           TextColor="#4D3B6D"
+           HorizontalOptions="Center" />
+                <Label Text="&gt; UPTIME: 00:00:01"
+           FontFamily="JetBrainsMono"
+           FontSize="11"
+           TextColor="#4D3B6D"
+           HorizontalOptions="Center"
+           Margin="0,0,0,10"/>
                 <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
                     <Border StrokeShape="RoundRectangle 4"
                             BackgroundColor="#1A1033"

@@ -28,6 +28,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     private IEnumerable<ChartEntry> entries;
     private bool _isAnimating = false;
     private bool _isPageVisible;
+    private string _selectedType = "";
     // Те самые коллекции, которые теперь 100% привязаны к UI
     private CancellationTokenSource _animationCts;
     public ObservableCollection<Transaction> TransactionHistory { get; set; } = new();
@@ -519,18 +520,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
        // CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
         CategoryPicker.SelectedIndex = 0;
     }
-    private void OnExpenseClicked(object s, EventArgs e)
-    {
-        // Просто говорим: "Включи режим Расход"
-        SetTransactionMode(false);
-    }
-
-    private void OnIncomeClicked(object s, EventArgs e)
-    {
-        // Просто говорим: "Включи режим Доход"
-        SetTransactionMode(true);
-    }
-
+    
     #endregion
 
     #region --- 5. ЛОГИКА ЦЕЛЕЙ И КОПИЛОК ---
@@ -844,35 +834,81 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     // ===== HOVER: РАСХОД =====
     private async void OnExpenseHoverEnter(object sender, PointerEventArgs e)
     {
+        if (_selectedType == "expense") return;
         BtnExpenseBorder.Stroke = new SolidColorBrush(Color.FromArgb("#FF00FF"));
         BtnExpenseBorder.StrokeThickness = 2;
         LblExpense.TextColor = Color.FromArgb("#D946EF");
-        await BtnExpenseBorder.ScaleTo(1.008, 120, Easing.CubicOut);
+        await BtnExpenseBorder.ScaleTo(1.01, 120, Easing.CubicOut);
     }
 
     private async void OnExpenseHoverExit(object sender, PointerEventArgs e)
     {
+        if (_selectedType == "expense") return;
         BtnExpenseBorder.Stroke = new SolidColorBrush(Color.FromArgb("#D946EF"));
         BtnExpenseBorder.StrokeThickness = 1;
-        LblExpense.TextColor = Color.FromArgb("#7A2D6A");
+        LblExpense.TextColor = Color.FromArgb("#D946EF");
         await BtnExpenseBorder.ScaleTo(1.0, 120, Easing.CubicOut);
     }
 
-    // ===== HOVER: ДОХОД =====
     private async void OnIncomeHoverEnter(object sender, PointerEventArgs e)
     {
+        if (_selectedType == "income") return;
         BtnIncomeBorder.Stroke = new SolidColorBrush(Color.FromArgb("#00FFE5"));
         BtnIncomeBorder.StrokeThickness = 2;
         LblIncome.TextColor = Color.FromArgb("#2DD4BF");
-        await BtnIncomeBorder.ScaleTo(1.008, 120, Easing.CubicOut);
+        await BtnIncomeBorder.ScaleTo(1.01, 120, Easing.CubicOut);
     }
 
     private async void OnIncomeHoverExit(object sender, PointerEventArgs e)
     {
+        if (_selectedType == "income") return;
         BtnIncomeBorder.Stroke = new SolidColorBrush(Color.FromArgb("#2DD4BF"));
         BtnIncomeBorder.StrokeThickness = 1;
-        LblIncome.TextColor = Color.FromArgb("#1E6B60");
+        LblIncome.TextColor = Color.FromArgb("#2DD4BF");
         await BtnIncomeBorder.ScaleTo(1.0, 120, Easing.CubicOut);
+    }
+
+    private async void OnExpenseClicked(object sender, TappedEventArgs e)
+    {
+        _selectedType = "expense";
+
+        // Сбрасываем доход
+        BtnIncomeBorder.BackgroundColor = Colors.Transparent;
+        BtnIncomeBorder.Stroke = new SolidColorBrush(Color.FromArgb("#2DD4BF"));
+        BtnIncomeBorder.StrokeThickness = 1;
+        LblIncome.TextColor = Color.FromArgb("#2DD4BF");
+
+        // Активируем расход
+        BtnExpenseBorder.BackgroundColor = Color.FromArgb("#6B1580");
+        BtnExpenseBorder.Stroke = new SolidColorBrush(Color.FromArgb("#FF00FF"));
+        BtnExpenseBorder.StrokeThickness = 2;
+        LblExpense.TextColor = Colors.White;
+
+        await BtnExpenseBorder.ScaleTo(0.96, 80, Easing.CubicIn);
+        await BtnExpenseBorder.ScaleTo(1.0, 80, Easing.CubicOut);
+
+        SetTransactionMode(false);
+    }
+
+    private async void OnIncomeClicked(object sender, TappedEventArgs e)
+    {
+        _selectedType = "income";
+
+        // Сбрасываем расход
+        BtnExpenseBorder.BackgroundColor = Colors.Transparent;
+        BtnExpenseBorder.Stroke = new SolidColorBrush(Color.FromArgb("#D946EF"));
+        BtnExpenseBorder.StrokeThickness = 1;
+        LblExpense.TextColor = Color.FromArgb("#D946EF");
+
+        // Активируем доход
+        BtnIncomeBorder.BackgroundColor = Color.FromArgb("#0D5C52");
+        BtnIncomeBorder.Stroke = new SolidColorBrush(Color.FromArgb("#00FFE5"));
+        BtnIncomeBorder.StrokeThickness = 2;
+        LblIncome.TextColor = Colors.White;
+
+        await BtnIncomeBorder.ScaleTo(0.96, 80, Easing.CubicIn);
+        await BtnIncomeBorder.ScaleTo(1.0, 80, Easing.CubicOut);
+        SetTransactionMode(true);
     }
 
     private async void OnCurrencyChanged(object s, EventArgs e)

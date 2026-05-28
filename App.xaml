@@ -115,7 +115,7 @@
             </Style>
 
             <ControlTemplate x:Key="MainPageTemplate">
-                <Grid RowDefinitions="60, *, 85">
+                <Grid RowDefinitions="78, *, 85">
 
                     <!-- ── СЛОЙ 0: Базовый тёмный фон ── -->
                     <BoxView Grid.RowSpan="3"
@@ -209,12 +209,12 @@
                     </BoxView>
 
                     <!-- ── Header ── -->
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Padding="20,8">
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Padding="15,0">
                         <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                            <Border Stroke="#00F2FF" StrokeThickness="2" HeightRequest="44" WidthRequest="44"
-                StrokeShape="RoundRectangle 12" BackgroundColor="Transparent"
-                VerticalOptions="Center">
-                                <Image Source="logomain.png" Aspect="AspectFit" />
+                            <Border Stroke="#00F2FF" StrokeThickness="2" HeightRequest="58" WidthRequest="58"
+        StrokeShape="RoundRectangle 14" BackgroundColor="#1A1033"
+        VerticalOptions="Center">
+                                <Image Source="logomain.png" Aspect="Fill" Margin="0" />
                                 <Border.Shadow>
                                     <Shadow Brush="#00F2FF" Opacity="0.8" Radius="15" Offset="0,0" />
                                 </Border.Shadow>

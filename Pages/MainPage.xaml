@@ -176,7 +176,9 @@
 
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="1">
 
-                            <Border x:Name="BtnExpenseBorder" Stroke="#D946EF" StrokeThickness="1" StrokeShape="RoundRectangle 10" HeightRequest="45">
+                            <Border x:Name="BtnExpenseBorder" Stroke="#D946EF" StrokeThickness="1" 
+        StrokeShape="RoundRectangle 10" HeightRequest="45" 
+        Margin="1" BackgroundColor="Transparent">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                         <GradientStop Color="#2A1A4A" Offset="0.0" />
@@ -192,7 +194,9 @@
                                 <Label x:Name="LblExpense" Text="💸 РАСХОД"  FontFamily="Orbitron" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="#7A2D6A" FontSize="13"/>
                             </Border>
 
-                            <Border x:Name="BtnIncomeBorder" Grid.Column="1" Stroke="#2DD4BF" StrokeThickness="1" StrokeShape="RoundRectangle 10" HeightRequest="45">
+                            <Border x:Name="BtnIncomeBorder" Grid.Column="1" Stroke="#2DD4BF" StrokeThickness="1" 
+        StrokeShape="RoundRectangle 10" HeightRequest="45" 
+        Margin="1" BackgroundColor="Transparent">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                         <GradientStop Color="#162D2A" Offset="0.0" />
@@ -278,10 +282,10 @@
                     <VerticalStackLayout Spacing="10">
                         <Label Text="ПОДПИСКИ" FontFamily="Orbitron" FontAttributes="Bold" FontSize="16" TextColor="#A78BFA" Margin="0,5,0,0" CharacterSpacing="1"/>
                         <Border Stroke="#3D2B5E" Background="#1A1033" Padding="10" StrokeShape="RoundRectangle 12">
-                            <Grid ColumnDefinitions="*, 60, 80, Auto" ColumnSpacing="5">
+                            <Grid ColumnDefinitions="*, 80, 80, 45" ColumnSpacing="5">
                                 <Entry x:Name="SubNameEntry" Placeholder="Имя" FontFamily="Inter" FontAttributes="Bold" TextColor="White" PlaceholderColor="#5A4A7A"/>
-                                <Entry Grid.Column="1" x:Name="SubPriceEntry" Placeholder="Цена" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="#D946EF" PlaceholderColor="#5A4A7A"/>
-                                <DatePicker Grid.Column="2" x:Name="SubDatePicker" FontFamily="RobotoMono" FontAttributes="Bold" Format="dd/MM" TextColor="White" FontSize="11" MinimumWidthRequest="80"/>
+                                <Entry Grid.Column="1" x:Name="SubPriceEntry" Placeholder="Цена" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="#D946EF" PlaceholderColor="#5A4A7A" WidthRequest="80"/>
+                                <DatePicker Grid.Column="2" x:Name="SubDatePicker" FontFamily="RobotoMono" FontAttributes="Bold" Format="dd/MM" TextColor="White" FontSize="11" WidthRequest="80"/>
                                 <Button Grid.Column="3" Text="➕" Clicked="OnAddSubscriptionClicked" BackgroundColor="#D946EF" WidthRequest="45" HeightRequest="45" CornerRadius="10" Padding="0" FontSize="16"/>
                             </Grid>
                         </Border>
