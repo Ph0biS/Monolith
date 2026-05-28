@@ -26,7 +26,7 @@ public partial class LoadingPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-
+        _ = RunTickerAsync();
         // Собираем ссылки на боковые лейблы
         _leftLabels[0] = LeftCol1; _leftLabels[1] = LeftCol2; _leftLabels[2] = LeftCol3;
         _leftLabels[3] = LeftCol4; _leftLabels[4] = LeftCol5; _leftLabels[5] = LeftCol6;
@@ -79,34 +79,49 @@ public partial class LoadingPage : ContentPage
         base.OnDisappearing();
         _sideAnimRunning = false;
     }
-
-    private async Task RunSideColumnsAsync()
+    private async Task RunTickerAsync()
     {
-        var rng = new Random();
-        int activeLeft = -1;
-        int activeRight = -1;
+        double screenWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density;
+        double textWidth = 800; // примерная ширина текста
+        TickerLabel.TranslationX = screenWidth;
 
         while (_sideAnimRunning)
         {
-            // Сбрасываем предыдущий активный
-            if (activeLeft >= 0)
-                _leftLabels[activeLeft].TextColor = Color.FromArgb("#1A0F3A");
-            if (activeRight >= 0)
-                _rightLabels[activeRight].TextColor = Color.FromArgb("#1A0F3A");
+            await TickerLabel.TranslateTo(-textWidth, 0, 8000, Easing.Linear);
+            TickerLabel.TranslationX = screenWidth;
+        }
+    }
+    private async Task RunSideColumnsAsync()
+    {
+        var rng = new Random();
+        int offsetLeft = 0;
+        int offsetRight = 10; // смещение чтобы колонки не синхронизировались
 
-            // Выбираем новый активный
-            activeLeft = rng.Next(0, 20);
-            activeRight = rng.Next(0, 20);
+        while (_sideAnimRunning)
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                int leftIdx = (i + offsetLeft) % 20;
+                int rightIdx = (i + offsetRight) % 20;
 
-            // Меняем текст на случайный hex
-            _leftLabels[activeLeft].Text = HexChars[rng.Next(HexChars.Length)];
-            _rightLabels[activeRight].Text = HexChars[rng.Next(HexChars.Length)];
+                // Обновляем текст
+                _leftLabels[i].Text = HexChars[(leftIdx + rng.Next(3)) % HexChars.Length];
+                _rightLabels[i].Text = HexChars[(rightIdx + rng.Next(3)) % HexChars.Length];
 
-            // Подсвечиваем активный
-            _leftLabels[activeLeft].TextColor = Color.FromArgb("#00F2FF");
-            _rightLabels[activeRight].TextColor = Color.FromArgb("#D946EF");
+                // Подсвечиваем "активную" строку
+                _leftLabels[i].TextColor = i == (offsetLeft % 20)
+                    ? Color.FromArgb("#00F2FF")
+                    : Color.FromArgb("#2A1B4E");
 
-            await Task.Delay(150);
+                _rightLabels[i].TextColor = i == (offsetRight % 20)
+                    ? Color.FromArgb("#D946EF")
+                    : Color.FromArgb("#2A1B4E");
+            }
+
+            offsetLeft = (offsetLeft + 1) % 20;
+            offsetRight = (offsetRight + 1) % 20;
+
+            await Task.Delay(120);
         }
     }
 

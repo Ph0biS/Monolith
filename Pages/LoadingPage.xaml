@@ -5,225 +5,172 @@
              BackgroundColor="#0D081F"
              Shell.NavBarIsVisible="False">
 
-    <!-- Корневой Grid: боковые панели + центр -->
-    <Grid ColumnDefinitions="55, *, 55">
+    <!-- Корневой Grid: строки + колонки -->
+    <Grid ColumnDefinitions="55, *, 55" RowDefinitions="*, 28">
 
         <!-- ЛЕВАЯ ПАНЕЛЬ -->
-        <VerticalStackLayout Grid.Column="0"
+        <VerticalStackLayout Grid.Column="0" Grid.Row="0"
                              VerticalOptions="Fill"
                              HorizontalOptions="Center"
-                             Spacing="4"
-                             Padding="0,20">
-            <Label x:Name="LeftCol1" Text="A3" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol2" Text="F7" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol3" Text="2B" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol4" Text="9E" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol5" Text="C1" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol6" Text="D4" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol7" Text="08" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol8" Text="5F" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol9" Text="E2" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol10" Text="3C" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol11" Text="B6" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol12" Text="71" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol13" Text="4A" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol14" Text="0D" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol15" Text="FF" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol16" Text="88" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol17" Text="2E" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol18" Text="6B" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol19" Text="C9" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="LeftCol20" Text="14" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
+                             Spacing="4" Padding="0,20">
+            <Label x:Name="LeftCol1"  Text="A3 F7" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol2"  Text="2B 9E" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol3"  Text="C1 D4" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol4"  Text="08 5F" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol5"  Text="E2 3C" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol6"  Text="B6 71" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol7"  Text="4A 0D" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol8"  Text="FF 88" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol9"  Text="2E 6B" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol10" Text="C9 14" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol11" Text="A3 F7" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol12" Text="2B 9E" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol13" Text="C1 D4" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol14" Text="08 5F" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol15" Text="E2 3C" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol16" Text="B6 71" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol17" Text="4A 0D" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol18" Text="FF 88" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol19" Text="2E 6B" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="LeftCol20" Text="C9 14" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
         </VerticalStackLayout>
 
         <!-- ЦЕНТРАЛЬНЫЙ КОНТЕНТ -->
-        <Grid Grid.Column="1"
-              RowDefinitions="*, Auto, Auto, *"
+        <Grid Grid.Column="1" Grid.Row="0"
+              RowDefinitions="Auto, Auto, Auto, *"
               Padding="10,30">
 
-            <!-- ВЕРХНИЙ БЛОК -->
             <VerticalStackLayout Grid.Row="0"
                                  VerticalOptions="Center"
                                  HorizontalOptions="Center"
                                  Spacing="6">
-
                 <Label Text="MONOLITH OS v1.0.0"
-                       FontFamily="JetBrainsMono"
-                       FontSize="18"
-                       FontAttributes="Bold"
-                       TextColor="#00F2FF"
-                       HorizontalOptions="Center" />
-
+                       FontFamily="JetBrainsMono" FontSize="18" FontAttributes="Bold"
+                       TextColor="#00F2FF" HorizontalOptions="Center" />
                 <Label Text="─────────────────────"
-                       FontFamily="JetBrainsMono"
-                       FontSize="12"
-                       TextColor="#2A1B4E"
-                       HorizontalOptions="Center" />
-
+                       FontFamily="JetBrainsMono" FontSize="12"
+                       TextColor="#2A1B4E" HorizontalOptions="Center" />
                 <Label Text="&gt; KERNEL 5.15.0-MONOLITH"
-                       FontFamily="JetBrainsMono"
-                       FontSize="11"
-                       TextColor="#4D3B6D"
-                       HorizontalOptions="Center" />
-
+                       FontFamily="JetBrainsMono" FontSize="11"
+                       TextColor="#4D3B6D" HorizontalOptions="Center" />
                 <Label Text="&gt; ARCH: ARM64 | BUILD: RELEASE"
-                       FontFamily="JetBrainsMono"
-                       FontSize="11"
-                       TextColor="#4D3B6D"
-                       HorizontalOptions="Center" />
-
+                       FontFamily="JetBrainsMono" FontSize="11"
+                       TextColor="#4D3B6D" HorizontalOptions="Center" />
                 <Label Text="&gt; ENCRYPTION: AES-256-GCM"
-                       FontFamily="JetBrainsMono"
-                       FontSize="11"
-                       TextColor="#4D3B6D"
-                       HorizontalOptions="Center" />
+                       FontFamily="JetBrainsMono" FontSize="11"
+                       TextColor="#4D3B6D" HorizontalOptions="Center" />
 
-                <!-- Логотип -->
                 <Border x:Name="SplashLogo"
-        Stroke="#00F2FF"
-        StrokeThickness="2"
-        HeightRequest="130"
-        WidthRequest="130"
-        StrokeShape="RoundRectangle 28"
-        BackgroundColor="#1A1033"
-        HorizontalOptions="Center"
-        Margin="0,20,0,0"
-        Opacity="0">
+                        Stroke="#00F2FF" StrokeThickness="2"
+                        HeightRequest="130" WidthRequest="130"
+                        StrokeShape="RoundRectangle 28"
+                        BackgroundColor="#1A1033"
+                        HorizontalOptions="Center"
+                        Margin="0,20,0,0" Opacity="0">
                     <Image Source="logomain.png" Aspect="AspectFit" Margin="8" />
                     <Border.Shadow>
                         <Shadow x:Name="LogoGlow" Brush="#00F2FF" Opacity="0" Radius="0" />
                     </Border.Shadow>
                 </Border>
 
-                <!-- Разделитель под логотипом -->
                 <Label Text="─────────────────────"
-                       FontFamily="JetBrainsMono"
-                       FontSize="12"
-                       TextColor="#2A1B4E"
-                       HorizontalOptions="Center"
+                       FontFamily="JetBrainsMono" FontSize="12"
+                       TextColor="#2A1B4E" HorizontalOptions="Center"
                        Margin="0,20,0,0" />
-
                 <Label Text="[ BOOT SEQUENCE INITIATED ]"
-                       FontFamily="JetBrainsMono"
-                       FontSize="11"
-                       TextColor="#4D3B6D"
-                       HorizontalOptions="Center" />
-
+                       FontFamily="JetBrainsMono" FontSize="11"
+                       TextColor="#4D3B6D" HorizontalOptions="Center" />
             </VerticalStackLayout>
 
-            <!-- ТЕРМИНАЛЬНЫЙ ТЕКСТ -->
-            <Label Grid.Row="1"
-                   x:Name="TerminalText"
-                   Text=""
-                   FontFamily="JetBrainsMono"
-                   FontSize="13"
-                   TextColor="#00F2FF"
-                   HorizontalOptions="Center"
+            <Label Grid.Row="1" x:Name="TerminalText"
+                   Text="" FontFamily="JetBrainsMono" FontSize="13"
+                   TextColor="#00F2FF" HorizontalOptions="Center"
                    Margin="0,20,0,0" />
 
-            <!-- ПРОГРЕСС-БАР -->
-            <Grid Grid.Row="2"
-                  WidthRequest="250"
-                  HeightRequest="6"
-                  Margin="0,20,0,0"
-                  HorizontalOptions="Center"
-                  VerticalOptions="Start">
+            <Grid Grid.Row="2" WidthRequest="250" HeightRequest="6"
+                  Margin="0,20,0,0" HorizontalOptions="Center" VerticalOptions="Start">
                 <BoxView BackgroundColor="#2A1B4E" CornerRadius="3" />
-                <BoxView x:Name="BootProgressBar"
-                         BackgroundColor="#D946EF"
-                         HorizontalOptions="Start"
-                         WidthRequest="0"
-                         CornerRadius="3" />
+                <BoxView x:Name="BootProgressBar" BackgroundColor="#D946EF"
+                         HorizontalOptions="Start" WidthRequest="0" CornerRadius="3" />
             </Grid>
 
-            <!-- НИЖНИЙ БЛОК -->
             <VerticalStackLayout Grid.Row="3"
                                  VerticalOptions="End"
                                  HorizontalOptions="Center"
-                                 Spacing="10"
-                                 Margin="0,0,0,10">
+                                 Spacing="10" Margin="0,0,0,10">
                 <Label Text="─────────────────────"
-           FontFamily="JetBrainsMono"
-           FontSize="12"
-           TextColor="#2A1B4E"
-           HorizontalOptions="Center" />
+                       FontFamily="JetBrainsMono" FontSize="12"
+                       TextColor="#2A1B4E" HorizontalOptions="Center" />
                 <Label Text="&gt; ALL SYSTEMS NOMINAL"
-           FontFamily="JetBrainsMono"
-           FontSize="11"
-           TextColor="#4D3B6D"
-           HorizontalOptions="Center" />
+                       FontFamily="JetBrainsMono" FontSize="11"
+                       TextColor="#4D3B6D" HorizontalOptions="Center" />
                 <Label Text="&gt; MEMORY: 128MB ALLOCATED"
-           FontFamily="JetBrainsMono"
-           FontSize="11"
-           TextColor="#4D3B6D"
-           HorizontalOptions="Center" />
+                       FontFamily="JetBrainsMono" FontSize="11"
+                       TextColor="#4D3B6D" HorizontalOptions="Center" />
                 <Label Text="&gt; UPTIME: 00:00:01"
-           FontFamily="JetBrainsMono"
-           FontSize="11"
-           TextColor="#4D3B6D"
-           HorizontalOptions="Center"
-           Margin="0,0,0,10"/>
+                       FontFamily="JetBrainsMono" FontSize="11"
+                       TextColor="#4D3B6D" HorizontalOptions="Center"
+                       Margin="0,0,0,10"/>
+
                 <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
-                    <Border StrokeShape="RoundRectangle 4"
-                            BackgroundColor="#1A1033"
-                            Stroke="#00F2FF"
-                            StrokeThickness="1"
-                            Padding="8,4">
+                    <Border StrokeShape="RoundRectangle 4" BackgroundColor="#1A1033"
+                            Stroke="#00F2FF" StrokeThickness="1" Padding="8,4">
                         <Label Text="ENCRYPTED" FontFamily="JetBrainsMono" FontSize="10" TextColor="#00F2FF" />
                     </Border>
-                    <Border StrokeShape="RoundRectangle 4"
-                            BackgroundColor="#1A1033"
-                            Stroke="#D946EF"
-                            StrokeThickness="1"
-                            Padding="8,4">
+                    <Border StrokeShape="RoundRectangle 4" BackgroundColor="#1A1033"
+                            Stroke="#D946EF" StrokeThickness="1" Padding="8,4">
                         <Label Text="SECURE" FontFamily="JetBrainsMono" FontSize="9" TextColor="#D946EF" />
                     </Border>
-                    <Border StrokeShape="RoundRectangle 4"
-                            Stroke="#00F2FF"
-                            BackgroundColor="#1A1033"
-                            StrokeThickness="1"
-                            Padding="8,4">
-                        <Label Text="OFFLINE-READY" TextColor="#00F2FF" FontFamily="JetBrainsMono" FontSize="9"/>
+                    <Border StrokeShape="RoundRectangle 4" BackgroundColor="#1A1033"
+                            Stroke="#4D3B6D" StrokeThickness="1" Padding="8,4">
+                        <Label Text="OFFLINE-READY" FontFamily="JetBrainsMono" FontSize="9" TextColor="#4D3B6D" />
                     </Border>
                 </HorizontalStackLayout>
 
                 <Label Text="v1.0.0-SYSTEM_READY"
-                       FontFamily="JetBrainsMono"
-                       FontSize="10"
-                       TextColor="#4D3B6D"
-                       HorizontalOptions="Center" />
-
+                       FontFamily="JetBrainsMono" FontSize="10"
+                       TextColor="#4D3B6D" HorizontalOptions="Center" />
             </VerticalStackLayout>
-
         </Grid>
 
         <!-- ПРАВАЯ ПАНЕЛЬ -->
-        <VerticalStackLayout Grid.Column="2"
+        <VerticalStackLayout Grid.Column="2" Grid.Row="0"
                              VerticalOptions="Fill"
                              HorizontalOptions="Center"
-                             Spacing="4"
-                             Padding="0,20">
-            <Label x:Name="RightCol1" Text="B9" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol2" Text="4E" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol3" Text="7F" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol4" Text="C3" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol5" Text="1D" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol6" Text="A0" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol7" Text="E8" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol8" Text="53" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol9" Text="6C" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol10" Text="2A" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol11" Text="F1" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol12" Text="9B" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol13" Text="D7" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol14" Text="3E" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol15" Text="80" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol16" Text="C6" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol17" Text="5A" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol18" Text="1F" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol19" Text="E4" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
-            <Label x:Name="RightCol20" Text="7D" FontFamily="JetBrainsMono" FontSize="20" TextColor="#1A0F3A" HorizontalOptions="Center"/>
+                             Spacing="4" Padding="0,20">
+            <Label x:Name="RightCol1"  Text="B9 4E" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol2"  Text="7F C3" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol3"  Text="1D A0" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol4"  Text="E8 53" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol5"  Text="6C 2A" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol6"  Text="F1 9B" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol7"  Text="D7 3E" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol8"  Text="80 C6" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol9"  Text="5A 1F" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol10" Text="E4 7D" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol11" Text="B9 4E" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol12" Text="7F C3" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol13" Text="1D A0" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol14" Text="E8 53" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol15" Text="6C 2A" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol16" Text="F1 9B" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/> 
+            <Label x:Name="RightCol17" Text="D7 3E" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol18" Text="80 C6" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol19" Text="5A 1F" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <Label x:Name="RightCol20" Text="E4 7D" FontFamily="JetBrainsMono" FontSize="19" TextColor="#2A1B4E" HorizontalOptions="Center"/>
         </VerticalStackLayout>
 
+        <!-- ТИКЕР СНИЗУ -->
+        <BoxView Grid.Row="1" Grid.ColumnSpan="3"
+                 BackgroundColor="#0A0518" />
+        <Label Grid.Row="1" Grid.ColumnSpan="3"
+               x:Name="TickerLabel"
+               Text="// MONOLITH_OS v1.0.0 // AES-256-GCM // KERNEL 5.15.0 // SECURE BOOT // MODULE_CHECK OK // FIREWALL ACTIVE // UPTIME 00:00:01 // "
+               FontFamily="JetBrainsMono"
+               FontSize="9"
+               TextColor="#2A1B4E"
+               VerticalOptions="Center"
+               HorizontalOptions="Start"
+               Margin="0,0,0,0"/>
     </Grid>
 </ContentPage>

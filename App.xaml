@@ -237,21 +237,60 @@
                             <RoundRectangle CornerRadius="20,20,0,0" />
                         </Border.StrokeShape>
                         <FlexLayout JustifyContent="SpaceEvenly" AlignItems="Center">
-                            <Button Text="Кошелек 👜" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
-                                    CommandParameter="//MainPage" />
-                            <Button Text="История 📜" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
-                                    CommandParameter="//HistoryPage" />
-                            <Button Text="Анализ 📊" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
-                                    CommandParameter="//AnalyticsPage" />
-                            <Button Text="Прогноз 📈" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
-                                    CommandParameter="//ForecastPage" />
-                            <Button Text="Достижения 🏆" Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="3"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
-                                    CommandParameter="//AchievementsPage" />
+                            <Button Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="2"
+        Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
+        CommandParameter="//MainPage">
+                                <Button.Text>
+                                    <OnPlatform x:TypeArguments="x:String">
+                                        <On Platform="Android" Value="👜" />
+                                        <On Platform="WinUI,iOS" Value="Кошелек 👜" />
+                                    </OnPlatform>
+                                </Button.Text>
+                            </Button>
+
+                            <Button Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="2"
+        Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
+        CommandParameter="//HistoryPage">
+                                <Button.Text>
+                                    <OnPlatform x:TypeArguments="x:String">
+                                        <On Platform="Android" Value="📜" />
+                                        <On Platform="WinUI,iOS" Value="История 📜" />
+                                    </OnPlatform>
+                                </Button.Text>
+                            </Button>
+
+                            <Button Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="2"
+        Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
+        CommandParameter="//AnalyticsPage">
+                                <Button.Text>
+                                    <OnPlatform x:TypeArguments="x:String">
+                                        <On Platform="Android" Value="📊" />
+                                        <On Platform="WinUI,iOS" Value="Анализ 📊" />
+                                    </OnPlatform>
+                                </Button.Text>
+                            </Button>
+
+                            <Button Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="2"
+        Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
+        CommandParameter="//ForecastPage">
+                                <Button.Text>
+                                    <OnPlatform x:TypeArguments="x:String">
+                                        <On Platform="Android" Value="📈"/>
+                                        <On Platform="WinUI,iOS" Value="Прогноз 📈" />
+                                    </OnPlatform>
+                                </Button.Text>
+                            </Button>
+
+                            <Button Style="{StaticResource NavButtonStyle}" FlexLayout.Grow="1" Margin="2"
+        Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.GoToCommand}"
+        CommandParameter="//AchievementsPage">
+                                <Button.Text>
+                                    <OnPlatform x:TypeArguments="x:String">
+                                        <On Platform="Android" Value="🏆" />
+                                        <On Platform="WinUI,iOS" Value="Достижения 🏆" />
+                                    </OnPlatform>
+                                </Button.Text>
+                            </Button>
                         </FlexLayout>
                     </Border>
 

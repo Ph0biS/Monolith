@@ -4,30 +4,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:PROJECT.Models"
              x:Class="PROJECT.Pages.HistoryPage"
-             BackgroundColor="#0B011D"
              Title="История">
 
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#0F0620" Offset="0.1" />
-            <GradientStop Color="#0B011D" Offset="1.0" />
+            <GradientStop Color="{AppThemeBinding Light=#E8E0FF, Dark=#0F0620}" Offset="0.1" />
+            <GradientStop Color="{AppThemeBinding Light=#F0EEFF, Dark=#0B011D}" Offset="1.0" />
         </LinearGradientBrush>
     </ContentPage.Background>
 
     <Grid RowDefinitions="Auto, Auto, *">
         <HorizontalStackLayout Grid.Row="0" Margin="20,15" Spacing="10">
             <Label Text="📜" FontSize="24" VerticalOptions="Center"/>
-            <Label Text="ИСТОРИЯ" FontAttributes="Bold" FontSize="24" TextColor="#A78BFA" CharacterSpacing="2" VerticalOptions="Center"/>
+            <Label Text="ИСТОРИЯ" FontAttributes="Bold" FontSize="24" 
+                   TextColor="{AppThemeBinding Light=#3C3489, Dark=#A78BFA}" 
+                   CharacterSpacing="2" VerticalOptions="Center"/>
         </HorizontalStackLayout>
 
-        <Border Grid.Row="1" Margin="15,5" BackgroundColor="#1A1033" Stroke="#8B5CF6" StrokeThickness="1.5" StrokeShape="RoundRectangle 12">
-            <SearchBar x:Name="TransactionSearchBar" 
-                       Placeholder="🔍 Найти операцию..."  FontAttributes="Bold"
-                       TextColor="White" 
-                       PlaceholderColor="#5A4A7A" 
-                       TextChanged="OnSearchTextChanged" 
+        <Border Grid.Row="1" Margin="15,5" 
+                BackgroundColor="{AppThemeBinding Light=#E0D8FF, Dark=#1A1033}" 
+                Stroke="{AppThemeBinding Light=#7F77DD, Dark=#8B5CF6}" 
+                StrokeThickness="1.5" StrokeShape="RoundRectangle 12">
+            <SearchBar x:Name="TransactionSearchBar"
+                       Placeholder="🔍 Найти операцию..." FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#1E1660, Dark=White}"
+                       PlaceholderColor="{AppThemeBinding Light=#7F77DD, Dark=#5A4A7A}"
+                       TextChanged="OnSearchTextChanged"
                        BackgroundColor="Transparent"
-                       CancelButtonColor="#D946EF"/>
+                       CancelButtonColor="{AppThemeBinding Light=#5B4BC4, Dark=#D946EF}"/>
         </Border>
 
         <CollectionView Grid.Row="2" x:Name="HistoryList" Margin="10,10">
@@ -36,58 +40,55 @@
                     <SwipeView>
                         <SwipeView.RightItems>
                             <SwipeItems>
-                                <SwipeItem Text="Удалить" 
-                                           BackgroundColor="#D946EF" 
-                                           Invoked="OnDeleteTransaction" 
+                                <SwipeItem Text="Удалить"
+                                           BackgroundColor="{AppThemeBinding Light=#9B1FBF, Dark=#D946EF}"
+                                           Invoked="OnDeleteTransaction"
                                            CommandParameter="{Binding .}" />
                             </SwipeItems>
                         </SwipeView.RightItems>
 
-                        <Border BackgroundColor="#1A1033" 
-        StrokeThickness="1.5" 
-        Margin="8,4" 
-        Padding="0"
-        StrokeShape="RoundRectangle 15">
-
+                        <Border BackgroundColor="{AppThemeBinding Light=#EDE8FF, Dark=#1A1033}"
+                                StrokeThickness="1.5"
+                                Margin="8,4"
+                                Padding="0"
+                                StrokeShape="RoundRectangle 15">
                             <Border.Stroke>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="#D946EF" Offset="0.1" />
+                                    <GradientStop Color="{AppThemeBinding Light=#9B1FBF, Dark=#D946EF}" Offset="0.1" />
                                     <GradientStop Color="Transparent" Offset="0.5" />
-                                    <GradientStop Color="#00F2FF" Offset="1.0" />
+                                    <GradientStop Color="{AppThemeBinding Light=#0099AA, Dark=#00F2FF}" Offset="1.0" />
                                 </LinearGradientBrush>
                             </Border.Stroke>
 
                             <Grid ColumnDefinitions="6, *, Auto" Padding="12">
-                                <BoxView Grid.Column="0" 
-                 BackgroundColor="{Binding AmountColor}" 
-                 WidthRequest="3" 
-                 Margin="0,2,0,2"
-                 CornerRadius="2" />
+                                <BoxView Grid.Column="0"
+                                         BackgroundColor="{Binding AmountColor}"
+                                         WidthRequest="3"
+                                         Margin="0,2,0,2"
+                                         CornerRadius="2" />
 
                                 <VerticalStackLayout Grid.Column="1" Spacing="2" Margin="12,0,0,0">
-                                    <Label Text="{Binding Category}" 
-                   FontAttributes="Bold" 
-                   TextColor="White" 
-                   FontSize="15" />
-                                    <Label Text="{Binding Description}" 
-                   TextColor="#A78BFA" 
-                   FontSize="12" />
-                                    <Label Text="{Binding Date, StringFormat='{0:dd MMM, HH:mm}'}" 
-                   TextColor="#5A4A7A" 
-                   FontSize="10" />
+                                    <Label Text="{Binding Category}"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light=#1E1660, Dark=White}"
+                                           FontSize="15" />
+                                    <Label Text="{Binding Description}"
+                                           TextColor="{AppThemeBinding Light=#5B4BC4, Dark=#A78BFA}"
+                                           FontSize="12" />
+                                    <Label Text="{Binding Date, StringFormat='{0:dd MMM, HH:mm}'}"
+                                           TextColor="{AppThemeBinding Light=#9890CC, Dark=#5A4A7A}"
+                                           FontSize="10" />
                                 </VerticalStackLayout>
 
-                                <Label Grid.Column="2" 
-               Text="{Binding DisplayAmount}" 
-               FontAttributes="Bold" 
-               TextColor="{Binding AmountColor}" 
-               FontSize="18" 
-               VerticalOptions="Center">
+                                <Label Grid.Column="2"
+                                       Text="{Binding DisplayAmount}"
+                                       FontAttributes="Bold"
+                                       TextColor="{Binding AmountColor}"
+                                       FontSize="18"
+                                       VerticalOptions="Center">
                                     <Label.Shadow>
-                                        <Shadow Brush="{Binding AmountColor}" 
-                        Offset="0,0" 
-                        Radius="12" 
-                        Opacity="0.5" />
+                                        <Shadow Brush="{Binding AmountColor}"
+                                                Offset="0,0" Radius="12" Opacity="0.5" />
                                     </Label.Shadow>
                                 </Label>
                             </Grid>
