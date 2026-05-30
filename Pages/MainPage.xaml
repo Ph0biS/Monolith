@@ -54,7 +54,7 @@
             CornerRadius="10" HeightRequest="38" WidthRequest="90"/>
                             <Button Text="📄 PDF" FontFamily="Inter" FontAttributes="Bold" 
             Clicked="OnExportPdfClicked" 
-            BackgroundColor="#2A1A4A" TextColor="#D946EF" 
+            BackgroundColor="#2A1A4A" TextColor="White" 
             CornerRadius="10" HeightRequest="38" WidthRequest="90"/>
                             <Button Text="🔄" Clicked="OnResetStatsClicked" 
             BackgroundColor="Transparent" TextColor="#D946EF" 

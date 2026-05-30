@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using ClosedXML.Excel;
 using System.Text.Json;
 using System.Windows.Input;
 namespace PROJECT.Pages;
@@ -1131,28 +1132,140 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         try
         {
             var transactions = await App.Database.GetTransactionsAsync();
-
             if (transactions == null || !transactions.Any())
             {
                 await DisplayAlert("Ошибка", "Нет данных для экспорта", "OK");
                 return;
             }
 
-            var csvBuilder = new StringBuilder();
-            csvBuilder.AppendLine("Дата,Категория,Описание,Сумма,Тип");
+            using var workbook = new ClosedXML.Excel.XLWorkbook();
+            var ws = workbook.Worksheets.Add("Monolith Report");
 
-            foreach (var t in transactions)
+            // Цвета
+            var purpleColor = ClosedXML.Excel.XLColor.FromHtml("#8B5CF6");
+            var darkColor = ClosedXML.Excel.XLColor.FromHtml("#1A1033");
+            var greenColor = ClosedXML.Excel.XLColor.FromHtml("#22C55E");
+            var redColor = ClosedXML.Excel.XLColor.FromHtml("#EF4444");
+            var lightPurple = ClosedXML.Excel.XLColor.FromHtml("#EDE8FF");
+            var white = ClosedXML.Excel.XLColor.White;
+
+            // Заголовок
+            ws.Range("A1:E1").Merge();
+            ws.Cell("A1").Value = "MONOLITH — Финансовый отчёт";
+            ws.Cell("A1").Style
+                .Font.SetBold(true)
+                .Font.SetFontSize(16)
+                .Font.SetFontColor(white)
+                .Fill.SetBackgroundColor(purpleColor)
+                .Alignment.SetHorizontal(ClosedXML.Excel.XLAlignmentHorizontalValues.Center);
+            ws.Row(1).Height = 30;
+
+            // Дата
+            ws.Range("A2:E2").Merge();
+            ws.Cell("A2").Value = $"Сформирован: {DateTime.Now:dd.MM.yyyy HH:mm}";
+            ws.Cell("A2").Style
+                .Font.SetFontSize(10)
+                .Font.SetFontColor(ClosedXML.Excel.XLColor.FromHtml("#5A4A7A"))
+                .Alignment.SetHorizontal(ClosedXML.Excel.XLAlignmentHorizontalValues.Center);
+
+            // Пустая строка
+            ws.Row(3).Height = 8;
+
+            // Баланс
+            var incomeTotal = transactions.Where(t => t.IsIncome).Sum(t => t.Amount);
+            var expenseTotal = transactions.Where(t => !t.IsIncome).Sum(t => t.Amount);
+            var balance = incomeTotal - expenseTotal;
+
+            ws.Range("A4:B4").Merge();
+            ws.Cell("A4").Value = "БАЛАНС";
+            ws.Cell("A4").Style.Font.SetBold(true).Font.SetFontSize(12)
+                .Fill.SetBackgroundColor(lightPurple);
+
+            ws.Cell("A5").Value = "Доходы";
+            ws.Cell("B5").Value = (double)incomeTotal;
+            ws.Cell("B5").Style.Font.SetFontColor(greenColor).Font.SetBold(true)
+                .NumberFormat.SetFormat("#,##0 ₽");
+
+            ws.Cell("A6").Value = "Расходы";
+            ws.Cell("B6").Value = (double)expenseTotal;
+            ws.Cell("B6").Style.Font.SetFontColor(redColor).Font.SetBold(true)
+                .NumberFormat.SetFormat("#,##0 ₽");
+
+            ws.Cell("A7").Value = "Итого";
+            ws.Cell("A7").Style.Font.SetBold(true);
+            ws.Cell("B7").Value = (double)balance;
+            ws.Cell("B7").Style.Font.SetBold(true)
+                .Font.SetFontColor(balance >= 0 ? greenColor : redColor)
+                .NumberFormat.SetFormat("#,##0 ₽");
+
+            ws.Row(8).Height = 8;
+
+            // Шапка таблицы
+            string[] headers = { "Дата", "Категория", "Описание", "Сумма", "Тип" };
+            for (int i = 0; i < headers.Length; i++)
             {
-                string type = t.IsIncome ? "Доход" : "Расход";
-                csvBuilder.AppendLine($"{t.Date:dd.MM.yyyy},{t.Category},{t.Description},{t.Amount},{type}");
+                var cell = ws.Cell(9, i + 1);
+                cell.Value = headers[i];
+                cell.Style
+                    .Font.SetBold(true)
+                    .Font.SetFontColor(white)
+                    .Fill.SetBackgroundColor(darkColor)
+                    .Alignment.SetHorizontal(ClosedXML.Excel.XLAlignmentHorizontalValues.Center)
+                    .Border.SetBottomBorder(ClosedXML.Excel.XLBorderStyleValues.Medium)
+                    .Border.SetBottomBorderColor(purpleColor);
+            }
+            ws.Row(9).Height = 22;
+
+            // Данные
+            int row = 10;
+            foreach (var t in transactions.OrderByDescending(x => x.Date))
+            {
+                string cleanCat = System.Text.RegularExpressions.Regex.Replace(
+                    t.Category ?? "", @"[^\u0000-\u007F\u0400-\u04FF\s]", "").Trim();
+
+                ws.Cell(row, 1).Value = t.Date.ToString("dd.MM.yyyy");
+                ws.Cell(row, 2).Value = cleanCat;
+                ws.Cell(row, 3).Value = t.Description ?? "";
+                ws.Cell(row, 4).Value = (double)t.Amount;
+                ws.Cell(row, 4).Style.NumberFormat.SetFormat("#,##0 ₽");
+                ws.Cell(row, 5).Value = t.IsIncome ? "Доход" : "Расход";
+
+                // Цвет строки
+                var rowColor = t.IsIncome ? greenColor : redColor;
+                ws.Cell(row, 4).Style.Font.SetFontColor(rowColor).Font.SetBold(true);
+                ws.Cell(row, 5).Style.Font.SetFontColor(rowColor);
+
+                // Чередование фона
+                if (row % 2 == 0)
+                {
+                    ws.Range(row, 1, row, 5).Style
+                        .Fill.SetBackgroundColor(lightPurple);
+                }
+
+                // Рамка
+                ws.Range(row, 1, row, 5).Style
+                    .Border.SetBottomBorder(ClosedXML.Excel.XLBorderStyleValues.Thin)
+                    .Border.SetBottomBorderColor(ClosedXML.Excel.XLColor.FromHtml("#D8D4F0"));
+
+                row++;
             }
 
+            // Ширина колонок
+            ws.Column(1).Width = 14;  // Дата
+            ws.Column(2).Width = 22;  // Категория
+            ws.Column(3).Width = 28;  // Описание
+            ws.Column(4).Width = 16;  // Сумма
+            ws.Column(5).Width = 12;  // Тип
+
+            // Закрепить шапку
+            ws.SheetView.FreezeRows(9);
+
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string fileName = $"Monolith_{DateTime.Now:dd-MM-yyyy_HHmm}.csv";
+            string fileName = $"Monolith_{DateTime.Now:dd-MM-yyyy_HHmm}.xlsx";
             string filePath = Path.Combine(desktop, fileName);
 
-            await File.WriteAllTextAsync(filePath, csvBuilder.ToString(), Encoding.UTF8);
-            await DisplayAlert("✅ Готово", $"CSV сохранён на рабочий стол:\n{fileName}", "OK");
+            workbook.SaveAs(filePath);
+            await DisplayAlert("✅ Готово", $"Excel сохранён на рабочий стол:\n{fileName}", "OK");
         }
         catch (Exception ex)
         {
@@ -1164,48 +1277,156 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         if (sender is Button b6) await AnimateButton(b6);
         try
         {
+            var transactions = await App.Database.GetTransactionsAsync();
+            if (transactions == null || !transactions.Any())
+            {
+                await DisplayAlert("Ошибка", "Нет данных для экспорта", "OK");
+                return;
+            }
+
             var document = new PdfSharpCore.Pdf.PdfDocument();
             document.Info.Title = "Monolith Report";
 
             var page = document.AddPage();
             var gfx = PdfSharpCore.Drawing.XGraphics.FromPdfPage(page);
-            var fontBold = new PdfSharpCore.Drawing.XFont("Arial", 20, PdfSharpCore.Drawing.XFontStyle.Bold);
-            var fontNormal = new PdfSharpCore.Drawing.XFont("Arial", 12, PdfSharpCore.Drawing.XFontStyle.Regular);
-            var fontSmall = new PdfSharpCore.Drawing.XFont("Arial", 10, PdfSharpCore.Drawing.XFontStyle.Regular);
 
-            gfx.DrawString("MONOLITH — Финансовый отчёт", fontBold,
-                PdfSharpCore.Drawing.XBrushes.Black,
-                new PdfSharpCore.Drawing.XRect(0, 40, page.Width, 30),
+            var fontTitle = new PdfSharpCore.Drawing.XFont("Arial", 22, PdfSharpCore.Drawing.XFontStyle.Bold);
+            var fontHeader = new PdfSharpCore.Drawing.XFont("Arial", 14, PdfSharpCore.Drawing.XFontStyle.Bold);
+            var fontNormal = new PdfSharpCore.Drawing.XFont("Arial", 11, PdfSharpCore.Drawing.XFontStyle.Regular);
+            var fontSmall = new PdfSharpCore.Drawing.XFont("Arial", 9, PdfSharpCore.Drawing.XFontStyle.Regular);
+            var fontBold = new PdfSharpCore.Drawing.XFont("Arial", 11, PdfSharpCore.Drawing.XFontStyle.Bold);
+
+            var colorPurple = PdfSharpCore.Drawing.XColor.FromArgb(139, 92, 246);
+            var colorGreen = PdfSharpCore.Drawing.XColor.FromArgb(34, 197, 94);
+            var colorRed = PdfSharpCore.Drawing.XColor.FromArgb(239, 68, 68);
+            var colorGray = PdfSharpCore.Drawing.XColor.FromArgb(100, 100, 100);
+            var colorDark = PdfSharpCore.Drawing.XColor.FromArgb(30, 30, 30);
+
+            double margin = 50;
+            double pageW = page.Width;
+
+            // Заголовок
+            gfx.DrawString("MONOLITH", fontTitle,
+                new PdfSharpCore.Drawing.XSolidBrush(colorPurple),
+                new PdfSharpCore.Drawing.XRect(0, 40, pageW, 30),
                 PdfSharpCore.Drawing.XStringFormats.TopCenter);
 
-            gfx.DrawString($"Дата: {DateTime.Now:dd.MM.yyyy HH:mm}", fontSmall,
-                PdfSharpCore.Drawing.XBrushes.Gray,
-                new PdfSharpCore.Drawing.XRect(0, 75, page.Width, 20),
+            gfx.DrawString("Финансовый отчёт", fontHeader,
+                new PdfSharpCore.Drawing.XSolidBrush(colorDark),
+                new PdfSharpCore.Drawing.XRect(0, 68, pageW, 25),
                 PdfSharpCore.Drawing.XStringFormats.TopCenter);
 
-            gfx.DrawLine(PdfSharpCore.Drawing.XPens.LightGray, 40, 100, page.Width - 40, 100);
+            gfx.DrawString($"Сформирован: {DateTime.Now:dd.MM.yyyy HH:mm}", fontSmall,
+                new PdfSharpCore.Drawing.XSolidBrush(colorGray),
+                new PdfSharpCore.Drawing.XRect(0, 95, pageW, 20),
+                PdfSharpCore.Drawing.XStringFormats.TopCenter);
 
-            var transactions = App.GlobalHistory.ToList();
-            double totalIncome = (double)transactions.Where(t => t.Amount > 0).Sum(t => t.Amount);
-            double totalExpense = (double)transactions.Where(t => t.Amount < 0).Sum(t => Math.Abs(t.Amount));
-            double balance = totalIncome - totalExpense;
+            // Линия
+            gfx.DrawLine(new PdfSharpCore.Drawing.XPen(colorPurple, 1.5), margin, 118, pageW - margin, 118);
 
-            gfx.DrawString("БАЛАНС", fontBold, PdfSharpCore.Drawing.XBrushes.Black, 40, 130);
-            gfx.DrawString($"Доходы:   +{totalIncome:N0} ₽", fontNormal, PdfSharpCore.Drawing.XBrushes.DarkGreen, 40, 160);
-            gfx.DrawString($"Расходы:  -{totalExpense:N0} ₽", fontNormal, PdfSharpCore.Drawing.XBrushes.DarkRed, 40, 185);
-            gfx.DrawString($"Итого:     {balance:N0} ₽", fontBold, PdfSharpCore.Drawing.XBrushes.Black, 40, 215);
+            // Баланс
+            var incomeList = transactions.Where(t => t.IsIncome).ToList();
+            var expenseList = transactions.Where(t => !t.IsIncome).ToList();
+            decimal totalIncome = incomeList.Sum(t => t.Amount);
+            decimal totalExpense = expenseList.Sum(t => t.Amount);
+            decimal balance = totalIncome - totalExpense;
 
-            gfx.DrawLine(PdfSharpCore.Drawing.XPens.LightGray, 40, 235, page.Width - 40, 235);
-            gfx.DrawString("ИСТОРИЯ ТРАНЗАКЦИЙ", fontBold, PdfSharpCore.Drawing.XBrushes.Black, 40, 255);
+            gfx.DrawString("БАЛАНС", fontHeader,
+                new PdfSharpCore.Drawing.XSolidBrush(colorDark), margin, 138);
 
-            double y = 285;
-            foreach (var t in transactions.OrderByDescending(x => x.Date).Take(20))
+            gfx.DrawString($"Доходы:", fontNormal,
+                new PdfSharpCore.Drawing.XSolidBrush(colorGray), margin, 162);
+            gfx.DrawString($"+{totalIncome:N0} руб.", fontBold,
+                new PdfSharpCore.Drawing.XSolidBrush(colorGreen), margin + 80, 162);
+
+            gfx.DrawString($"Расходы:", fontNormal,
+                new PdfSharpCore.Drawing.XSolidBrush(colorGray), margin, 182);
+            gfx.DrawString($"-{totalExpense:N0} руб.", fontBold,
+                new PdfSharpCore.Drawing.XSolidBrush(colorRed), margin + 80, 182);
+
+            gfx.DrawString($"Итого:", fontBold,
+                new PdfSharpCore.Drawing.XSolidBrush(colorDark), margin, 206);
+            var balanceColor = balance >= 0 ? colorGreen : colorRed;
+            gfx.DrawString($"{(balance >= 0 ? "+" : "")}{balance:N0} руб.", fontBold,
+                new PdfSharpCore.Drawing.XSolidBrush(balanceColor), margin + 80, 206);
+
+            // Линия
+            gfx.DrawLine(new PdfSharpCore.Drawing.XPen(colorGray, 0.5), margin, 222, pageW - margin, 222);
+
+            // Расходы по категориям
+            gfx.DrawString("РАСХОДЫ ПО КАТЕГОРИЯМ", fontHeader,
+                new PdfSharpCore.Drawing.XSolidBrush(colorDark), margin, 238);
+
+            var grouped = expenseList
+                .GroupBy(t => t.Category)
+                .Select(g => new { Name = g.Key, Sum = g.Sum(t => t.Amount) })
+                .OrderByDescending(x => x.Sum)
+                .ToList();
+
+            double y = 262;
+            foreach (var item in grouped)
             {
-                if (y > page.Height - 60) break;
-                var color = t.Amount > 0 ? PdfSharpCore.Drawing.XBrushes.DarkGreen : PdfSharpCore.Drawing.XBrushes.DarkRed;
-                gfx.DrawString($"{t.Date:dd.MM.yy}  {t.Category,-20} {t.Amount:+#,##0;-#,##0} ₽", fontNormal, color, 40, y);
-                y += 22;
+                if (y > page.Height - 100) break;
+                // Убираем эмодзи из названия категории
+                string cleanName = System.Text.RegularExpressions.Regex.Replace(item.Name, @"[^\u0000-\u007F\u0400-\u04FF\s]", "").Trim();
+                gfx.DrawString(cleanName, fontNormal,
+                    new PdfSharpCore.Drawing.XSolidBrush(colorDark), margin + 10, y);
+                gfx.DrawString($"{item.Sum:N0} руб.", fontBold,
+                    new PdfSharpCore.Drawing.XSolidBrush(colorRed), pageW - margin - 90, y);
+                y += 20;
             }
+
+            // Линия
+            gfx.DrawLine(new PdfSharpCore.Drawing.XPen(colorGray, 0.5), margin, y + 5, pageW - margin, y + 5);
+            y += 20;
+
+            // История
+            gfx.DrawString("ИСТОРИЯ ТРАНЗАКЦИЙ", fontHeader,
+                new PdfSharpCore.Drawing.XSolidBrush(colorDark), margin, y);
+            y += 24;
+
+            // Шапка таблицы
+            gfx.DrawString("Дата", fontBold, new PdfSharpCore.Drawing.XSolidBrush(colorGray), margin, y);
+            gfx.DrawString("Категория", fontBold, new PdfSharpCore.Drawing.XSolidBrush(colorGray), margin + 65, y);
+            gfx.DrawString("Описание", fontBold, new PdfSharpCore.Drawing.XSolidBrush(colorGray), margin + 220, y);
+            gfx.DrawString("Сумма", fontBold, new PdfSharpCore.Drawing.XSolidBrush(colorGray), pageW - margin - 80, y);
+            y += 18;
+
+            gfx.DrawLine(new PdfSharpCore.Drawing.XPen(colorGray, 0.3), margin, y, pageW - margin, y);
+            y += 8;
+
+            foreach (var t in transactions.OrderByDescending(x => x.Date))
+            {
+                if (y > page.Height - 50)
+                {
+                    // Новая страница
+                    page = document.AddPage();
+                    gfx = PdfSharpCore.Drawing.XGraphics.FromPdfPage(page);
+                    y = 40;
+                }
+
+                string cleanCat = System.Text.RegularExpressions.Regex.Replace(t.Category ?? "", @"[^\u0000-\u007F\u0400-\u04FF\s]", "").Trim();
+                string desc = (t.Description ?? "").Length > 20 ? t.Description.Substring(0, 20) + "..." : t.Description ?? "";
+                string amount = t.IsIncome ? $"+{t.Amount:N0}" : $"-{t.Amount:N0}";
+                var amountColor = t.IsIncome ? colorGreen : colorRed;
+
+                gfx.DrawString(t.Date.ToString("dd.MM.yy"), fontNormal,
+                    new PdfSharpCore.Drawing.XSolidBrush(colorGray), margin, y);
+                gfx.DrawString(cleanCat, fontNormal,
+                    new PdfSharpCore.Drawing.XSolidBrush(colorDark), margin + 65, y);
+                gfx.DrawString(desc, fontNormal,
+                    new PdfSharpCore.Drawing.XSolidBrush(colorGray), margin + 220, y);
+                gfx.DrawString($"{amount} руб.", fontBold,
+                    new PdfSharpCore.Drawing.XSolidBrush(amountColor), pageW - margin - 80, y);
+                y += 20;
+            }
+
+            // Подпись
+            gfx.DrawLine(new PdfSharpCore.Drawing.XPen(colorPurple, 1), margin, page.Height - 40, pageW - margin, page.Height - 40);
+            gfx.DrawString("MONOLITH OS • Encrypted • Secure", fontSmall,
+                new PdfSharpCore.Drawing.XSolidBrush(colorGray),
+                new PdfSharpCore.Drawing.XRect(0, page.Height - 30, pageW, 20),
+                PdfSharpCore.Drawing.XStringFormats.TopCenter);
 
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string fileName = $"Monolith_Report_{DateTime.Now:dd-MM-yyyy_HHmm}.pdf";
