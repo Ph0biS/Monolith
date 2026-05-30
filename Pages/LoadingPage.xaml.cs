@@ -158,10 +158,35 @@ public partial class LoadingPage : ContentPage
         await Task.Delay(300);
 
         var shell = await _shellReady.Task;
-        await _dataReady.Task;
+        await Task.WhenAny(_dataReady.Task, Task.Delay(3000));
 
         _sideAnimRunning = false;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var transactions = await App.Database.GetTransactionsAsync();
+                var goals = await App.Database.GetGoalsAsync();
+                var subs = await App.Database.GetSubscriptionsAsync();
 
+                App.PreloadedTransactions = transactions;
+                App.PreloadedGoals = goals;
+                App.PreloadedSubscriptions = subs;
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    App.GlobalHistory.Clear();
+                    foreach (var t in transactions)
+                        App.GlobalHistory.Add(t);
+                    _dataReady.TrySetResult();
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"DB ERROR: {ex.Message}");
+                MainThread.BeginInvokeOnMainThread(() => _dataReady.TrySetResult());
+            }
+        });
         // Сначала плавно гасим весь экран
         await this.FadeTo(0, 700, Easing.CubicIn);
         await Task.Delay(32);

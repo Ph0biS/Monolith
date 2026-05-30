@@ -15,8 +15,8 @@ namespace PROJECT.Services
             if (_database is not null) return;
 
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MyData.db3");
-            var options = new SQLiteConnectionString(dbPath, true, key: AppConstants.DatabaseKey);
-            _database = new SQLiteAsyncConnection(options);
+            _database = new SQLiteAsyncConnection(dbPath);
+
             await _database.CreateTableAsync<Achievement>();
             await _database.CreateTableAsync<Transaction>();
             await _database.CreateTableAsync<SavingsGoal>();
