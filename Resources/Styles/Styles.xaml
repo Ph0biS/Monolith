@@ -62,6 +62,7 @@
                             <Setter Property="Scale" Value="1.0" />
                             <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#5B4BC4, Dark=#3C3489}" />
                             <Setter Property="BorderColor" Value="{AppThemeBinding Light=#7F77DD, Dark=#534AB7}" />
+                            <Setter Property="CornerRadius" Value="14" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="PointerOver">
@@ -69,6 +70,7 @@
                             <Setter Property="Scale" Value="1.03" />
                             <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#7F77DD, Dark=#534AB7}" />
                             <Setter Property="BorderColor" Value="{AppThemeBinding Light=#3C3489, Dark=#7F77DD}" />
+                            <Setter Property="CornerRadius" Value="14"/>
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Pressed">
@@ -76,6 +78,7 @@
                             <Setter Property="Scale" Value="0.97" />
                             <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#3C3489, Dark=#26215C}" />
                             <Setter Property="BorderColor" Value="{AppThemeBinding Light=#1E1660, Dark=#AFA9EC}" />
+                            <Setter Property="CornerRadius" Value="14" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Disabled">
@@ -165,7 +168,7 @@
     </Style>
 
     <Style TargetType="Entry">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=#EDE8FF}" />
+        <Setter Property="TextColor" Value="White" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E4DEFF, Dark=#1A1640}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light=#7F77DD, Dark=#534AB7}" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
@@ -192,7 +195,7 @@
     </Style>
 
     <Style TargetType="Editor">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=#EDE8FF}" />
+        <Setter Property="TextColor" Value="White" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E4DEFF, Dark=#1A1640}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light=#7F77DD, Dark=#534AB7}" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
@@ -214,7 +217,7 @@
     </Style>
 
     <Style TargetType="Label" x:Key="Headline">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=#EDE8FF}" />
+        <Setter Property="TextColor" Value="White" />
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="32" />
         <Setter Property="HorizontalOptions" Value="Center" />
@@ -222,7 +225,7 @@
     </Style>
 
     <Style TargetType="Label" x:Key="SubHeadline">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light=#3C3489, Dark=#C8BFFF}" />
+        <Setter Property="TextColor" Value="White" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="HorizontalOptions" Value="Center" />
@@ -313,7 +316,7 @@
     </Style>
 
     <Style TargetType="Picker">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=#EDE8FF}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=White}" />
         <Setter Property="TitleColor" Value="{AppThemeBinding Light=#5B4BC4, Dark=#AFA9EC}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
@@ -336,7 +339,7 @@
     </Style>
 
     <Style TargetType="DatePicker">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=#EDE8FF}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=White}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
         <Setter Property="FontSize" Value="14"/>
@@ -357,7 +360,7 @@
     </Style>
 
     <Style TargetType="TimePicker">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=#EDE8FF}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=White}" />
         <Setter Property="BackgroundColor" Value="Transparent"/>
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
         <Setter Property="FontSize" Value="14"/>
@@ -378,7 +381,7 @@
     </Style>
 
     <Style TargetType="SearchBar">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=#EDE8FF}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1E1660, Dark=White}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light=#7F77DD, Dark=#534AB7}" />
         <Setter Property="CancelButtonColor" Value="{AppThemeBinding Light=#5B4BC4, Dark=#C8BFFF}" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E4DEFF, Dark=#1A1640}" />

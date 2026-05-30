@@ -307,6 +307,13 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
     private async void OnAddTransactionClicked(object sender, EventArgs e)
     {
+        if (sender is View v)
+        {
+            await v.ScaleTo(0.96, 80, Easing.CubicIn);
+            await v.ScaleTo(1.0, 80, Easing.CubicOut);
+        }
+
+
         // 1. КРИТИЧЕСКАЯ ПРОВЕРКА: выбран ли режим и категория
         // Так как при старте ничего не горит, ItemsSource у пикера равен null.
         // ПРОВЕРКА: Если выбрана заглушка или ничего не выбрано — стопим процесс
@@ -378,6 +385,61 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         {
             // Если пользователь ввел буквы или оставил поле суммы пустым
             await DisplayAlert("Monolith OS", "Пожалуйста, введите корректную сумму операции.", "OK");
+        }
+    }
+    private bool _glowAnimRunning = false;
+
+    private async void OnAddBtnHoverEnter(object sender, PointerEventArgs e)
+    {
+        _glowAnimRunning = true;
+        _ = RunGlowAnimation();
+    }
+
+    private async void OnAddBtnHoverExit(object sender, PointerEventArgs e)
+    {
+        _glowAnimRunning = false;
+        GlowWrapper.Stroke = new SolidColorBrush(Colors.Transparent);
+        //GlowWrapper.StrokeThickness = 0;
+    }
+
+    private async Task RunGlowAnimation()
+    {
+        while (_glowAnimRunning)
+        {
+            GlowWrapper.Stroke = new LinearGradientBrush(
+                new GradientStopCollection {
+                new GradientStop(Colors.Transparent, 0.0f),
+                new GradientStop(Color.FromArgb("#00F2FF"), 0.5f),
+                new GradientStop(Colors.Transparent, 1.0f)
+                }, new Point(0, 0), new Point(1, 0));
+            await Task.Delay(500);
+            if (!_glowAnimRunning) break;
+
+            GlowWrapper.Stroke = new LinearGradientBrush(
+                new GradientStopCollection {
+                new GradientStop(Colors.Transparent, 0.0f),
+                new GradientStop(Color.FromArgb("#D946EF"), 0.5f),
+                new GradientStop(Colors.Transparent, 1.0f)
+                }, new Point(0, 0), new Point(0, 1));
+            await Task.Delay(500);
+            if (!_glowAnimRunning) break;
+
+            GlowWrapper.Stroke = new LinearGradientBrush(
+                new GradientStopCollection {
+                new GradientStop(Colors.Transparent, 0.0f),
+                new GradientStop(Color.FromArgb("#00F2FF"), 0.5f),
+                new GradientStop(Colors.Transparent, 1.0f)
+                }, new Point(1, 0), new Point(0, 0));
+            await Task.Delay(500);
+            if (!_glowAnimRunning) break;
+
+            GlowWrapper.Stroke = new LinearGradientBrush(
+                new GradientStopCollection {
+                new GradientStop(Colors.Transparent, 0.0f),
+                new GradientStop(Color.FromArgb("#D946EF"), 0.5f),
+                new GradientStop(Colors.Transparent, 1.0f)
+                }, new Point(0, 1), new Point(0, 0));
+            await Task.Delay(500);
         }
     }
     private async Task CheckNewAchievements()
@@ -526,6 +588,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     // ДОБАВЛЕНИЕ КОПИЛКИ
     private async void OnAddGoalClicked(object sender, EventArgs e)
     {
+        if (sender is Button b2) await AnimateButton(b2);
         // Убираем возможные пробелы и меняем запятую на точку для парсинга
         string name = GoalNameEntry.Text?.Trim();
         string targetText = GoalTargetEntry.Text?.Replace(',', '.');
@@ -557,6 +620,11 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     // ДОБАВЛЕНИЕ ПОДПИСКИ
     private async void OnAddSubscriptionClicked(object sender, EventArgs e)
     {
+        if (sender is Button btn)
+        {
+            await btn.ScaleTo(0.9, 80, Easing.CubicIn);
+            await btn.ScaleTo(1.0, 80, Easing.CubicOut);
+        }
         string name = SubNameEntry.Text?.Trim();
         string priceText = SubPriceEntry.Text?.Replace(',', '.');
 
@@ -590,6 +658,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     }
     private async void OnDepositGoalClicked(object sender, EventArgs e)
     {
+        if (sender is Button b3) await AnimateButton(b3);
         if ((sender as Button)?.CommandParameter is not SavingsGoal goal)
             return;
 
@@ -652,9 +721,19 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             await DisplayAlert("Ошибка", $"Не удалось пополнить цель: {ex.Message}", "OK");
         }
     }
-
+    private async Task AnimateButton(Button btn)
+    {
+        await btn.ScaleTo(0.93, 80, Easing.CubicIn);
+        await btn.ScaleTo(1.0, 80, Easing.CubicOut);
+    }
     private async void OnDeleteGoalClicked(object sender, EventArgs e)
     {
+        if (sender is Button b4) await AnimateButton(b4);
+        if (sender is Button btn)
+        {
+            await btn.ScaleTo(0.85, 80, Easing.CubicIn);
+            await btn.ScaleTo(1.0, 80, Easing.CubicOut);
+        }
         if ((sender as Button)?.CommandParameter is not SavingsGoal goal)
             return;
 
@@ -685,6 +764,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     #region --- 6. ЛОГИКА ПОДПИСОК ---
     private async void OnDeleteSubscriptionClicked(object sender, EventArgs e)
     {
+        if (sender is Button b8) await AnimateButton(b8);
         if ((sender as Button)?.CommandParameter is not Subscription sub)
             return;
 
@@ -924,6 +1004,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     }
     private async void OnResetStatsClicked(object sender, EventArgs e)
     {
+        if (sender is Button b7) await AnimateButton(b7);
         // Спрашиваем подтверждение, чтобы случайно всё не удалить
         bool answer = await DisplayAlert("Очистка", "Вы уверены, что хотите удалить все записи о тратах и доходах?", "Да", "Нет");
 
@@ -1046,6 +1127,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     }
     private async void OnShareReportClicked(object sender, EventArgs e)
     {
+        if (sender is Button b5) await AnimateButton(b5);
         try
         {
             // 1. Получаем все данные
@@ -1093,6 +1175,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     }
     private async void OnExportPdfClicked(object sender, EventArgs e)
     {
+        if (sender is Button b6) await AnimateButton(b6);
         try
         {
             var document = new PdfSharpCore.Pdf.PdfDocument();

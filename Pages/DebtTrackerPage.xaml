@@ -44,7 +44,7 @@
                             StrokeShape="RoundRectangle 8" Padding="10,0">
                         <Entry x:Name="AmountEntry" Placeholder="Сумма" FontFamily="Inter"
                                FontAttributes="Bold" Keyboard="Numeric" Margin="-9.5"
-                               PlaceholderColor="#5A4A7A" TextColor="#D946EF"/>
+                               PlaceholderColor="#5A4A7A" TextColor="White"/>
                     </Border>
                 </Grid>
 

@@ -106,6 +106,7 @@ public partial class DebtTrackerPage : ContentPage
 
     private async void OnAddDebtClicked(object sender, EventArgs e)
     {
+        if (sender is Button btn) await AnimateButton(btn);
         if (string.IsNullOrWhiteSpace(PersonEntry.Text) ||
             string.IsNullOrWhiteSpace(AmountEntry.Text))
         {
@@ -139,6 +140,7 @@ public partial class DebtTrackerPage : ContentPage
 
     private async void OnCloseDebtClicked(object sender, EventArgs e)
     {
+        if (sender is Button b2) await AnimateButton(b2);
         if (sender is Button btn && btn.CommandParameter is Debt debt)
         {
             bool confirm = await DisplayAlert(
@@ -178,9 +180,14 @@ public partial class DebtTrackerPage : ContentPage
                 "OK");
         }
     }
-
+    private async Task AnimateButton(View btn)
+    {
+        await btn.ScaleTo(0.93, 80, Easing.CubicIn);
+        await btn.ScaleTo(1.0, 80, Easing.CubicOut);
+    }
     private async void OnDeleteDebtClicked(object sender, EventArgs e)
     {
+        if (sender is Button b3) await AnimateButton(b3);
         if (sender is Button btn && btn.CommandParameter is Debt debt)
         {
             bool confirm = await DisplayAlert("Удалить?", $"Удалить долг {debt.PersonName}?", "Да", "Нет");
@@ -194,6 +201,7 @@ public partial class DebtTrackerPage : ContentPage
 
     private async void OnCloseClicked(object sender, EventArgs e)
     {
+        if (sender is View v) await AnimateButton(v);
         await Navigation.PopModalAsync();
     }
 }

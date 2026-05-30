@@ -178,7 +178,7 @@
                         </Border>
 
                         <Border Stroke="#3D2B5E" StrokeThickness="0" BackgroundColor="#0B011D" StrokeShape="RoundRectangle 8" Padding="10,2">
-                            <Entry x:Name="AmountEntry" Placeholder="Сумма" Margin="-9.5" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" PlaceholderColor="#5A4A7A" TextColor="#2DD4BF"/>
+                            <Entry x:Name="AmountEntry" Placeholder="Сумма" Margin="-9.5" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" PlaceholderColor="#5A4A7A" TextColor="White"/>
                         </Border>
 
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="1">
@@ -224,17 +224,37 @@
                             <Picker x:Name="CategoryPicker" Margin="-9.5" FontAttributes="Bold" FontFamily="Inter" TextColor="White" TitleColor="#A78BFA" HorizontalOptions="Fill" VerticalOptions="Center"/>
                         </Border>
 
-                        <Button x:Name="AddTransactionBtn" Text="ДОБАВИТЬ ЗАПИСЬ" Style="{StaticResource SynthwaveButton}" FontAttributes="Bold" FontFamily="Orbitron" Clicked="OnAddTransactionClicked" TextColor="White" HeightRequest="50" CharacterSpacing="1" Margin="0,5,0,0">
-                            <Button.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                    <GradientStop Color="#8B5CF6" Offset="0.1" />
-                                    <GradientStop Color="#D946EF" Offset="1.0" />
-                                </LinearGradientBrush>
-                            </Button.Background>
-                            <Button.Shadow>
-                                <Shadow Brush="#D946EF" Offset="0,0" Radius="15" Opacity="0.3" />
-                            </Button.Shadow>
-                        </Button>
+                        <Border x:Name="GlowWrapper"
+        StrokeShape="RoundRectangle 14"
+        StrokeThickness="2"
+        Stroke="Transparent"
+        BackgroundColor="Transparent"
+        Margin="0,5,0,0">
+                            <Border x:Name="AddTransactionBorder"
+            StrokeShape="RoundRectangle 14"
+            StrokeThickness="0"
+            HeightRequest="50"
+            Margin="1">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#8B5CF6" Offset="0.1" />
+                                        <GradientStop Color="#D946EF" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.Shadow>
+                                    <Shadow Brush="#D946EF" Offset="0,0" Radius="15" Opacity="0.3" />
+                                </Border.Shadow>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnAddTransactionClicked"/>
+                                    <PointerGestureRecognizer
+                PointerEntered="OnAddBtnHoverEnter"
+                PointerExited="OnAddBtnHoverExit"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="ДОБАВИТЬ ЗАПИСЬ" FontFamily="Orbitron" FontAttributes="Bold"
+               TextColor="White" FontSize="14" CharacterSpacing="1"
+               HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
+                        </Border>
                     </VerticalStackLayout>
                 </Border>
 
@@ -245,7 +265,7 @@
                         <Border Stroke="#3D2B5E" Padding="10" StrokeShape="RoundRectangle 12" BackgroundColor="#1A1033">
                             <Grid ColumnDefinitions="*, *, Auto" ColumnSpacing="10">
                                 <Entry x:Name="GoalNameEntry" Placeholder="Название" FontAttributes="Bold" FontFamily="Inter" TextColor="White" PlaceholderColor="#5A4A7A"/>
-                                <Entry Grid.Column="1" x:Name="GoalTargetEntry" Placeholder="Сумма" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="#2DD4BF" PlaceholderColor="#5A4A7A"/>
+                                <Entry Grid.Column="1" x:Name="GoalTargetEntry" Placeholder="Сумма" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="White" PlaceholderColor="#5A4A7A"/>
                                 <Button Grid.Column="2" Text="💲" Clicked="OnAddGoalClicked" 
         BackgroundColor="#8B5CF6" WidthRequest="45" HeightRequest="45"
         CornerRadius="10" Padding="0" FontSize="18"/>
@@ -289,11 +309,18 @@
                     <VerticalStackLayout Spacing="10">
                         <Label Text="ПОДПИСКИ" FontFamily="Orbitron" FontAttributes="Bold" FontSize="16" TextColor="#A78BFA" Margin="0,5,0,0" CharacterSpacing="1"/>
                         <Border Stroke="#3D2B5E" Background="#1A1033" Padding="10" StrokeShape="RoundRectangle 12">
-                            <Grid ColumnDefinitions="*, 80, 80, 45" ColumnSpacing="5">
-                                <Entry x:Name="SubNameEntry" Placeholder="Имя" FontFamily="Inter" FontAttributes="Bold" TextColor="White" PlaceholderColor="#5A4A7A"/>
-                                <Entry Grid.Column="1" x:Name="SubPriceEntry" Placeholder="Цена" FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric" TextColor="#D946EF" PlaceholderColor="#5A4A7A" WidthRequest="80"/>
-                                <DatePicker Grid.Column="2" x:Name="SubDatePicker" FontFamily="RobotoMono" FontAttributes="Bold" Format="dd/MM" TextColor="White" FontSize="11" WidthRequest="80"/>
-                                <Button Grid.Column="3" Text="➕" Clicked="OnAddSubscriptionClicked" BackgroundColor="#D946EF" WidthRequest="45" HeightRequest="45" CornerRadius="10" Padding="0" FontSize="16"/>
+                            <Grid ColumnDefinitions="*, *, 75, 50" ColumnSpacing="8">
+                                <Entry x:Name="SubNameEntry" Placeholder="Имя" FontFamily="Inter"
+               FontAttributes="Bold" TextColor="White" PlaceholderColor="#5A4A7A"/>
+                                <Entry Grid.Column="1" x:Name="SubPriceEntry" Placeholder="Цена"
+               FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric"
+               TextColor="White" PlaceholderColor="#5A4A7A"/>
+                                <DatePicker Grid.Column="2" x:Name="SubDatePicker" FontFamily="RobotoMono"
+                    FontAttributes="Bold" Format="dd/MM" TextColor="White"
+                    FontSize="12" WidthRequest="75"/>
+                                <Button Grid.Column="3" Text="➕" Clicked="OnAddSubscriptionClicked"
+                BackgroundColor="#D946EF" WidthRequest="45" HeightRequest="45"
+                CornerRadius="10" Padding="0" FontSize="16"/>
                             </Grid>
                         </Border>
 
@@ -315,12 +342,17 @@
                 VerticalOptions="Fill">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="models:Subscription">
-                                    <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" Margin="0,5" Padding="12" StrokeShape="RoundRectangle 12">
-                                        <Grid ColumnDefinitions="40, *, Auto, 40">
+                                    <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" Margin="0,5" 
+                    Padding="12" StrokeShape="RoundRectangle 12">
+                                        <Grid ColumnDefinitions="40, *, Auto, 10, 40">
                                             <Label Text="💳" FontSize="18" VerticalOptions="Center"/>
-                                            <Label Grid.Column="1" Text="{Binding Name}" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" Margin="10,0"/>
-                                            <Label Grid.Column="2" Text="{Binding Price}" FontAttributes="Bold" TextColor="#D946EF" FontSize="14" VerticalOptions="Center"/>
-                                            <Button Grid.Column="3" Text="✕" Clicked="OnDeleteSubscriptionClicked" CommandParameter="{Binding .}" BackgroundColor="Transparent" TextColor="#5A4A7A" FontSize="14"/>
+                                            <Label Grid.Column="1" Text="{Binding Name}" FontAttributes="Bold" 
+                           TextColor="White" VerticalOptions="Center" Margin="10,0"/>
+                                            <Label Grid.Column="2" Text="{Binding DisplayPrice}" FontAttributes="Bold" 
+                           TextColor="White" FontSize="14" VerticalOptions="Center"/>
+                                            <Button Grid.Column="4" Text="✕" Clicked="OnDeleteSubscriptionClicked" 
+                            CommandParameter="{Binding .}" BackgroundColor="Transparent" 
+                            TextColor="#5A4A7A" FontSize="14" Padding="0"/>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>

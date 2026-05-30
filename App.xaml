@@ -83,6 +83,7 @@
                                     <Setter Property="BackgroundColor" Value="#3D2570" />
                                     <Setter Property="BorderColor" Value="#00F2FF" />
                                     <Setter Property="Scale" Value="1.03" />
+                                    <Setter Property="CornerRadius" Value="10" />
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Normal">
