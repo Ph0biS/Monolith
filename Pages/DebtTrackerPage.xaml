@@ -161,23 +161,23 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Debt">
                     <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" StrokeThickness="1"
-                            Margin="0,5" Padding="14" StrokeShape="RoundRectangle 12">
+                            Margin="0,6" Padding="16" StrokeShape="RoundRectangle 12">
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
                             <Label Text="{Binding DirectionIcon}" FontSize="24"
                                    VerticalOptions="Center"/>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
                                 <Label Text="{Binding PersonName}" FontAttributes="Bold"
-                                       TextColor="White" FontSize="15"/>
+                                       TextColor="White" FontSize="18"/>
                                 <Label Text="{Binding DirectionText}" FontFamily="JetBrainsMono"
-                                       FontSize="10" TextColor="#A78BFA"/>
-                                <Label Text="{Binding Description}" FontSize="11"
+                                       FontSize="14" TextColor="#A78BFA"/>
+                                <Label Text="{Binding Description}" FontSize="14"
                                        TextColor="#5A4A7A" IsVisible="{Binding HasDescription}"/>
                                 <Label Text="{Binding StatusText}" FontFamily="JetBrainsMono"
-                                       FontSize="10" TextColor="#4D3B6D"/>
+                                       FontSize="13" TextColor="#4D3B6D"/>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="2" Spacing="5" VerticalOptions="Center">
                                 <Label Text="{Binding AmountText}" FontFamily="Orbitron"
-                                       FontAttributes="Bold" FontSize="14"
+                                       FontAttributes="Bold" FontSize="18"
                                        TextColor="{Binding AmountColor}"
                                        HorizontalOptions="End"/>
                                 <HorizontalStackLayout Spacing="5" HorizontalOptions="End">

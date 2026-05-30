@@ -31,20 +31,23 @@
             </Border>
 
             <CollectionView x:Name="AnalyticsList">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+                </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Stroke="#3D2B5E" StrokeShape="RoundRectangle 15" BackgroundColor="#1A1033" Padding="15" Margin="0,5">
-                            <VerticalStackLayout Spacing="10">
+                        <Border Stroke="#3D2B5E" StrokeShape="RoundRectangle 15" BackgroundColor="#1A1033" Padding="16" Margin="0">
+                            <VerticalStackLayout Spacing="14">
                                 <Grid ColumnDefinitions="*, Auto">
                                     <Label Text="{Binding Category}"
                                            FontFamily="MontserratBold" FontAttributes="Bold"
-                                           FontSize="14"
+                                           FontSize="15"
                                            TextColor="White"/>
 
                                     <Label Grid.Column="1"
                                            Text="{Binding AmountText}" FontAttributes="Bold"
                                            FontFamily="JetBrainsMono"
-                                           FontSize="15"
+                                           FontSize="16"
                                            TextColor="#2DD4BF"/>
                                 </Grid>
 
@@ -55,7 +58,7 @@
 
                                 <Label Text="{Binding PercentageText}" FontAttributes="Bold"
                                        FontFamily="RobotoMono"
-                                       FontSize="11"
+                                       FontSize="12"
                                        TextColor="#A78BFA"
                                        HorizontalOptions="End"/>
                             </VerticalStackLayout>
