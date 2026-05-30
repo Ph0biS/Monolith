@@ -120,8 +120,6 @@
 | **📱 Связь** | Cyan | `#06B6D4` | 🩵 |
 | **💰 Зарплата** | Matrix Green | `#22C55E` | ❇️ |
 | **🎁 Подарок** | Amber | `#F59E0B` | 🟤 |
-| **💰 Возврат долга** | Teal | `#2DD4BF` | 🟢 |
-| **💸 Выплата долга** | Magenta | `#D946EF` | 🟣 |
 
 ---
 
@@ -208,5 +206,5 @@ dotnet build PROJECT.csproj
 ---
 
 <p align="center">
-  <sub>MONOLITH OS v1.0.0 · ENCRYPTED · SECURE · OFFLINE-READY</sub>
+  <sub>MONOLITH OS v1.0.0 · ENCRYPTED · SECURE · ONLINE-READY</sub>
 </p>
