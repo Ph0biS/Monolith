@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PROJECT.Models; // Добавляем эту строку, чтобы сервис увидел Transaction
+using PROJECT.Models; 
 
 namespace PROJECT.Services;
 
@@ -11,7 +11,6 @@ public class FinanceService
     public static double CalculateTotalExpenses(List<Transaction> transactions)
     {
         // Считаем сумму только для тех операций, где IsIncome == false (расходы)
-        // Если твоя логика в коде на скрине подразумевала траты, проверь условие !t.IsIncome
         return (double)transactions.Where(t => !t.IsIncome).Sum(t => t.Amount);
     }
 

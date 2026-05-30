@@ -33,7 +33,7 @@ public partial class App : Application
             // Меняем фон во всех открытых окнах (если нужно)
             Application.Current.UserAppTheme = isDark ? AppTheme.Dark : AppTheme.Light;
 
-            // Прямая установка для твоего шаблона (по ключу или свойству)
+            // Прямая установка для шаблона (по ключу или свойству)
             // Но лучше всего - использовать прослойку:
             MessagingCenter.Send(Current, "ThemeChanged", gradient);
         }
@@ -58,8 +58,16 @@ public partial class App : Application
             }
         }
     }
+ 
+    private async void OnLogoTapped(object sender, TappedEventArgs e)
+    {
+        if (Application.Current?.MainPage is AppShell shell)
+        {
+            await shell.Navigation.PushModalAsync(new Pages.DebtTrackerPage());
+        }
+    }
     // Добавляем этот метод для управления окном
-  protected override Window CreateWindow(IActivationState? activationState)
+    protected override Window CreateWindow(IActivationState? activationState)
 {
     var window = base.CreateWindow(activationState);
 

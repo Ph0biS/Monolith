@@ -211,17 +211,25 @@
                     <!-- ── Header ── -->
                     <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Padding="15,0">
                         <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                            <Border Stroke="#00F2FF" StrokeThickness="2" HeightRequest="58" WidthRequest="58"
-        StrokeShape="RoundRectangle 14" BackgroundColor="#1A1033"
-        VerticalOptions="Center">
-                                <Image Source="logomain.png" Aspect="Fill" Margin="0" />
-                                <Border.Shadow>
-                                    <Shadow Brush="#00F2FF" Opacity="0.8" Radius="15" Offset="0,0" />
-                                </Border.Shadow>
-                            </Border>
+                            <VerticalStackLayout Spacing="2">
+                                <Border Stroke="#00F2FF" StrokeThickness="2" HeightRequest="58" WidthRequest="58"
+                StrokeShape="RoundRectangle 14" BackgroundColor="#1A1033"
+                VerticalOptions="Center">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnLogoTapped"/>
+                                    </Border.GestureRecognizers>
+                                    <Image Source="logomain.png" Aspect="Fill" Margin="0" />
+                                    <Border.Shadow>
+                                        <Shadow Brush="#00F2FF" Opacity="0.8" Radius="15" Offset="0,0" />
+                                    </Border.Shadow>
+                                </Border>
+                                <Label Text="💀 ДОЛГИ" FontFamily="JetBrainsMono" FontSize="10"
+       TextColor="#D946EF" HorizontalOptions="Center"
+       FontAttributes="Bold" CharacterSpacing="1"/>
+                            </VerticalStackLayout>
                             <Label Text="MONOLITH" FontSize="22" TextColor="White"
-               FontFamily="Orbitron" FontAttributes="Bold"
-               VerticalOptions="Center" Margin="5,0,0,0"/>
+           FontFamily="Orbitron" FontAttributes="Bold"
+           VerticalOptions="Center" Margin="5,0,0,0"/>
                         </HorizontalStackLayout>
                         <Label Grid.Column="2"
            Text="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.CurrentTime}"

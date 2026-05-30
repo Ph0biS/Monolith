@@ -61,11 +61,8 @@ public partial class ForecastPage : ContentPage
                 foreach (var t in transactions)
                 {
                     // 1. Убираем проверку IsNullOrWhiteSpace, так как DateTime не может быть пустым.
-                    // 2. Оставляем только проверку на доход, если ты считаешь только расходы.
-                    if (t.IsIncome) continue;
-
-                    // 3. Теперь нам не нужен TryParseExact, так как t.Date — это уже готовый объект DateTime.
-                    // Мы можем просто сравнить месяц напрямую.
+                    // 2. Оставляем только проверку на доход
+                    if (t.IsIncome) continue;      
                     if (t.Date.Month == DateTime.Now.Month && t.Date.Year == DateTime.Now.Year)
                     {
                         currentMonthExpenses += (double)t.Amount;

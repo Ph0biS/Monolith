@@ -70,21 +70,38 @@ namespace PROJECT.Models
         [Ignore]
         public string ProgressText => $"{CurrentAmount:N0} / {TargetAmount:N0} ₽";
     }
+    public class Debt
+    {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+        public string PersonName { get; set; } = "";
+        public double Amount { get; set; }
+        public string Direction { get; set; } = "tome";
+        public string Description { get; set; } = "";
+        public DateTime Date { get; set; } = DateTime.Now;
+        public bool IsClosed { get; set; } = false;
 
+        public string DirectionIcon => Direction == "tome" ? "💰" : "💸";
+        public string DirectionText => Direction == "tome" ? "должен мне" : "я должен";
+        public string AmountText => $"{Amount:N0} ₽";
+        public string StatusText => IsClosed ? "✅ Закрыт" : "⏳ Активен";
+        public string AmountColor => Direction == "tome" ? "#2DD4BF" : "#D946EF";
+        public bool HasDescription => !string.IsNullOrEmpty(Description);
+        public bool IsActive => !IsClosed;
+    }
     public class Subscription
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
         public string Name { get; set; }
-        public decimal Price { get; set; } // Оставляем Price, как было у тебя
-        public int PaymentDay { get; set; } // Это добавляем
-        public DateTime NextPaymentDate { get; set; } // Это было в твоем коде
+        public decimal Price { get; set; } 
+        public int PaymentDay { get; set; } 
+        public DateTime NextPaymentDate { get; set; } 
         public bool IsActive { get; set; }
         // Для вывода в списке
         [Ignore]
         public string PaymentInfo => $"Списание: {NextPaymentDate:dd.MM.yyyy}";
 
-        // Статические поля для конвертации курсов (те, что у тебя уже были)
         public static decimal CurrentRate { get; set; } = 1.0m;
         public static string CurrentSymbol { get; set; } = "₽";
 
@@ -120,7 +137,7 @@ namespace PROJECT.Models
     }
     public class Achievement
     {
-        [SQLite.PrimaryKey] // Если используешь в БД, это поле будет ключом
+        [SQLite.PrimaryKey] 
         public string Name { get; set; }
 
         public string Title { get; set; }
@@ -134,6 +151,7 @@ namespace PROJECT.Models
         public double Progress => TargetValue > 0 ? Math.Min(CurrentValue / TargetValue, 1.0) : 0;
         public string ProgressText => $"{CurrentValue:N0} / {TargetValue:N0}";
     }
+
     public partial class TransactionGroup : List<Transaction>
     {
         public string Date { get; private set; }

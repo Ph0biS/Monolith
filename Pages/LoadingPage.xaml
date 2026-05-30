@@ -122,8 +122,8 @@
                         <Label Text="SECURE" FontFamily="JetBrainsMono" FontSize="9" TextColor="#D946EF" />
                     </Border>
                     <Border StrokeShape="RoundRectangle 4" BackgroundColor="#1A1033"
-                            Stroke="#4D3B6D" StrokeThickness="1" Padding="8,4">
-                        <Label Text="OFFLINE-READY" FontFamily="JetBrainsMono" FontSize="9" TextColor="#4D3B6D" />
+                            Stroke="#00F2FF" StrokeThickness="1" Padding="8,4">
+                        <Label Text="OFFLINE-READY" FontFamily="JetBrainsMono" FontSize="9" TextColor="#00F2FF" />
                     </Border>
                 </HorizontalStackLayout>
 

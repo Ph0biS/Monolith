@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:PROJECT.Models"
+             x:Class="PROJECT.Pages.DebtTrackerPage"
+             BackgroundColor="#0D081F"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, *" Padding="20">
+
+        <!-- Хедер -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,10,0,20">
+            <VerticalStackLayout>
+                <Label Text="💀 DEBT TRACKER" FontFamily="Inter" FontAttributes="Bold"
+                       FontSize="18" TextColor="#D946EF" CharacterSpacing="1"/>
+                <Label Text="// СИСТЕМА УЧЁТА ДОЛГОВ" FontFamily="Inter" FontAttributes="Bold"
+                       FontSize="10" TextColor="#4D3B6D"/>
+            </VerticalStackLayout>
+            <Border Grid.Column="1" Stroke="#D946EF" StrokeThickness="1.5"
+                    StrokeShape="RoundRectangle 10" BackgroundColor="#2A0F1A"
+                    VerticalOptions="Center" Padding="12,6">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCloseClicked"/>
+                </Border.GestureRecognizers>
+                <Label Text="✕ ЗАКРЫТЬ" FontFamily="JetBrainsMono" FontSize="11"
+                       FontAttributes="Bold" TextColor="#D946EF" CharacterSpacing="1"/>
+            </Border>
+        </Grid>
+
+        <!-- Форма добавления -->
+        <Border Grid.Row="1" BackgroundColor="#1A1033" Stroke="#D946EF"
+                StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="15" Margin="0,0,0,15">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="НОВЫЙ ДОЛГ" FontFamily="Inter" FontAttributes="Bold" FontSize="11"
+                       TextColor="#D946EF" CharacterSpacing="1"/>
+
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                    <Border BackgroundColor="#0B011D" StrokeThickness="0"
+                            StrokeShape="RoundRectangle 8" Padding="10,0">
+                        <Entry x:Name="PersonEntry" Placeholder="Имя" FontFamily="Inter" Margin="-9.5"
+                               FontAttributes="Bold" PlaceholderColor="#5A4A7A" TextColor="White"/>
+                    </Border>
+                    <Border Grid.Column="1" BackgroundColor="#0B011D" StrokeThickness="0"
+                            StrokeShape="RoundRectangle 8" Padding="10,0">
+                        <Entry x:Name="AmountEntry" Placeholder="Сумма" FontFamily="Inter"
+                               FontAttributes="Bold" Keyboard="Numeric" Margin="-9.5"
+                               PlaceholderColor="#5A4A7A" TextColor="#D946EF"/>
+                    </Border>
+                </Grid>
+
+                <Border BackgroundColor="#0B011D" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 8" Padding="10,0">
+                    <Entry x:Name="DescEntry" Placeholder="Описание (необязательно)" Margin="-9.5"
+                           FontFamily="Inter" FontAttributes="Bold" PlaceholderColor="#5A4A7A" TextColor="White"/>
+                </Border>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Border x:Name="BtnToMeBorder" Stroke="#2DD4BF" StrokeThickness="1.5"
+                            StrokeShape="RoundRectangle 10" HeightRequest="42" BackgroundColor="Transparent">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnToMeTapped"/>
+                        </Border.GestureRecognizers>
+                        <Label x:Name="LblToMe" Text="💰 МНЕ ДОЛЖНЫ"
+                               FontFamily="Inter" FontSize="10" FontAttributes="Bold"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+                               TextColor="#2DD4BF"/>
+                    </Border>
+                    <Border x:Name="BtnFromMeBorder" Grid.Column="1" Stroke="#D946EF"
+                            StrokeThickness="1.5" StrokeShape="RoundRectangle 10"
+                            HeightRequest="42" BackgroundColor="Transparent">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFromMeTapped"/>
+                        </Border.GestureRecognizers>
+                        <Label x:Name="LblFromMe" Text="💸 Я ДОЛЖЕН"
+                               FontFamily="Inter" FontSize="10" FontAttributes="Bold"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+                               TextColor="#D946EF"/>
+                    </Border>
+                </Grid>
+
+                <Button Text="ДОБАВИТЬ ДОЛГ" FontFamily="Inter" FontAttributes="Bold"
+                        Clicked="OnAddDebtClicked" HeightRequest="45" CharacterSpacing="1">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#8B5CF6" Offset="0.0"/>
+                            <GradientStop Color="#D946EF" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Итоги -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,0,0,15">
+            <Border BackgroundColor="#0F2A1A" Stroke="#2DD4BF" StrokeThickness="1"
+                    StrokeShape="RoundRectangle 12" Padding="12">
+                <VerticalStackLayout>
+                    <Label Text="МНЕ ДОЛЖНЫ" FontFamily="Inter" FontAttributes="Bold" FontSize="9"
+                           TextColor="#2DD4BF"/>
+                    <Label x:Name="TotalToMeLabel" Text="0 ₽" FontFamily="Orbitron"
+                           FontSize="16" FontAttributes="Bold" TextColor="#2DD4BF"/>
+                </VerticalStackLayout>
+            </Border>
+            <Border Grid.Column="1" BackgroundColor="#2A0F1A" Stroke="#D946EF"
+                    StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12">
+                <VerticalStackLayout>
+                    <Label Text="Я ДОЛЖЕН" FontFamily="Inter" FontAttributes="Bold" FontSize="9"
+                           TextColor="#D946EF"/>
+                    <Label x:Name="TotalFromMeLabel" Text="0 ₽" FontFamily="Orbitron"
+                           FontSize="16" FontAttributes="Bold" TextColor="#D946EF"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Atlas AI блок -->
+        <Border Grid.Row="3" BackgroundColor="#0F172A" Stroke="#D946EF" StrokeThickness="1.5"
+                StrokeShape="RoundRectangle 14" Padding="15" Margin="0,0,0,15">
+            <Grid ColumnDefinitions="Auto, *">
+                <Label Text="💀" FontSize="20" VerticalOptions="Center" Margin="0,0,10,0"/>
+                <VerticalStackLayout Grid.Column="1" Spacing="3">
+                    <Label Text="DEBT_TRACKER // ATLAS AI" TextColor="#D946EF"
+                           FontFamily="Inter" FontAttributes="Bold" FontSize="10" CharacterSpacing="1"/>
+                    <Label x:Name="AtlasDebtLabel"
+                           Text="Система мониторинга долгов активна. Добавьте первый долг чтобы я начал отслеживать твои финансовые обязательства."
+                           TextColor="#A78BFA" FontSize="12" FontFamily="Inter"
+                           FontAttributes="Bold" LineBreakMode="WordWrap"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Декоративный блок -->
+        <VerticalStackLayout Grid.Row="4" HorizontalOptions="Center" Spacing="6" Margin="0,5,0,10">
+            <Label Text="─────────────────────────────"
+                   FontFamily="JetBrainsMono" FontSize="11"
+                   TextColor="#2A1B4E" HorizontalOptions="Center"/>
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="20">
+                <Label Text="&gt; ENCRYPT: AES-256" FontFamily="JetBrainsMono"
+                       FontSize="10" TextColor="#2A1B4E"/>
+                <Label Text="&gt; SYNC: LOCAL" FontFamily="JetBrainsMono"
+                       FontSize="10" TextColor="#2A1B4E"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,5,0,0">
+                <Border StrokeShape="RoundRectangle 4" BackgroundColor="#1A1033"
+                        Stroke="#D946EF" StrokeThickness="1" Padding="8,4">
+                    <Label Text="DEBT_TRACKER v1.0" FontFamily="JetBrainsMono"
+                           FontSize="9" TextColor="#D946EF"/>
+                </Border>
+                <Border StrokeShape="RoundRectangle 4" BackgroundColor="#1A1033"
+                        Stroke="#2DD4BF" StrokeThickness="1" Padding="8,4">
+                    <Label Text="MONOLITH OS" FontFamily="JetBrainsMono"
+                           FontSize="9" TextColor="#2DD4BF"/>
+                </Border>
+            </HorizontalStackLayout>
+            <Label Text="─────────────────────────────"
+                   FontFamily="JetBrainsMono" FontSize="11"
+                   TextColor="#2A1B4E" HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <!-- Список долгов -->
+        <CollectionView Grid.Row="5" x:Name="DebtsCollection">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Debt">
+                    <Border BackgroundColor="#1A1033" Stroke="#3D2B5E" StrokeThickness="1"
+                            Margin="0,5" Padding="14" StrokeShape="RoundRectangle 12">
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                            <Label Text="{Binding DirectionIcon}" FontSize="24"
+                                   VerticalOptions="Center"/>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="{Binding PersonName}" FontAttributes="Bold"
+                                       TextColor="White" FontSize="15"/>
+                                <Label Text="{Binding DirectionText}" FontFamily="JetBrainsMono"
+                                       FontSize="10" TextColor="#A78BFA"/>
+                                <Label Text="{Binding Description}" FontSize="11"
+                                       TextColor="#5A4A7A" IsVisible="{Binding HasDescription}"/>
+                                <Label Text="{Binding StatusText}" FontFamily="JetBrainsMono"
+                                       FontSize="10" TextColor="#4D3B6D"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2" Spacing="5" VerticalOptions="Center">
+                                <Label Text="{Binding AmountText}" FontFamily="Orbitron"
+                                       FontAttributes="Bold" FontSize="14"
+                                       TextColor="{Binding AmountColor}"
+                                       HorizontalOptions="End"/>
+                                <HorizontalStackLayout Spacing="5" HorizontalOptions="End">
+                                    <Button Text="✅" Clicked="OnCloseDebtClicked"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#2DD4BF" TextColor="#0B011D"
+                                            WidthRequest="32" HeightRequest="32"
+                                            CornerRadius="16" Padding="0" FontSize="12"
+                                            IsVisible="{Binding IsActive}"/>
+                                    <Button Text="🗑️" Clicked="OnDeleteDebtClicked"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#D946EF"
+                                            WidthRequest="32" HeightRequest="32"
+                                            CornerRadius="16" Padding="0" FontSize="10"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

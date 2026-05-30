@@ -5,7 +5,6 @@ using System.Windows.Input;
 
 namespace PROJECT.Pages;
 
-// Обязательно добавь : ContentPage, чтобы C# понимал, что это страница
 public partial class AchievementsPage : ContentPage
 {
     public ICommand GoToWalletCommand => new Command(async () => await Shell.Current.GoToAsync("//MainPage"));
@@ -19,7 +18,7 @@ public partial class AchievementsPage : ContentPage
         BindingContext = this;
     }
 
-    // Метод OnAppearing срабатывает каждый раз, когда ты открываешь эту вкладку
+    
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -28,7 +27,7 @@ public partial class AchievementsPage : ContentPage
         int unlocked = result.Count(a => a.IsUnlocked);
         TotalStatsLabel.Text = $"Разблокировано: {unlocked} / {result.Count}";
         AchievementsCollectionView.ItemsSource = result;
-        // ОТЛАДКА: Если ачивок 0, ты увидишь алерт при переходе на вкладку
+        
         if (result == null || result.Count == 0)
         {
             await DisplayAlert("Debug", "Список ачивок пуст!", "OK");
@@ -41,15 +40,13 @@ public partial class AchievementsPage : ContentPage
     {
         try
         {
-            // 1. Получаем всю историю транзакций из твоей базы
+            // 1. Получаем всю историю транзакций из базы
             var history = await App.Database.GetTransactionsAsync();
 
             // 2. Пропускаем историю через сервис ачивок
-            // (Убедись, что метод в сервисе называется CalculateAchievements)
             var achievements = AchievementService.CalculateAchievements(history);
 
-            // 3. Привязываем результат к CollectionView
-            // AchievementsCollectionView — это x:Name из твоего XAML
+            // 3. Привязываем результат к CollectionView        
             AchievementsCollectionView.ItemsSource = achievements;
         }
         catch (Exception ex)

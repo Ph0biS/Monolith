@@ -110,7 +110,7 @@ public partial class AnalyticsPage : ContentPage
         bool confirm = await DisplayAlert("Полный сброс", "Удалить все данные, включая копилки и подписки?", "Да", "Нет");
         if (confirm)
         {
-            await App.Database.ClearEverythingAsync(); // Метод, который мы создали в DatabaseService
+            await App.Database.ClearEverythingAsync(); 
             await LoadAnalyticsData(); // Обновляем текущую страницу
             await Shell.Current.GoToAsync("//MainPage"); // Возвращаемся, чтобы обнулить баланс
         }

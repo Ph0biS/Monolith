@@ -29,7 +29,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     private bool _isAnimating = false;
     private bool _isPageVisible;
     private string _selectedType = "";
-    // Те самые коллекции, которые теперь 100% привязаны к UI
     private CancellationTokenSource _animationCts;
     public ObservableCollection<Transaction> TransactionHistory { get; set; } = new();
     public ObservableCollection<SavingsGoal> UserSavings { get; set; } = new();
@@ -67,8 +66,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         CategoryPicker.SelectedIndex = 0;
         CurrencyPicker.SelectedItem = "RUB";
         PeriodPicker.SelectedItem = "Все время";
-        // Вставьте этот исправленный код:
-      
         BindableLayout.SetItemsSource(SavingsCollection, UserSavings);
         Subscriptions = new ObservableCollection<Subscription>();
     }
@@ -109,7 +106,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         }
         catch (OperationCanceledException)
         {
-            // Это ожидаемое исключение при отмене токена, просто игнорируем
+            // Это ожидаемое исключение при отмене токена
         }
         catch (Exception ex)
         {
@@ -119,9 +116,9 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     private void Switch_Toggled(object sender, ToggledEventArgs e)
     {
         // 1. Получаем Grid из шаблона (если он назван)
-        // Либо просто меняем общий ресурс, который использует твой шаблон
+        // Либо просто меняем общий ресурс, который использует шаблон
 
-        // Если твой шаблон использует StaticResource/DynamicResource:
+        // Если шаблон использует StaticResource/DynamicResource:
         Application.Current.Resources["ActiveBackground"] = e.Value ?
             Application.Current.Resources["DarkGradient"] :
             Application.Current.Resources["LightGradient"];
@@ -133,7 +130,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         _animationCts = new CancellationTokenSource();
         _ = RunPulseAnimation(BalanceLabel, _animationCts.Token);
         // 1. Сразу сбрасываем всё в Нейтральное состояние
-        // Это наш "Эталон" для запуска
         SetNeutralState();
 
         if (App.PreloadedTransactions != null)
@@ -194,8 +190,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         _isPulseRunning = false;
         _animationCts?.Cancel();
         _animationCts?.Dispose();
-        // Убиваем график при уходе. Когда вернешься через //, 
-        // OnAppearing создаст его заново — это чище для процессора.
+        // Убиваем график при уходе. 
+        // OnAppearing создаст его заново
 
     }
     #endregion
@@ -228,8 +224,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
                 // Принудительное обновление для CollectionView
                 SubsCollectionView.ItemsSource = null;
                 SubsCollectionView.ItemsSource = Subscriptions;
-
-                // --- ЛОГИКА ГРАФИКОВ (Chart vs Empty) ---
                 
                 // --- ЛОГИКА ПОДПИСОК ---
                 if (AtlasSubscriptionsPlaceholder != null)
@@ -297,11 +291,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         }
     }
 
-    // Этот метод вызывается каждый раз, когда ты меняешь период в Пикере
     private void OnPeriodChanged(object sender, EventArgs e)
     {
-        // Проверяем, что метод загрузки данных существует и вызываем его
-        // Он должен учитывать выбранный период при фильтрации
         _ = LoadDataFromDatabase();
     }
     #endregion
@@ -441,7 +432,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
                 new Point(0, 0), new Point(1, 0));
         }
     }
-    // Обрати внимание: bool? (с вопросиком) означает, что переменная может быть null
     private void UpdateButtonStyles(bool? isIncomeSelected)
     {
         // Одинаковый для всех "неактивный" стиль
@@ -516,8 +506,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         // 2. Блокируем пикер
         CategoryPicker.IsEnabled = false;
 
-        // Это твой хак для Mac Catalyst:
-       // CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
+        // Это хак для Mac Catalyst:
+        // CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
         CategoryPicker.SelectedIndex = 0;
     }
     
@@ -810,12 +800,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
     #region --- 8. СЕРВИСНЫЕ МЕТОДЫ ---
 
-    private void StartBalanceGlow()
-    {
-        _isGlowRunning = true;
-        BalanceLabel.FadeTo(0.6, 1500).ContinueWith(t => BalanceLabel.FadeTo(1.0, 1500));
-    }
-
     private Color GetColorForCategory(string cat) => cat switch
     {
         "🛒 Продукты" => Color.FromArgb("#2DD4BF"), // Бирюзовый
@@ -831,7 +815,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         _ => Color.FromArgb("#94A3B8")                // Серый (для остальных)
     };
 
-    // ===== HOVER: РАСХОД =====
+    // ===== HOVER: РАСХОД/ДОХОД =====
     private async void OnExpenseHoverEnter(object sender, PointerEventArgs e)
     {
         if (_selectedType == "expense") return;
@@ -925,7 +909,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     #endregion
     private async void OnExportDataClicked(object sender, EventArgs e)
     {
-        // Даже если здесь пока будет пусто, ошибка исчезнет
+        // Даже если здесь будет пусто, ошибка исчезнет
         await DisplayAlert("Экспорт", "Функция экспорта в CSV будет добавлена позже", "OK");
     }
     private async void OnResetStatsClicked(object sender, EventArgs e)
@@ -1011,9 +995,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
         await ChartV.ScaleTo(0.95, 50);
         await ChartV.ScaleTo(1.0, 50);
-
-        // УДАЛИЛИ ChartV.Chart = null;
-
         await Shell.Current.GoToAsync("StatisticsPage");
         _isAnimating = false;
     }
@@ -1025,9 +1006,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
         await Shell.Current.GoToAsync("..");
     }
-    // ///////////////////////////////////////////////////////////
-    // 
-    // ///////////////////////////////////////////////////////////
     private void UpdateDonutChart(List<ExpenseCategoryItem> data)
     {
         if (data == null || !data.Any())
@@ -1036,7 +1014,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             return;
         }
 
-        // Создаем записи для диаграммы на основе твоих данных из легенды
+        // Создаем записи для диаграммы на основе данных из легенды
         var entries = data.Select(d => new ChartEntry((float)d.Sum)
         {
             Label = d.Category,
@@ -1052,7 +1030,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             HoleRadius = 0.7f,              // Толщина кольца
             LabelTextSize = 35f,            // Размер текста подписей
             BackgroundColor = SKColors.Transparent,
-            LabelMode = LabelMode.None,      // Скрываем лишние подписи, так как у нас есть своя легенда
+            LabelMode = LabelMode.None,      // Скрываем лишние подписи
             GraphPosition = GraphPosition.Center
         };
     }
@@ -1085,7 +1063,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             using var stream = new MemoryStream(fileBytes);
 
             // Используем встроенный в MAUI Share для мобильных устройств 
-            // или FileSaver, если вы используете CommunityToolkit.
+            // или FileSaver, если CommunityToolkit.
             // Самый универсальный способ для старта — сохранить во временную папку и «поделиться»
             string fileName = $"Отчет_{DateTime.Now:yyyyMMdd_HHmm}.csv";
             string tempPath = Path.Combine(Microsoft.Maui.Storage.FileSystem.CacheDirectory, fileName);
@@ -1101,6 +1079,87 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         catch (Exception ex)
         {
             await DisplayAlert("Ошибка", $"Не удалось сохранить файл: {ex.Message}", "OK");
+        }
+    }
+    private async void OnExportPdfClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var document = new PdfSharpCore.Pdf.PdfDocument();
+            document.Info.Title = "Monolith Report";
+
+            var page = document.AddPage();
+            var gfx = PdfSharpCore.Drawing.XGraphics.FromPdfPage(page);
+            var fontBold = new PdfSharpCore.Drawing.XFont("Arial", 20, PdfSharpCore.Drawing.XFontStyle.Bold);
+            var fontNormal = new PdfSharpCore.Drawing.XFont("Arial", 12, PdfSharpCore.Drawing.XFontStyle.Regular);
+            var fontSmall = new PdfSharpCore.Drawing.XFont("Arial", 10, PdfSharpCore.Drawing.XFontStyle.Regular);
+
+            // Заголовок
+            gfx.DrawString("MONOLITH — Финансовый отчёт", fontBold,
+                PdfSharpCore.Drawing.XBrushes.Black,
+                new PdfSharpCore.Drawing.XRect(0, 40, page.Width, 30),
+                PdfSharpCore.Drawing.XStringFormats.TopCenter);
+
+            // Дата
+            gfx.DrawString($"Дата: {DateTime.Now:dd.MM.yyyy HH:mm}", fontSmall,
+                PdfSharpCore.Drawing.XBrushes.Gray,
+                new PdfSharpCore.Drawing.XRect(0, 75, page.Width, 20),
+                PdfSharpCore.Drawing.XStringFormats.TopCenter);
+
+            // Разделитель
+            gfx.DrawLine(PdfSharpCore.Drawing.XPens.LightGray, 40, 100, page.Width - 40, 100);
+
+            // Баланс
+            var transactions = App.GlobalHistory.ToList();
+            double totalIncome = (double)transactions.Where(t => t.Amount > 0).Sum(t => t.Amount);
+            double totalExpense = (double)transactions.Where(t => t.Amount < 0).Sum(t => Math.Abs(t.Amount));
+            double balance = totalIncome - totalExpense;
+
+            gfx.DrawString("БАЛАНС", fontBold,
+                PdfSharpCore.Drawing.XBrushes.Black, 40, 130);
+            gfx.DrawString($"Доходы:   +{totalIncome:N0} ₽", fontNormal,
+                PdfSharpCore.Drawing.XBrushes.DarkGreen, 40, 160);
+            gfx.DrawString($"Расходы:  -{totalExpense:N0} ₽", fontNormal,
+                PdfSharpCore.Drawing.XBrushes.DarkRed, 40, 185);
+            gfx.DrawString($"Итого:     {balance:N0} ₽", fontBold,
+                PdfSharpCore.Drawing.XBrushes.Black, 40, 215);
+
+            gfx.DrawLine(PdfSharpCore.Drawing.XPens.LightGray, 40, 235, page.Width - 40, 235);
+
+            // Транзакции
+            gfx.DrawString("ИСТОРИЯ ТРАНЗАКЦИЙ", fontBold,
+                PdfSharpCore.Drawing.XBrushes.Black, 40, 255);
+
+            double y = 285;
+            foreach (var t in transactions.OrderByDescending(x => x.Date).Take(20))
+            {
+                if (y > page.Height - 60) break;
+
+                var color = t.Amount > 0
+                    ? PdfSharpCore.Drawing.XBrushes.DarkGreen
+                    : PdfSharpCore.Drawing.XBrushes.DarkRed;
+
+                gfx.DrawString($"{t.Date:dd.MM.yy}  {t.Category,-20} {t.Amount:+#,##0;-#,##0} ₽",
+                    fontNormal, color, 40, y);
+                y += 22;
+            }
+
+            // Сохраняем
+            var fileName = $"Monolith_Report_{DateTime.Now:yyyyMMdd_HHmm}.pdf";
+            var filePath = Path.Combine(Microsoft.Maui.Storage.FileSystem.CacheDirectory, fileName);
+
+            using var stream = File.Create(filePath);
+            document.Save(stream);
+
+            await Share.RequestAsync(new ShareFileRequest
+            {
+                Title = "Monolith PDF Report",
+                File = new ShareFile(filePath)
+            });
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", ex.Message, "OK");
         }
     }
     private async Task LoadCurrencyRates()

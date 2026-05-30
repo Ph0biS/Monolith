@@ -20,6 +20,7 @@ namespace PROJECT.Services
             await _database.CreateTableAsync<Transaction>();
             await _database.CreateTableAsync<SavingsGoal>();
             await _database.CreateTableAsync<Subscription>();
+            await _database.CreateTableAsync<Debt>();
         }
 
         // --- ТРАНЗАКЦИИ ---
@@ -128,6 +129,33 @@ namespace PROJECT.Services
         {
             await Init();
             await _database.InsertOrReplaceAsync(new Achievement { Name = name, IsUnlocked = true });
+        }
+        // --- ДОЛГИ (Debt) ---
+        public async Task<List<Debt>> GetDebtsAsync()
+        {
+            await Init();
+            return await _database.Table<Debt>().OrderByDescending(x => x.Date).ToListAsync();
+        }
+
+        public async Task<int> SaveDebtAsync(Debt debt)
+        {
+            await Init();
+            return debt.Id != 0
+                ? await _database.UpdateAsync(debt)
+                : await _database.InsertAsync(debt);
+        }
+
+        public async Task<int> DeleteDebtAsync(Debt debt)
+        {
+            await Init();
+            return await _database.DeleteAsync(debt);
+        }
+
+        public async Task<int> CloseDebtAsync(Debt debt)
+        {
+            await Init();
+            debt.IsClosed = true;
+            return await _database.UpdateAsync(debt);
         }
     }
 

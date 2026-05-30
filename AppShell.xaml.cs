@@ -57,12 +57,16 @@ public partial class AppShell : Shell, INotifyPropertyChanged
 
         BindingContext = this;
     }
-
+    public async void OpenDebtTracker()
+    {
+        await Navigation.PushModalAsync(new Pages.DebtTrackerPage());
+    }
     protected override void OnNavigated(ShellNavigatedEventArgs args)
     {
         base.OnNavigated(args);
         OnPropertyChanged("CurrentItem");
     }
+
 
     // INotifyPropertyChanged
     public new event PropertyChangedEventHandler? PropertyChanged;

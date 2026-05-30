@@ -51,7 +51,7 @@ public partial class StatisticsPage : ContentPage
             {
                 Name = g.Key,
                 Amount = (float)g.Sum(x => x.Amount),
-                Color = GetColorForCategory(g.Key) // Получаем родной Microsoft.Maui.Graphics.Color
+                Color = GetColorForCategory(g.Key) // Получаем Microsoft.Maui.Graphics.Color
             })
             .OrderByDescending(x => x.Amount)
             .ToList();
@@ -66,7 +66,7 @@ public partial class StatisticsPage : ContentPage
             ValueLabelColor = SKColors.White
         }).ToArray();
 
-        // 5. Создаем данные для ЛЕГЕНДЫ (имена свойств ДОЛЖНЫ совпадать с Binding в XAML)
+        // 5. Создаем данные для ЛЕГЕНДЫ 
         var legendItems = chartEntries.Select(e => new
         {
             Label = e.Label,        // Для Binding Label
