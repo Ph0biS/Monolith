@@ -309,18 +309,18 @@
                     <VerticalStackLayout Spacing="10">
                         <Label Text="ПОДПИСКИ" FontFamily="Orbitron" FontAttributes="Bold" FontSize="16" TextColor="#A78BFA" Margin="0,5,0,0" CharacterSpacing="1"/>
                         <Border Stroke="#3D2B5E" Background="#1A1033" Padding="10" StrokeShape="RoundRectangle 12">
-                            <Grid ColumnDefinitions="*, *, 75, 50" ColumnSpacing="8">
+                            <Grid ColumnDefinitions="*, 120, 150, 50" ColumnSpacing="8">
                                 <Entry x:Name="SubNameEntry" Placeholder="Имя" FontFamily="Inter"
-               FontAttributes="Bold" TextColor="White" PlaceholderColor="#5A4A7A"/>
+           FontAttributes="Bold" TextColor="White" PlaceholderColor="#5A4A7A"/>
                                 <Entry Grid.Column="1" x:Name="SubPriceEntry" Placeholder="Цена"
-               FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric"
-               TextColor="White" PlaceholderColor="#5A4A7A"/>
+           FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric"
+           TextColor="White" PlaceholderColor="#5A4A7A" WidthRequest="120"/>
                                 <DatePicker Grid.Column="2" x:Name="SubDatePicker" FontFamily="RobotoMono"
-                    FontAttributes="Bold" Format="dd/MM" TextColor="White"
-                    FontSize="12" WidthRequest="75"/>
+                FontAttributes="Bold" Format="dd/MM/yyyy" TextColor="White"
+                FontSize="12" WidthRequest="150"/>
                                 <Button Grid.Column="3" Text="➕" Clicked="OnAddSubscriptionClicked"
-                BackgroundColor="#D946EF" WidthRequest="45" HeightRequest="45"
-                CornerRadius="10" Padding="0" FontSize="16"/>
+            BackgroundColor="#D946EF" WidthRequest="45" HeightRequest="45"
+            CornerRadius="10" Padding="0" FontSize="16"/>
                             </Grid>
                         </Border>
 
