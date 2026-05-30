@@ -62,8 +62,6 @@
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
-
-
                 <VerticalStackLayout x:Name="ChartContainer" Spacing="15">
                     <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                         <Label Text="Период:" FontFamily="Inter" FontAttributes="Bold" VerticalOptions="Center" TextColor="#A78BFA" />
@@ -328,9 +326,40 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
-
                     </VerticalStackLayout>
                 </VerticalStackLayout>
+
+                <!-- МИНИ-ЗАМЕТКИ -->
+                <Border BackgroundColor="#140B2D" Stroke="#A78BFA" StrokeThickness="1.5"
+                        StrokeShape="RoundRectangle 15" Padding="15" Margin="0,5,0,20">
+                    <Grid RowDefinitions="Auto, Auto">
+                        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Margin="0,0,0,10">
+                            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                <Label Text="📝" FontSize="16" VerticalOptions="Center"/>
+                                <Label Text="ЛИЧНЫЙ ЖУРНАЛ" FontFamily="JetBrainsMono"
+                                       FontSize="11" FontAttributes="Bold"
+                                       TextColor="#A78BFA" CharacterSpacing="1"/>
+                            </HorizontalStackLayout>
+                            <Label Grid.Column="2" x:Name="NoteSavedLabel"
+                                   Text="✓ сохранено" FontFamily="JetBrainsMono"
+                                   FontSize="9" TextColor="#2DD4BF"
+                                   IsVisible="False" VerticalOptions="Center"/>
+                        </Grid>
+                        <Border Grid.Row="1" BackgroundColor="#0B011D" StrokeThickness="0"
+                                StrokeShape="RoundRectangle 10" Padding="12,8">
+                            <Editor x:Name="NoteEditor"
+                                    Placeholder="Запишите мысль, план или заметку..."
+                                    PlaceholderColor="#5A4A7A"
+                                    TextColor="White"
+                                    FontFamily="Inter"
+                                    FontSize="13"
+                                    AutoSize="TextChanges"
+                                    MinimumHeightRequest="80"
+                                    Unfocused="OnNoteUnfocused"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

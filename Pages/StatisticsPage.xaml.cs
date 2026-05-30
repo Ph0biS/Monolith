@@ -106,15 +106,19 @@ public partial class StatisticsPage : ContentPage
     // Тот самый метод-синхронизатор цветов (скопирован с MainPage)
     private Color GetColorForCategory(string cat) => cat switch
     {
-        "🛒 Продукты" => Color.FromArgb("#2DD4BF"),
-        "🚌 Транспорт" => Color.FromArgb("#3B82F6"),
-        "🎮 Развлечения" => Color.FromArgb("#8B5CF6"),
-        "🏠 Дом" => Color.FromArgb("#FB923C"),
-        "💊 Здоровье" => Color.FromArgb("#EF4444"),
-        "🍔 Еда" => Color.FromArgb("#FFD700"),
-        "👕 Одежда" => Color.FromArgb("#EC4899"),
-        "📱 Связь" => Color.FromArgb("#06B6D4"),
-        _ => Color.FromArgb("#94A3B8")
+        "🛒 Продукты" => Color.FromArgb("#2DD4BF"), // Бирюзовый
+        "🚌 Транспорт" => Color.FromArgb("#3B82F6"), // Синий
+        "🎮 Развлечения" => Color.FromArgb("#8B5CF6"), // Фиолетовый
+        "🏠 Дом" => Color.FromArgb("#FB923C"),       // Оранжевый
+        "💊 Здоровье" => Color.FromArgb("#EF4444"),   // Красный
+        "🍔 Еда" => Color.FromArgb("#FFD700"),        // Золотой
+        "👕 Одежда" => Color.FromArgb("#EC4899"),     // Розовый
+        "📱 Связь" => Color.FromArgb("#06B6D4"),      // Голубой
+        "💰 Зарплата" => Color.FromArgb("#22C55E"),   // Зеленый
+        "🎁 Подарок" => Color.FromArgb("#F59E0B"),    // Янтарный
+        "💰 Возврат долга" => Color.FromArgb("#D51848"),
+        "💸 Выплата долга" => Color.FromArgb("#FFF700"),
+        _ => Color.FromArgb("#94A3B8")                // Серый (для остальных)
     };
     public class LegendItem
     {

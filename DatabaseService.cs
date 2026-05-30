@@ -21,6 +21,8 @@ namespace PROJECT.Services
             await _database.CreateTableAsync<SavingsGoal>();
             await _database.CreateTableAsync<Subscription>();
             await _database.CreateTableAsync<Debt>();
+            await _database.CreateTableAsync<StreakData>();
+            await _database.CreateTableAsync<NoteData>();
         }
 
         // --- ТРАНЗАКЦИИ ---
@@ -156,6 +158,57 @@ namespace PROJECT.Services
             await Init();
             debt.IsClosed = true;
             return await _database.UpdateAsync(debt);
+        }
+        // --- СТРИК ---
+        public async Task<StreakData> GetStreakAsync()
+        {
+            await Init();
+            var streak = await _database.Table<StreakData>().FirstOrDefaultAsync();
+            return streak ?? new StreakData();
+        }
+
+        public async Task UpdateStreakAsync()
+        {
+            await Init();
+            var streak = await _database.Table<StreakData>().FirstOrDefaultAsync() ?? new StreakData();
+            var today = DateTime.Today;
+
+            if (streak.LastActivityDate.Date == today)
+                return; // уже обновляли сегодня
+
+            if (streak.LastActivityDate.Date == today.AddDays(-1))
+                streak.CurrentStreak++; // вчера была активность — стрик растёт
+            else if (streak.LastActivityDate.Date < today.AddDays(-1))
+                streak.CurrentStreak = 1; // пропустили день — сброс
+
+            streak.LastActivityDate = today;
+
+            if (streak.CurrentStreak > streak.BestStreak)
+                streak.BestStreak = streak.CurrentStreak;
+
+            if (streak.Id == 0)
+                await _database.InsertAsync(streak);
+            else
+                await _database.UpdateAsync(streak);
+        }
+        // --- ЗАМЕТКИ ---
+        public async Task<string> GetNoteAsync()
+        {
+            await Init();
+            var note = await _database.Table<NoteData>().FirstOrDefaultAsync();
+            return note?.Text ?? "";
+        }
+
+        public async Task SaveNoteAsync(string text)
+        {
+            await Init();
+            var note = await _database.Table<NoteData>().FirstOrDefaultAsync()
+                       ?? new NoteData { Id = 1 };
+            note.Text = text;
+            if (note.Id == 0)
+                await _database.InsertAsync(note);
+            else
+                await _database.InsertOrReplaceAsync(note);
         }
     }
 

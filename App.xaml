@@ -231,10 +231,14 @@
            FontFamily="Orbitron" FontAttributes="Bold"
            VerticalOptions="Center" Margin="5,0,0,0"/>
                         </HorizontalStackLayout>
-                        <Label Grid.Column="2"
-           Text="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.CurrentTime}"
+                        <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" Spacing="2" VerticalOptions="Center">
+                            <Label Text="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.CurrentTime}"
            FontFamily="JetBrainsMono" FontSize="14" TextColor="#4D3B6D"
-           VerticalOptions="Center" />
+           HorizontalOptions="End"/>
+                            <Label Text="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=BindingContext.StreakText}"
+           FontFamily="JetBrainsMono" FontSize="11" TextColor="#D946EF"
+           HorizontalOptions="End"/>
+                        </VerticalStackLayout>
                     </Grid>
 
                     <ContentPresenter Grid.Row="1" />

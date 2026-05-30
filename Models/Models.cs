@@ -160,4 +160,18 @@ namespace PROJECT.Models
             Date = date;
         }
     }
+    public class StreakData
+    {
+        [PrimaryKey]
+        public int Id { get; set; } = 1;
+        public int CurrentStreak { get; set; } = 0;
+        public int BestStreak { get; set; } = 0;
+        public DateTime LastActivityDate { get; set; } = DateTime.MinValue;
+    }
+    public class NoteData
+    {
+        [PrimaryKey]
+        public int Id { get; set; } = 1;
+        public string Text { get; set; } = "";
+    }
 }

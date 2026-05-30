@@ -56,6 +56,7 @@ public partial class AppShell : Shell, INotifyPropertyChanged
         _clockTimer.Start();
 
         BindingContext = this;
+        _ = RefreshStreakAsync();
     }
     public async void OpenDebtTracker()
     {
@@ -66,7 +67,27 @@ public partial class AppShell : Shell, INotifyPropertyChanged
         base.OnNavigated(args);
         OnPropertyChanged("CurrentItem");
     }
+    private string _streakText = "🔥 0 дней";
+    public string StreakText
+    {
+        get => _streakText;
+        private set
+        {
+            if (_streakText != value)
+            {
+                _streakText = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 
+    public async Task RefreshStreakAsync()
+    {
+        var streak = await App.Database.GetStreakAsync();
+        StreakText = streak.CurrentStreak > 0
+            ? $"🔥 {streak.CurrentStreak} дн."
+            : "💤 нет стрика";
+    }
 
     // INotifyPropertyChanged
     public new event PropertyChangedEventHandler? PropertyChanged;

@@ -131,7 +131,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         _ = RunPulseAnimation(BalanceLabel, _animationCts.Token);
         // 1. Сразу сбрасываем всё в Нейтральное состояние
         SetNeutralState();
-
+        NoteEditor.Text = await App.Database.GetNoteAsync();
         if (App.PreloadedTransactions != null)
         {
             var transactions = App.PreloadedTransactions;
@@ -179,9 +179,15 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
         
     }
-    
+    private async void OnNoteUnfocused(object sender, FocusEventArgs e)
+    {
+        await App.Database.SaveNoteAsync(NoteEditor.Text ?? "");
+        NoteSavedLabel.IsVisible = true;
+        await Task.Delay(2000);
+        NoteSavedLabel.IsVisible = false;
+    }
 
-   
+
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
@@ -327,7 +333,9 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
             // Сохраняем в локальную БД
             await App.Database.SaveTransactionAsync(newTransaction);
-
+            await App.Database.UpdateStreakAsync();
+            if (Shell.Current is AppShell appShell)
+                await appShell.RefreshStreakAsync();
             // Получаем историю для расчета достижений
             var history = await App.Database.GetTransactionsAsync();
             var achievements = AchievementService.CalculateAchievements(history);
@@ -812,6 +820,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         "📱 Связь" => Color.FromArgb("#06B6D4"),      // Голубой
         "💰 Зарплата" => Color.FromArgb("#22C55E"),   // Зеленый
         "🎁 Подарок" => Color.FromArgb("#F59E0B"),    // Янтарный
+        "💰 Возврат долга" => Color.FromArgb("#D51848"),
+        "💸 Выплата долга" => Color.FromArgb("#FFF700"),
         _ => Color.FromArgb("#94A3B8")                // Серый (для остальных)
     };
 
