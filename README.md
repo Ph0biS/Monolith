@@ -317,18 +317,12 @@ dotnet publish PROJECT.csproj -f net9.0-windows10.0.19041.0 -c Release -p:Window
 
 <div align="center">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/ENGINE_CORE-RUNNING-22C55E?style=for-the-badge&logo=render&logoColor=white" alt="Engine">
-  <img src="https://img.shields.io/badge/MEMORY_VAULT-ENCRYPTED-00F5FF?style=for-the-badge&logo=sqlite&logoColor=white" alt="Vault">
-  <img src="https://img.shields.io/badge/UI_REFRESH-OPTIMIZED-FF007F?style=for-the-badge&logo=skia&logoColor=white" alt="UI">
-  <img src="https://img.shields.io/badge/ATLAS_AI-ONLINE-8A2BE2?style=for-the-badge&logo=openai&logoColor=white" alt="Atlas">
-</p>
-
----
-
-<p align="center">
-  <sub>MONOLITH OS v1.0.0 · ENCRYPTED · SECURE · ONLINE-READY</sub>
-</p>
+```
+╔═══════════════════════════════════════════════════╗
+║   MONOLITH OS v1.1.0  ·  ENCRYPTED  ·  SECURE    ║
+║         ATLAS AI  ·  ONLINE & READY               ║
+╚═══════════════════════════════════════════════════╝
+```
 
 *Построено с ❤️ и неоновым свечением*
 
