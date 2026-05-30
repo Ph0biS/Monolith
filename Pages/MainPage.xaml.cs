@@ -65,7 +65,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         CategoryPicker.ItemsSource = new List<string> { "[ Сначала выберите Доход или Расход ]" };
         CategoryPicker.SelectedIndex = 0;
         CurrencyPicker.SelectedItem = "RUB";
-        PeriodPicker.SelectedItem = "Все время";
+        PeriodPicker.SelectedItem = "Всё время";
         BindableLayout.SetItemsSource(SavingsCollection, UserSavings);
         Subscriptions = new ObservableCollection<Subscription>();
     }

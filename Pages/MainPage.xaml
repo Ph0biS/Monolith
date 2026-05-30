@@ -66,10 +66,10 @@
                     <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                         <Label Text="Период:" FontFamily="Inter" FontAttributes="Bold" VerticalOptions="Center" TextColor="#A78BFA" />
                         <Border Stroke="#3D2B5E" BackgroundColor="#1A1033" StrokeShape="RoundRectangle 8" Padding="10,0" HeightRequest="40">
-                            <Picker x:Name="PeriodPicker" Margin="-12" FontAttributes="Bold" SelectedIndex="0" SelectedIndexChanged="OnPeriodChanged" WidthRequest="150" TextColor="White" FontFamily="Inter" TitleColor="#5A4A7A" VerticalOptions="Center">
+                            <Picker x:Name="PeriodPicker" HorizontalTextAlignment="Center" Margin="-12" FontAttributes="Bold" SelectedIndex="0" SelectedIndexChanged="OnPeriodChanged" WidthRequest="150" TextColor="White" FontFamily="Inter" TitleColor="#5A4A7A" VerticalOptions="Center">
                                 <Picker.ItemsSource>
                                     <x:Array Type="{x:Type x:String}">
-                                        <x:String>Все время</x:String>
+                                        <x:String>Всё время</x:String>
                                         <x:String>Январь</x:String>
                                         <x:String>Февраль</x:String>
                                         <x:String>Март</x:String>
