@@ -255,8 +255,8 @@
         CommandParameter="//MainPage">
                                 <Button.Text>
                                     <OnPlatform x:TypeArguments="x:String">
-                                        <On Platform="Android" Value="👜" />
-                                        <On Platform="WinUI,iOS" Value="Кошелек 👜" />
+                                        <On Platform="Android, iOS" Value="👜" />
+                                        <On Platform="WinUI, MacCatalyst" Value="Кошелек 👜" />
                                     </OnPlatform>
                                 </Button.Text>
                             </Button>
@@ -266,8 +266,8 @@
         CommandParameter="//HistoryPage">
                                 <Button.Text>
                                     <OnPlatform x:TypeArguments="x:String">
-                                        <On Platform="Android" Value="📜" />
-                                        <On Platform="WinUI,iOS" Value="История 📜" />
+                                        <On Platform="Android, iOS" Value="📜" />
+                                        <On Platform="WinUI, MacCatalyst" Value="История 📜" />
                                     </OnPlatform>
                                 </Button.Text>
                             </Button>
@@ -277,8 +277,8 @@
         CommandParameter="//AnalyticsPage">
                                 <Button.Text>
                                     <OnPlatform x:TypeArguments="x:String">
-                                        <On Platform="Android" Value="📊" />
-                                        <On Platform="WinUI,iOS" Value="Анализ 📊" />
+                                        <On Platform="Android, iOS" Value="📊" />
+                                        <On Platform="WinUI, MacCatalyst" Value="Анализ 📊" />
                                     </OnPlatform>
                                 </Button.Text>
                             </Button>
@@ -288,8 +288,8 @@
         CommandParameter="//ForecastPage">
                                 <Button.Text>
                                     <OnPlatform x:TypeArguments="x:String">
-                                        <On Platform="Android" Value="📈"/>
-                                        <On Platform="WinUI,iOS" Value="Прогноз 📈" />
+                                        <On Platform="Android, iOS" Value="📈"/>
+                                        <On Platform="WinUI, MacCatalyst" Value="Прогноз 📈" />
                                     </OnPlatform>
                                 </Button.Text>
                             </Button>
@@ -299,8 +299,8 @@
         CommandParameter="//AchievementsPage">
                                 <Button.Text>
                                     <OnPlatform x:TypeArguments="x:String">
-                                        <On Platform="Android" Value="🏆" />
-                                        <On Platform="WinUI,iOS" Value="Достижения 🏆" />
+                                        <On Platform="Android, iOS" Value="🏆" />
+                                        <On Platform="WinUI, MacCatalyst" Value="Достижения 🏆" />
                                     </OnPlatform>
                                 </Button.Text>
                             </Button>
