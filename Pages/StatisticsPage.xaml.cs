@@ -150,6 +150,11 @@ public partial class StatisticsPage : ContentPage
 
     private async void OnShareReportClicked(object sender, EventArgs e)
     {
+        await ShareButton.ScaleTo(0.95, 80, Easing.CubicIn);
+        await ShareButton.ScaleTo(1.0, 80, Easing.CubicOut);
+        ShareButton.BackgroundColor = Color.FromArgb("#A855F7");
+        await Task.Delay(100);
+        ShareButton.BackgroundColor = Color.FromArgb("#8B5CF6");
         try
         {
             var transactions = await App.Database.GetTransactionsAsync();
@@ -161,39 +166,31 @@ public partial class StatisticsPage : ContentPage
                 return;
             }
 
-            // Формируем красивый текст отчета
             var sb = new StringBuilder();
-            sb.AppendLine("📊 ФИНАНСОВЫЙ ОТЧЕТ");
-            sb.AppendLine($"Дата создания: {DateTime.Now:dd.MM.yyyy HH:mm}");
-            sb.AppendLine("---------------------------");
+            sb.AppendLine("📊 ФИНАНСОВЫЙ ОТЧЕТ MONOLITH");
+            sb.AppendLine($"Дата: {DateTime.Now:dd.MM.yyyy HH:mm}");
+            sb.AppendLine("═══════════════════════════");
 
             var grouped = expenses.GroupBy(x => x.Category)
                                   .Select(g => new { Name = g.Key, Sum = g.Sum(s => s.Amount) })
                                   .OrderByDescending(x => x.Sum);
 
             foreach (var item in grouped)
-            {
                 sb.AppendLine($"{item.Name}: {item.Sum:N0} ₽");
-            }
 
-            sb.AppendLine("---------------------------");
+            sb.AppendLine("═══════════════════════════");
             sb.AppendLine($"ИТОГО ТРАТ: {expenses.Sum(x => x.Amount):N0} ₽");
 
-            // Сохраняем во временный файл
-            string fn = "FinanceReport.txt";
-            string file = Path.Combine(FileSystem.CacheDirectory, fn);
-            File.WriteAllText(file, sb.ToString());
+            // Сохраняем на рабочий стол
+            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string file = Path.Combine(desktop, $"Monolith_Report_{DateTime.Now:dd-MM-yyyy}.txt");
+            File.WriteAllText(file, sb.ToString(), Encoding.UTF8);
 
-            // Открываем меню "Поделиться"
-            await Share.Default.RequestAsync(new ShareFileRequest
-            {
-                Title = "Мой финансовый отчет",
-                File = new ShareFile(file)
-            });
+            await DisplayAlert("✅ Готово", $"Отчет сохранен на рабочий стол:\n{Path.GetFileName(file)}", "OK");
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ошибка", "Не удалось создать отчет", "OK");
+            await DisplayAlert("Ошибка", ex.Message, "OK");
         }
     }
 }

@@ -81,7 +81,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Button Text="ПОДЕЛИТЬСЯ ОТЧЕТОМ" FontAttributes="Bold"
+            <Button x:Name="ShareButton" Text="ПОДЕЛИТЬСЯ ОТЧЕТОМ" FontAttributes="Bold"
                     FontFamily="Orbitron" 
                     Clicked="OnShareReportClicked" 
                     BackgroundColor="#8B5CF6" 

@@ -1130,7 +1130,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
         if (sender is Button b5) await AnimateButton(b5);
         try
         {
-            // 1. Получаем все данные
             var transactions = await App.Database.GetTransactionsAsync();
 
             if (transactions == null || !transactions.Any())
@@ -1139,38 +1138,25 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
                 return;
             }
 
-            // 2. Формируем CSV контент
             var csvBuilder = new StringBuilder();
             csvBuilder.AppendLine("Дата,Категория,Описание,Сумма,Тип");
 
             foreach (var t in transactions)
             {
                 string type = t.IsIncome ? "Доход" : "Расход";
-                // Форматируем строку: Дата | Категория | Описание | Сумма | Тип
                 csvBuilder.AppendLine($"{t.Date:dd.MM.yyyy},{t.Category},{t.Description},{t.Amount},{type}");
             }
 
-            // 3. Сохранение файла
-            byte[] fileBytes = Encoding.UTF8.GetBytes(csvBuilder.ToString());
-            using var stream = new MemoryStream(fileBytes);
+            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string fileName = $"Monolith_{DateTime.Now:dd-MM-yyyy_HHmm}.csv";
+            string filePath = Path.Combine(desktop, fileName);
 
-            // Используем встроенный в MAUI Share для мобильных устройств 
-            // или FileSaver, если CommunityToolkit.
-            // Самый универсальный способ для старта — сохранить во временную папку и «поделиться»
-            string fileName = $"Отчет_{DateTime.Now:yyyyMMdd_HHmm}.csv";
-            string tempPath = Path.Combine(Microsoft.Maui.Storage.FileSystem.CacheDirectory, fileName);
-
-            await File.WriteAllBytesAsync(tempPath, fileBytes);
-
-            await Share.Default.RequestAsync(new ShareFileRequest
-            {
-                Title = "Экспорт данных",
-                File = new ShareFile(tempPath)
-            });
+            await File.WriteAllTextAsync(filePath, csvBuilder.ToString(), Encoding.UTF8);
+            await DisplayAlert("✅ Готово", $"CSV сохранён на рабочий стол:\n{fileName}", "OK");
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ошибка", $"Не удалось сохранить файл: {ex.Message}", "OK");
+            await DisplayAlert("Ошибка", ex.Message, "OK");
         }
     }
     private async void OnExportPdfClicked(object sender, EventArgs e)
@@ -1187,68 +1173,48 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             var fontNormal = new PdfSharpCore.Drawing.XFont("Arial", 12, PdfSharpCore.Drawing.XFontStyle.Regular);
             var fontSmall = new PdfSharpCore.Drawing.XFont("Arial", 10, PdfSharpCore.Drawing.XFontStyle.Regular);
 
-            // Заголовок
             gfx.DrawString("MONOLITH — Финансовый отчёт", fontBold,
                 PdfSharpCore.Drawing.XBrushes.Black,
                 new PdfSharpCore.Drawing.XRect(0, 40, page.Width, 30),
                 PdfSharpCore.Drawing.XStringFormats.TopCenter);
 
-            // Дата
             gfx.DrawString($"Дата: {DateTime.Now:dd.MM.yyyy HH:mm}", fontSmall,
                 PdfSharpCore.Drawing.XBrushes.Gray,
                 new PdfSharpCore.Drawing.XRect(0, 75, page.Width, 20),
                 PdfSharpCore.Drawing.XStringFormats.TopCenter);
 
-            // Разделитель
             gfx.DrawLine(PdfSharpCore.Drawing.XPens.LightGray, 40, 100, page.Width - 40, 100);
 
-            // Баланс
             var transactions = App.GlobalHistory.ToList();
             double totalIncome = (double)transactions.Where(t => t.Amount > 0).Sum(t => t.Amount);
             double totalExpense = (double)transactions.Where(t => t.Amount < 0).Sum(t => Math.Abs(t.Amount));
             double balance = totalIncome - totalExpense;
 
-            gfx.DrawString("БАЛАНС", fontBold,
-                PdfSharpCore.Drawing.XBrushes.Black, 40, 130);
-            gfx.DrawString($"Доходы:   +{totalIncome:N0} ₽", fontNormal,
-                PdfSharpCore.Drawing.XBrushes.DarkGreen, 40, 160);
-            gfx.DrawString($"Расходы:  -{totalExpense:N0} ₽", fontNormal,
-                PdfSharpCore.Drawing.XBrushes.DarkRed, 40, 185);
-            gfx.DrawString($"Итого:     {balance:N0} ₽", fontBold,
-                PdfSharpCore.Drawing.XBrushes.Black, 40, 215);
+            gfx.DrawString("БАЛАНС", fontBold, PdfSharpCore.Drawing.XBrushes.Black, 40, 130);
+            gfx.DrawString($"Доходы:   +{totalIncome:N0} ₽", fontNormal, PdfSharpCore.Drawing.XBrushes.DarkGreen, 40, 160);
+            gfx.DrawString($"Расходы:  -{totalExpense:N0} ₽", fontNormal, PdfSharpCore.Drawing.XBrushes.DarkRed, 40, 185);
+            gfx.DrawString($"Итого:     {balance:N0} ₽", fontBold, PdfSharpCore.Drawing.XBrushes.Black, 40, 215);
 
             gfx.DrawLine(PdfSharpCore.Drawing.XPens.LightGray, 40, 235, page.Width - 40, 235);
-
-            // Транзакции
-            gfx.DrawString("ИСТОРИЯ ТРАНЗАКЦИЙ", fontBold,
-                PdfSharpCore.Drawing.XBrushes.Black, 40, 255);
+            gfx.DrawString("ИСТОРИЯ ТРАНЗАКЦИЙ", fontBold, PdfSharpCore.Drawing.XBrushes.Black, 40, 255);
 
             double y = 285;
             foreach (var t in transactions.OrderByDescending(x => x.Date).Take(20))
             {
                 if (y > page.Height - 60) break;
-
-                var color = t.Amount > 0
-                    ? PdfSharpCore.Drawing.XBrushes.DarkGreen
-                    : PdfSharpCore.Drawing.XBrushes.DarkRed;
-
-                gfx.DrawString($"{t.Date:dd.MM.yy}  {t.Category,-20} {t.Amount:+#,##0;-#,##0} ₽",
-                    fontNormal, color, 40, y);
+                var color = t.Amount > 0 ? PdfSharpCore.Drawing.XBrushes.DarkGreen : PdfSharpCore.Drawing.XBrushes.DarkRed;
+                gfx.DrawString($"{t.Date:dd.MM.yy}  {t.Category,-20} {t.Amount:+#,##0;-#,##0} ₽", fontNormal, color, 40, y);
                 y += 22;
             }
 
-            // Сохраняем
-            var fileName = $"Monolith_Report_{DateTime.Now:yyyyMMdd_HHmm}.pdf";
-            var filePath = Path.Combine(Microsoft.Maui.Storage.FileSystem.CacheDirectory, fileName);
+            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string fileName = $"Monolith_Report_{DateTime.Now:dd-MM-yyyy_HHmm}.pdf";
+            string filePath = Path.Combine(desktop, fileName);
 
             using var stream = File.Create(filePath);
             document.Save(stream);
 
-            await Share.RequestAsync(new ShareFileRequest
-            {
-                Title = "Monolith PDF Report",
-                File = new ShareFile(filePath)
-            });
+            await DisplayAlert("✅ Готово", $"PDF сохранён на рабочий стол:\n{fileName}", "OK");
         }
         catch (Exception ex)
         {
