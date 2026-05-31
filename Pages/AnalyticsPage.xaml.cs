@@ -130,8 +130,8 @@ public partial class AnalyticsPage : ContentPage
             "📱 Связь" => Color.FromArgb("#06B6D4"),      // Голубой
             "💰 Зарплата" => Color.FromArgb("#22C55E"),   // Зеленый
             "🎁 Подарок" => Color.FromArgb("#F59E0B"),    // Янтарный
-            "💰 Возврат долга" => Color.FromArgb("#D51848"),
-            "💸 Выплата долга" => Color.FromArgb("#FFF700"),
+            "💰 Возврат долга" => Color.FromArgb("#D51848"), // Красный (для возврата долга)
+            "💸 Выплата долга" => Color.FromArgb("#FFF700"), // Желтый (для выплаты долга)
             _ => Color.FromArgb("#94A3B8")                // Серый (для остальных)
         };
     }
