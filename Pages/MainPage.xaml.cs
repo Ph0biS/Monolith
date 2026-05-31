@@ -1077,9 +1077,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             System.Diagnostics.Debug.WriteLine($"Ошибка пикера: {ex.Message}");
         }
     }
-    // ///////////////////////////////////////////////////////////
     // СТРАНИЦА: КОШЕЛЕК -> ПЕРЕХОД НА АНАЛИЗ
-    // ///////////////////////////////////////////////////////////
     private async void OnChartTapped(object sender, EventArgs e)
     {
         if (_isAnimating) return;
