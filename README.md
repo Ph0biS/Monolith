@@ -44,7 +44,7 @@
 
 <!-- STATS BADGES -->
 <p>
-  <img src="https://img.shields.io/badge/RELEASE-v1.1-FF007F?style=flat-square&logo=github"/>
+  <img src="https://img.shields.io/badge/RELEASE-v1.2-FF007F?style=flat-square&logo=github"/>
   <img src="https://img.shields.io/badge/BUILD-PASSING-22C55E?style=flat-square&logo=githubactions&logoColor=white"/>
   <img src="https://img.shields.io/badge/PLATFORM-CROSS--PLATFORM-8A2BE2?style=flat-square"/>
   <img src="https://img.shields.io/badge/LICENSE-MIT-00E5FF?style=flat-square"/>
