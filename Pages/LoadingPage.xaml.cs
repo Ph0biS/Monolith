@@ -46,21 +46,34 @@ public partial class LoadingPage : ContentPage
 
         _ = Task.Run(async () =>
         {
-            var transactions = await App.Database.GetTransactionsAsync();
-            var goals = await App.Database.GetGoalsAsync();
-            var subs = await App.Database.GetSubscriptionsAsync();
-
-            App.PreloadedTransactions = transactions;
-            App.PreloadedGoals = goals;
-            App.PreloadedSubscriptions = subs;
-
-            MainThread.BeginInvokeOnMainThread(() =>
+            try
             {
-                App.GlobalHistory.Clear();
-                foreach (var t in transactions)
-                    App.GlobalHistory.Add(t);
-                _dataReady.TrySetResult();
-            });
+       
+                int created = await App.Database.ProcessScheduledTransactionsAsync();
+                if (created > 0)
+                    System.Diagnostics.Debug.WriteLine($"[SCHEDULED] Создано транзакций: {created}");
+
+                var transactions = await App.Database.GetTransactionsAsync();
+                var goals = await App.Database.GetGoalsAsync();
+                var subs = await App.Database.GetSubscriptionsAsync();
+
+                App.PreloadedTransactions = transactions;
+                App.PreloadedGoals = goals;
+                App.PreloadedSubscriptions = subs;
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    App.GlobalHistory.Clear();
+                    foreach (var t in transactions)
+                        App.GlobalHistory.Add(t);
+                    _dataReady.TrySetResult();
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"DB ERROR: {ex.Message}");
+                MainThread.BeginInvokeOnMainThread(() => _dataReady.TrySetResult());
+            }
         });
 
         MainThread.BeginInvokeOnMainThread(() =>
@@ -127,6 +140,16 @@ public partial class LoadingPage : ContentPage
 
     private async Task RunBootAndSwitchAsync()
     {
+        try
+        {
+            int created = await App.Database.ProcessScheduledTransactionsAsync();
+            if (created > 0)
+                System.Diagnostics.Debug.WriteLine($"[SCHEDULED] Создано транзакций: {created}");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[SCHEDULED ERROR]: {ex.Message}");
+        }
         await SplashLogo.FadeTo(1.0, 800, Easing.BounceOut);
         LogoGlow.Radius = 25;
         LogoGlow.Opacity = 0.8f;

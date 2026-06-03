@@ -59,7 +59,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
     {
         InitializeComponent();
         _isReady = true;
-
+        SchedIntervalPicker.SelectedIndex = 0;
         this.BindingContext = this;
         UserSavings = new ObservableCollection<SavingsGoal>();
         // Даем Mac Catalyst непустой список при старте, чтобы инициализировать оверлей
@@ -288,7 +288,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
                 // 4. ФИНАЛЬНЫЙ ВЫЗОВ (в самом конце!)
                 UpdateLayoutVisibility(hasTransactions, hasStats);
             });
-
+            await LoadScheduledTransactions();
             // 3. Обновляем графики (если метод вызывается отдельно)
             await UpdateDashboardUI();
         }
@@ -1508,5 +1508,129 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
             AtlasPeriodPlaceholder.IsVisible = !hasStats;
         }
     }
+    #region --- 9. ЗАПЛАНИРОВАННЫЕ ТРАНЗАКЦИИ ---
+
+    // Флаг режима для формы расписания: true = доход, false = расход, null = не выбрано
+    private bool? _schedIsIncome = null;
+
+    // Нажатие РАСХОД в форме расписания
+    private async void OnSchedExpenseTapped(object sender, TappedEventArgs e)
+    {
+        await SchedExpenseBorder.ScaleTo(0.96, 80, Easing.CubicIn);
+        await SchedExpenseBorder.ScaleTo(1.0, 80, Easing.CubicOut);
+        _schedIsIncome = false;
+        SchedExpenseBorder.BackgroundColor = Color.FromArgb("#6B1580");
+        SchedExpenseBorder.Stroke = new SolidColorBrush(Color.FromArgb("#FF00FF"));
+        LblSchedExpense.TextColor = Colors.White;
+
+        SchedIncomeBorder.BackgroundColor = Colors.Transparent;
+        SchedIncomeBorder.Stroke = new SolidColorBrush(Color.FromArgb("#2DD4BF"));
+        LblSchedIncome.TextColor = Color.FromArgb("#1E6B60");
+    }
+
+    // Нажатие ДОХОД в форме расписания
+    private async void OnSchedIncomeTapped(object sender, TappedEventArgs e)
+    {
+        await SchedIncomeBorder.ScaleTo(0.96, 80, Easing.CubicIn);
+        await SchedIncomeBorder.ScaleTo(1.0, 80, Easing.CubicOut);
+        _schedIsIncome = true;
+        SchedIncomeBorder.BackgroundColor = Color.FromArgb("#0D5C52");
+        SchedIncomeBorder.Stroke = new SolidColorBrush(Color.FromArgb("#00FFE5"));
+        LblSchedIncome.TextColor = Colors.White;
+
+        SchedExpenseBorder.BackgroundColor = Colors.Transparent;
+        SchedExpenseBorder.Stroke = new SolidColorBrush(Color.FromArgb("#D946EF"));
+        LblSchedExpense.TextColor = Color.FromArgb("#7A2D6A");
+    }
+
+    // Добавление запланированной транзакции
+    private async void OnAddScheduledClicked(object sender, EventArgs e)
+    {
+        if (sender is Button btn) await AnimateButton(btn);
+
+        // Проверка режима
+        if (_schedIsIncome == null)
+        {
+            await DisplayAlert("Monolith OS", "Выберите тип: Доход или Расход", "OK");
+            return;
+        }
+
+        // Проверка суммы
+        if (!decimal.TryParse(SchedAmountEntry.Text?.Replace(',', '.'), out decimal amount) || amount <= 0)
+        {
+            await DisplayAlert("Monolith OS", "Введите корректную сумму", "OK");
+            return;
+        }
+
+        // Проверка интервала
+        if (SchedIntervalPicker.SelectedIndex < 0)
+        {
+            await DisplayAlert("Monolith OS", "Выберите интервал повторения", "OK");
+            return;
+        }
+
+        // Конвертируем выбранный интервал в код
+        string interval = SchedIntervalPicker.SelectedIndex switch
+        {
+            0 => "daily",
+            1 => "weekly",
+            2 => "monthly",
+            3 => "yearly",
+            _ => "monthly"
+        };
+
+        var scheduled = new ScheduledTransaction
+        {
+            Description = string.IsNullOrWhiteSpace(SchedNameEntry.Text) ? "Авто-транзакция" : SchedNameEntry.Text.Trim(),
+            Amount = amount,
+            IsIncome = (bool)_schedIsIncome,
+            Category = (bool)_schedIsIncome ? "💰 Зарплата" : "💳 Подписка",
+            StartDate = SchedDatePicker.Date,
+            NextExecutionDate = SchedDatePicker.Date,
+            Interval = interval,
+            IsActive = true
+        };
+
+        await App.Database.SaveScheduledTransactionAsync(scheduled);
+
+        // Сбрасываем форму
+        SchedNameEntry.Text = string.Empty;
+        SchedAmountEntry.Text = string.Empty;
+        SchedIntervalPicker.SelectedIndex = -1;
+        _schedIsIncome = null;
+
+        SchedExpenseBorder.BackgroundColor = Colors.Transparent;
+        SchedExpenseBorder.Stroke = new SolidColorBrush(Color.FromArgb("#D946EF"));
+        LblSchedExpense.TextColor = Color.FromArgb("#7A2D6A");
+
+        SchedIncomeBorder.BackgroundColor = Colors.Transparent;
+        SchedIncomeBorder.Stroke = new SolidColorBrush(Color.FromArgb("#2DD4BF"));
+        LblSchedIncome.TextColor = Color.FromArgb("#1E6B60");
+
+        await LoadScheduledTransactions();
+    }
+
+    // Удаление запланированной транзакции
+    private async void OnDeleteScheduledClicked(object sender, EventArgs e)
+    {
+        if (sender is Button btn) await AnimateButton(btn);
+        if ((sender as Button)?.CommandParameter is not ScheduledTransaction scheduled) return;
+
+        bool confirm = await DisplayAlert("Удаление", $"Удалить расписание '{scheduled.Description}'?", "Да", "Нет");
+        if (!confirm) return;
+
+        await App.Database.DeleteScheduledTransactionAsync(scheduled);
+        await LoadScheduledTransactions();
+    }
+
+    // Загружает список запланированных транзакций в CollectionView
+    private async Task LoadScheduledTransactions()
+    {
+        var list = await App.Database.GetScheduledTransactionsAsync();
+        ScheduledCollectionView.ItemsSource = null;
+        ScheduledCollectionView.ItemsSource = list;
+    }
+
+    #endregion
 }
     #endregion

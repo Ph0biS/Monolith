@@ -174,4 +174,57 @@ namespace PROJECT.Models
         public int Id { get; set; } = 1;
         public string Text { get; set; } = "";
     }
+    public class ScheduledTransaction
+    {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+
+        // Основные данные транзакции
+        public string Category { get; set; }
+        public string Description { get; set; }
+        public decimal Amount { get; set; }
+        public bool IsIncome { get; set; }
+
+        // Расписание
+        public DateTime StartDate { get; set; }        // Дата первого выполнения
+        public DateTime NextExecutionDate { get; set; } // Следующее выполнение
+        public DateTime? LastExecutionDate { get; set; } // Последнее выполнение (null = ещё не выполнялось)
+        public string Interval { get; set; }            // "daily" / "weekly" / "monthly" / "yearly"
+        public bool IsActive { get; set; } = true;      // Можно приостановить
+
+        // Вычисляемые свойства для UI
+        [Ignore]
+        public string IntervalText => Interval switch
+        {
+            "daily" => "Каждый день",
+            "weekly" => "Каждую неделю",
+            "monthly" => "Каждый месяц",
+            "yearly" => "Каждый год",
+            _ => Interval
+        };
+
+        [Ignore]
+        public string AmountText => IsIncome
+            ? $"+{Amount:N0} ₽"
+            : $"-{Amount:N0} ₽";
+
+        [Ignore]
+        public string AmountColor => IsIncome ? "#2DD4BF" : "#D946EF";
+
+        [Ignore]
+        public string NextExecutionText => $"Следующее: {NextExecutionDate:dd.MM.yyyy}";
+
+        [Ignore]
+        public string DirectionIcon => IsIncome ? "💰" : "💸";
+
+        // Считает следующую дату выполнения на основе интервала
+        public DateTime CalculateNextDate(DateTime from) => Interval switch
+        {
+            "daily" => from.AddDays(1),
+            "weekly" => from.AddDays(7),
+            "monthly" => from.AddMonths(1),
+            "yearly" => from.AddYears(1),
+            _ => from.AddMonths(1)
+        };
+    }
 }

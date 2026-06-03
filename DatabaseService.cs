@@ -12,7 +12,7 @@ namespace PROJECT.Services
 
         private async Task Init()
         {
-            if (_database is not null) return;
+            if (_database is not null) { await _database.CreateTableAsync<ScheduledTransaction>(); return; } 
 
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MyData.db3");
             _database = new SQLiteAsyncConnection(dbPath);
@@ -24,6 +24,7 @@ namespace PROJECT.Services
             await _database.CreateTableAsync<Debt>();
             await _database.CreateTableAsync<StreakData>();
             await _database.CreateTableAsync<NoteData>();
+            await _database.CreateTableAsync<ScheduledTransaction>();
         }
 
         // --- ТРАНЗАКЦИИ ---
@@ -211,6 +212,78 @@ namespace PROJECT.Services
             else
                 await _database.InsertOrReplaceAsync(note);
         }
-    }
+        // --- ЗАПЛАНИРОВАННЫЕ ТРАНЗАКЦИИ (ScheduledTransaction) ---
 
+        // Получить все запланированные транзакции
+        public async Task<List<ScheduledTransaction>> GetScheduledTransactionsAsync()
+        {
+            await Init();
+            return await _database.Table<ScheduledTransaction>()
+                .OrderBy(x => x.NextExecutionDate)
+                .ToListAsync();
+        }
+
+        // Сохранить или обновить запланированную транзакцию
+        public async Task<int> SaveScheduledTransactionAsync(ScheduledTransaction scheduled)
+        {
+            await Init();
+            return scheduled.Id != 0
+                ? await _database.UpdateAsync(scheduled)
+                : await _database.InsertAsync(scheduled);
+        }
+
+        // Удалить запланированную транзакцию
+        public async Task<int> DeleteScheduledTransactionAsync(ScheduledTransaction scheduled)
+        {
+            await Init();
+            return await _database.DeleteAsync(scheduled);
+        }
+
+        // Главный метод — вызывается при каждом запуске приложения
+        // Проверяет просроченные запланированные транзакции и создаёт их в базе
+        public async Task<int> ProcessScheduledTransactionsAsync()
+        {
+            await Init();
+
+            var scheduled = await _database.Table<ScheduledTransaction>()
+                .Where(s => s.IsActive)
+                .ToListAsync();
+
+            int created = 0;
+            var today = DateTime.Today;
+
+            foreach (var item in scheduled)
+            {
+                // Пока дата следующего выполнения прошла или наступила сегодня
+                while (item.NextExecutionDate.Date <= today)
+                {
+                    // Создаём реальную транзакцию
+                    var transaction = new Transaction
+                    {
+                        Category = item.Category,
+                        Description = string.IsNullOrWhiteSpace(item.Description)
+                            ? $"Авто: {item.Category}"
+                            : item.Description,
+                        Amount = item.Amount,
+                        IsIncome = item.IsIncome,
+                        Date = item.NextExecutionDate
+                    };
+
+                    await _database.InsertAsync(transaction);
+
+                    // Обновляем дату последнего и следующего выполнения
+                    item.LastExecutionDate = item.NextExecutionDate;
+                    item.NextExecutionDate = item.CalculateNextDate(item.NextExecutionDate);
+
+                    created++;
+                }
+
+                // Сохраняем обновлённые даты
+                await _database.UpdateAsync(item);
+            }
+
+            return created; // Возвращаем количество созданных транзакций
+        }
+    }
 }
+

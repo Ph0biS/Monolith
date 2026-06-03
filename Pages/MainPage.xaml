@@ -360,7 +360,116 @@
                         </CollectionView>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
+                <!-- ЗАПЛАНИРОВАННЫЕ ТРАНЗАКЦИИ -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="РАСПИСАНИЕ" FontFamily="Orbitron" FontAttributes="Bold"
+           FontSize="16" TextColor="#A78BFA" Margin="0,5,0,0" CharacterSpacing="1"/>
 
+                    <!-- Форма добавления -->
+                    <Border Stroke="#3D2B5E" Background="#1A1033" Padding="10" StrokeShape="RoundRectangle 12">
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                                <Entry x:Name="SchedNameEntry" Placeholder="Описание"
+                       FontAttributes="Bold" FontFamily="Inter"
+                       TextColor="White" PlaceholderColor="#5A4A7A"/>
+                                <Entry Grid.Column="1" x:Name="SchedAmountEntry" Placeholder="Сумма"
+                       FontAttributes="Bold" FontFamily="JetBrainsMono" Keyboard="Numeric"
+                       TextColor="White" PlaceholderColor="#5A4A7A"/>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*, 150, 50" ColumnSpacing="8">
+                                <Border StrokeThickness="1" Stroke="#3D2B5E"
+        BackgroundColor="#1A1033"
+        StrokeShape="RoundRectangle 8" 
+        Padding="10,0" HeightRequest="45">
+                                    <Picker x:Name="SchedIntervalPicker"
+            Margin="-12"
+            FontAttributes="Bold" FontFamily="Inter"
+            TextColor="White" TitleColor="#5A4A7A"
+            SelectedIndex="0">
+                                        <Picker.ItemsSource>
+                                            <x:Array Type="{x:Type x:String}">
+                                                <x:String>Каждый день</x:String>
+                                                <x:String>Каждую неделю</x:String>
+                                                <x:String>Каждый месяц</x:String>
+                                                <x:String>Каждый год</x:String>
+                                            </x:Array>
+                                        </Picker.ItemsSource>
+                                    </Picker>
+                                </Border>
+                                <DatePicker Grid.Column="1" x:Name="SchedDatePicker"
+                FontFamily="RobotoMono" FontAttributes="Bold"
+                Format="dd/MM/yyyy" TextColor="White"
+                FontSize="12" WidthRequest="150"/>
+                                <Button Grid.Column="2" Text="⭐" Clicked="OnAddScheduledClicked"
+            BackgroundColor="#8B5CF6" WidthRequest="45" HeightRequest="45"
+            CornerRadius="10" Padding="0" FontSize="16"/>
+                            </Grid>
+
+                            <!-- Кнопки Доход/Расход для расписания -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                <Border x:Name="SchedExpenseBorder" Stroke="#D946EF" StrokeThickness="1"
+                        StrokeShape="RoundRectangle 10" HeightRequest="40" BackgroundColor="Transparent">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnSchedExpenseTapped"/>
+                                    </Border.GestureRecognizers>
+                                    <Label x:Name="LblSchedExpense" Text="💸 РАСХОД"
+                           FontFamily="Inter" FontAttributes="Bold" FontSize="13"
+                           HorizontalOptions="Center" VerticalOptions="Center"
+                           TextColor="#7A2D6A"/>
+                                </Border>
+                                <Border x:Name="SchedIncomeBorder" Grid.Column="1" Stroke="#2DD4BF"
+                        StrokeThickness="1" StrokeShape="RoundRectangle 10"
+                        HeightRequest="40" BackgroundColor="Transparent">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnSchedIncomeTapped"/>
+                                    </Border.GestureRecognizers>
+                                    <Label x:Name="LblSchedIncome" Text="💰 ДОХОД"
+                           FontFamily="Inter" FontAttributes="Bold" FontSize="13"
+                           HorizontalOptions="Center" VerticalOptions="Center"
+                           TextColor="#1E6B60"/>
+                                </Border>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Список запланированных -->
+                    <CollectionView x:Name="ScheduledCollectionView">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:ScheduledTransaction">
+                                <Border BackgroundColor="#1A1033" Stroke="#3D2B5E"
+                        Padding="12" StrokeShape="RoundRectangle 12">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <Label Text="{Binding DirectionIcon}" FontSize="20"
+                               VerticalOptions="Center" Margin="0,0,10,0"/>
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                            <Label Text="{Binding Description}" FontFamily="Inter" FontAttributes="Bold"
+                                   TextColor="White" FontSize="16"/>
+                                            <Label Text="{Binding IntervalText}" FontFamily="Inter" FontAttributes="Bold"
+                                   FontSize="13" TextColor="#A78BFA"/>
+                                            <Label Text="{Binding NextExecutionText}" FontFamily="Inter" FontAttributes="Bold"
+                                   FontSize="12" TextColor="#5A4A7A"/>
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Column="2" Spacing="5" VerticalOptions="Center">
+                                            <Label Text="{Binding AmountText}" FontFamily="Inter" FontAttributes="Bold"
+                                    FontSize="14"
+                                   TextColor="{Binding AmountColor}"
+                                   HorizontalOptions="End"/>
+                                            <Button Text="🗑️" Clicked="OnDeleteScheduledClicked"
+                                    CommandParameter="{Binding .}"
+                                    BackgroundColor="#D946EF"
+                                    WidthRequest="32" HeightRequest="32"
+                                    CornerRadius="16" FontSize="12" Padding="0"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
                 <!-- МИНИ-ЗАМЕТКИ -->
                 <Border BackgroundColor="#140B2D" Stroke="#A78BFA" StrokeThickness="1.5"
                         StrokeShape="RoundRectangle 15" Padding="15" Margin="0,5,0,20">
