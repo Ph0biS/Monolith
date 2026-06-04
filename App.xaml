@@ -214,15 +214,12 @@
                         <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
                             <VerticalStackLayout Spacing="2">
                                 <Border Stroke="#00F2FF" StrokeThickness="2" HeightRequest="58" WidthRequest="58"
-                StrokeShape="RoundRectangle 14" BackgroundColor="#1A1033"
-                VerticalOptions="Center">
+        StrokeShape="RoundRectangle 14" BackgroundColor="#1A1033"
+        VerticalOptions="Center">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnLogoTapped"/>
                                     </Border.GestureRecognizers>
                                     <Image Source="logomain.png" Aspect="Fill" Margin="0" />
-                                    <Border.Shadow>
-                                        <Shadow Brush="#00F2FF" Opacity="0.8" Radius="15" Offset="0,0" />
-                                    </Border.Shadow>
                                 </Border>
                                 <Label Text="💀 ДОЛГИ" FontFamily="JetBrainsMono" FontSize="10"
        TextColor="#D946EF" HorizontalOptions="Center"
