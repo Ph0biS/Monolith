@@ -15,7 +15,7 @@
 
 <br>
 
-![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=16&duration=3000&pause=1000&color=D946EF&center=true&vCenter=true&width=600&lines=MONOLITH_OS+v1.2+%2F%2F+BOOT+SEQUENCE+COMPLETE;ATLAS+AI+MODULE+%5BONLINE%5D;YOUR+FINANCES+ARE+UNDER+CONTROL%2C+OPERATOR;ENCRYPTION%3A+ACTIVE+%E2%9C%93+%7C+VAULT%3A+SECURED+%E2%9C%93)
+![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=16&duration=3000&pause=1000&color=D946EF&center=true&vCenter=true&width=600&lines=MONOLITH_OS+v1.0+%2F%2F+BOOT+SEQUENCE+COMPLETE;ATLAS+AI+MODULE+%5BONLINE%5D;YOUR+FINANCES+ARE+UNDER+CONTROL%2C+OPERATOR;ENCRYPTION%3A+ACTIVE+%E2%9C%93+%7C+VAULT%3A+SECURED+%E2%9C%93)
 
 <br>
 
