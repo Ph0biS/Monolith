@@ -124,11 +124,7 @@
 
 <div align="center">
 
-> 🖼️ *Добавь скриншоты приложения сюда — перетащи изображения в папку `screenshots/` и они появятся здесь*
-
-<!-- ПРИМЕР КАК ДОБАВИТЬ СКРИНШОТЫ:
-<img src="screenshots/main.png" width="32%"/> <img src="screenshots/analytics.png" width="32%"/> <img src="screenshots/achievements.png" width="32%"/>
--->
+<img src="screenshots/main.png" width="32%"/>
 
 </div>
 
