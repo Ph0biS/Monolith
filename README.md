@@ -1,7 +1,5 @@
 <div align="center">
 
-# ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-
 ```
 ███╗   ███╗ ██████╗ ███╗   ██╗ ██████╗ ██╗     ██╗████████╗██╗  ██╗
 ████╗ ████║██╔═══██╗████╗  ██║██╔═══██╗██║     ██║╚══██╔══╝██║  ██║
@@ -44,9 +42,10 @@
 
 <!-- STATS BADGES -->
 <p>
-  <img src="https://img.shields.io/badge/RELEASE-v1.2-FF007F?style=flat-square&logo=github"/>
+  <img src="https://img.shields.io/github/v/release/Ph0biS/Monolith?style=flat-square&label=RELEASE&color=FF007F&logo=github"/>
+  <img src="https://img.shields.io/github/stars/Ph0biS/Monolith?style=flat-square&label=STARS&color=FFD700&logo=github"/>
+  <img src="https://img.shields.io/github/downloads/Ph0biS/Monolith/total?style=flat-square&label=DOWNLOADS&color=22C55E&logo=github"/>
   <img src="https://img.shields.io/badge/BUILD-PASSING-22C55E?style=flat-square&logo=githubactions&logoColor=white"/>
-  <img src="https://img.shields.io/badge/PLATFORM-CROSS--PLATFORM-8A2BE2?style=flat-square"/>
   <img src="https://img.shields.io/badge/LICENSE-MIT-00E5FF?style=flat-square"/>
 </p>
 
@@ -59,6 +58,33 @@
 **MONOLITH** — это футуристический кроссплатформенный финансовый менеджер, построенный на **.NET MAUI (C# / XAML)**.<br>
 Строгий контроль бюджета. Продвинутая аналитика под управлением ИИ-ассистента **Atlas**.<br>
 Геймификация. Трекер долгов. Личный журнал. Неоновый интерфейс в стиле *Synthwave / Cyberpunk*.
+
+</div>
+
+---
+
+## ⬇️ DOWNLOAD // ПОЛУЧИТЬ ДОСТУП
+
+<div align="center">
+
+<br>
+
+[![Download macOS](https://img.shields.io/badge/⬇%20%20СКАЧАТЬ%20ДЛЯ%20macOS-000000?style=for-the-badge&logo=apple&logoColor=white&labelColor=000000)](https://github.com/Ph0biS/Monolith/releases/latest)
+&nbsp;&nbsp;
+[![All Releases](https://img.shields.io/badge/📦%20%20ВСЕ%20РЕЛИЗЫ-FF007F?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Ph0biS/Monolith/releases)
+
+<br>
+
+> **⚠️ Первый запуск на macOS**
+>
+> Так как приложение не подписано сертификатом Apple, macOS может заблокировать запуск.
+>
+> **Способ 1:** Системные настройки → Конфиденциальность и безопасность → **"Всё равно открыть"**
+>
+> **Способ 2:** Терминал:
+> ```bash
+> xattr -cr /Applications/PROJECT.app
+> ```
 
 </div>
 
@@ -94,7 +120,21 @@
 
 ---
 
-## ⚡ Основной Функционал
+## 📸 SCREENSHOTS // ИНТЕРФЕЙС
+
+<div align="center">
+
+> 🖼️ *Добавь скриншоты приложения сюда — перетащи изображения в папку `screenshots/` и они появятся здесь*
+
+<!-- ПРИМЕР КАК ДОБАВИТЬ СКРИНШОТЫ:
+<img src="screenshots/main.png" width="32%"/> <img src="screenshots/analytics.png" width="32%"/> <img src="screenshots/achievements.png" width="32%"/>
+-->
+
+</div>
+
+---
+
+## ⚡ FEATURES // ОСНОВНОЙ ФУНКЦИОНАЛ
 
 <table>
 <tr>
@@ -129,7 +169,7 @@
 <td width="50%">
 
 ### 🎯 Цели и Копилки
-Визуальный трекер накоплений с `ProgressBar` и мгновенным пополнением через `🚀`. Atlas рассчитывает стратегию достижения цели.
+Визуальный трекер накоплений с `ProgressBar` и мгностанным пополнением через `🚀`. Atlas рассчитывает стратегию достижения цели.
 
 </td>
 <td width="50%">
@@ -185,7 +225,7 @@ SQLite база данных зашифрована через SQLCipher. Тво
 
 ---
 
-## 🛠 Технологический Стек
+## 🛠 TECH STACK // ТЕХНОЛОГИЧЕСКИЙ СТЕК
 
 <div align="center">
 
@@ -203,28 +243,7 @@ SQLite база данных зашифрована через SQLCipher. Тво
 
 ---
 
-## 🎨 Цветовая Матрица Категорий
-
-<div align="center">
-
-| 📁 Категория | 🌌 Тег | HEX | Маркер |
-| :---: | :--- | :--- | :---: |
-| 🛒 **Продукты** | Neon Teal | `#2DD4BF` | 🟢 |
-| 🚌 **Транспорт** | Cyber Blue | `#3B82F6` | 🔵 |
-| 🎮 **Развлечения** | Synth Purple | `#8B5CF6` | 🟣 |
-| 🏠 **Дом** | Neon Orange | `#FB923C` | 🟠 |
-| 💊 **Здоровье** | Laser Red | `#EF4444` | 🔴 |
-| 🍔 **Еда** | Neon Gold | `#FFD700` | 🟡 |
-| 👕 **Одежда** | Hot Pink | `#EC4899` | 🩷 |
-| 📱 **Связь** | Cyan | `#06B6D4` | 🩵 |
-| 💰 **Зарплата** | Matrix Green | `#22C55E` | ❇️ |
-| 🎁 **Подарок** | Amber | `#F59E0B` | 🟤 |
-
-</div>
-
----
-
-## 📱 Поддерживаемые Платформы
+## 📱 PLATFORMS // ПОДДЕРЖИВАЕМЫЕ ПЛАТФОРМЫ
 
 <div align="center">
 
@@ -239,7 +258,7 @@ SQLite база данных зашифрована через SQLCipher. Тво
 
 ---
 
-## 🚀 Установка и Запуск
+## 🚀 INSTALL // УСТАНОВКА И ЗАПУСК
 
 ### Требования
 
@@ -276,25 +295,59 @@ dotnet build PROJECT.csproj -f net9.0-android
 dotnet publish PROJECT.csproj -f net9.0-windows10.0.19041.0 -c Release -p:WindowsPackageType=None --self-contained true
 ```
 
-> 📦 Готовый архив лежит в `bin\Release\net9.0-windows10.0.19041.0\win10-x64\publish\`
+> 📦 Готовый архив: `bin\Release\net9.0-windows10.0.19041.0\win10-x64\publish\`
+
+### Self-Contained сборка для macOS
+
+```bash
+dotnet publish PROJECT.csproj -f net9.0-maccatalyst -c Release
+zip -r Monolith-mac.zip bin/Release/net9.0-maccatalyst/*.app
+```
+
+> 📦 Готовый архив: `bin/Release/net9.0-maccatalyst/`
 
 ---
 
-## 📖 Инструкция Оператора
+## 📖 OPERATOR MANUAL // ИНСТРУКЦИЯ ОПЕРАТОРА
 
 ```
-[01] ЗАГРУЗКА ............ Дождитесь завершения анимации MONOLITH_OS_BOOT
-[02] ТРАНЗАКЦИИ .......... Нажмите 💸 РАСХОД или 💰 ДОХОД → введите сумму
-[03] КОПИЛКИ ............. Создайте цель → пополняйте через 🚀
-[04] ДОЛГИ ............... Нажмите на логотип MONOLITH → откроется 💀 DEBT TRACKER
-[05] АНАЛИТИКА ........... Нажмите на диаграмму → breakdown по категориям
-[06] ЭКСПОРТ ............. Кнопки 📥 CSV и 📄 PDF рядом с балансом
-[07] ДОСТИЖЕНИЯ .......... Вкладка 🏆 → выполняй условия → разблокируй награды
+╔═══════════════════════════════════════════════════════════════════╗
+║                    OPERATOR QUICK START GUIDE                     ║
+╠═══════════════════════════════════════════════════════════════════╣
+║  [01] ЗАГРУЗКА ......... Дождитесь анимации MONOLITH_OS_BOOT      ║
+║  [02] ТРАНЗАКЦИИ ....... Нажмите 💸 РАСХОД или 💰 ДОХОД           ║
+║  [03] КОПИЛКИ .......... Создайте цель → пополняйте через 🚀      ║
+║  [04] ДОЛГИ ............ Нажмите на логотип → 💀 DEBT TRACKER     ║
+║  [05] АНАЛИТИКА ........ Нажмите на диаграмму → breakdown         ║
+║  [06] ЭКСПОРТ .......... Кнопки 📥 CSV и 📄 PDF рядом с балансом  ║
+║  [07] ДОСТИЖЕНИЯ ....... Вкладка 🏆 → выполняй → разблокируй     ║
+╚═══════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## 📊 Системные Метрики
+## 🎨 COLOR MATRIX // ЦВЕТОВАЯ МАТРИЦА КАТЕГОРИЙ
+
+<div align="center">
+
+| 📁 Категория | 🌌 Тег | HEX | Маркер |
+| :---: | :--- | :--- | :---: |
+| 🛒 **Продукты** | Neon Teal | `#2DD4BF` | 🟢 |
+| 🚌 **Транспорт** | Cyber Blue | `#3B82F6` | 🔵 |
+| 🎮 **Развлечения** | Synth Purple | `#8B5CF6` | 🟣 |
+| 🏠 **Дом** | Neon Orange | `#FB923C` | 🟠 |
+| 💊 **Здоровье** | Laser Red | `#EF4444` | 🔴 |
+| 🍔 **Еда** | Neon Gold | `#FFD700` | 🟡 |
+| 👕 **Одежда** | Hot Pink | `#EC4899` | 🩷 |
+| 📱 **Связь** | Cyan | `#06B6D4` | 🩵 |
+| 💰 **Зарплата** | Matrix Green | `#22C55E` | ❇️ |
+| 🎁 **Подарок** | Amber | `#F59E0B` | 🟤 |
+
+</div>
+
+---
+
+## 📊 SYSTEM METRICS // СИСТЕМНЫЕ МЕТРИКИ
 
 <div align="center">
 
@@ -307,11 +360,17 @@ dotnet publish PROJECT.csproj -f net9.0-windows10.0.19041.0 -c Release -p:Window
 
 <p>
   <img src="https://img.shields.io/badge/STREAK_SYSTEM-ACTIVE-FF6B35?style=for-the-badge&logo=duolingo&logoColor=white"/>
-  <img src="https://img.shields.io/badge/ACHIEVEMENTS-UNLOCKING-FFD700?style=for-the-badge&logo=achievement&logoColor=black"/>
-  <img src="https://img.shields.io/badge/CURRENCY_API-LIVE-22C55E?style=for-the-badge&logo=exchangerate&logoColor=white"/>
+  <img src="https://img.shields.io/badge/ACHIEVEMENTS-UNLOCKING-FFD700?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/CURRENCY_API-LIVE-22C55E?style=for-the-badge"/>
 </p>
 
 </div>
+
+---
+
+## 📜 LICENSE
+
+Распространяется под лицензией **MIT**. Используй, форкай, улучшай — Atlas одобряет.
 
 ---
 
@@ -319,7 +378,7 @@ dotnet publish PROJECT.csproj -f net9.0-windows10.0.19041.0 -c Release -p:Window
 
 ```
 ╔═══════════════════════════════════════════════════╗
-║   MONOLITH OS v1.1.0  ·  ENCRYPTED  ·  SECURE    ║
+║   MONOLITH OS v1.0  ·  ENCRYPTED  ·  SECURE      ║
 ║         ATLAS AI  ·  ONLINE & READY               ║
 ╚═══════════════════════════════════════════════════╝
 ```
